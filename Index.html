@@ -1,10 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
-    <link rel="stylesheet" href="Estilos.css">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GECK Codex</title>  <!-- Fixed closing tag -->
+    <!-- Hojas de estilo -->
+    <link id="estilo-obs" rel="stylesheet" href="EstiloObs.css">
+    <link id="estilo-bla" rel="stylesheet" href="EstiloBla.css" disabled>
+    <title>GECK Codex</title>
     
 </head>
 <body>
@@ -16,13 +18,21 @@
                 <li><a href="#">Proyectos</a></li>
                 <li><a href="#">Historia</a></li>
                 <li><a href="#">Equipo</a></li>
-                <li><a href="">Vision & Valores</a></li>
-                <li><a href="#">Contactanos</a></li>
+                <li><a href="">Visión & Valores</a></li>
+                <li><a href="#">Contáctanos</a></li>
+                <li>
+                    <button class="theme-switcher" id="cambiarEstilo" aria-label="Cambiar tema">
+                        <svg class="theme-icon" viewBox="0 0 24 24" aria-hidden="true">
+                            <path fill="currentColor" />
+                        </svg>
+                        <span class="theme-label">Cambiar Tema</span>
+                    </button>
+                </li>
             </ul>
         </header>
         <div class="contenido">
             <div class="cajaTexto">
-            <h2>¡¡Bienvenidos!!</h2>
+                <h2>¡¡Bienvenidos!!</h2>
                 <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Aperiam expedita, 
                 dolor voluptate asperiores reprehenderit iure inventore vitae repudiandae blanditiis commodi, 
                 consectetur, voluptas recusandae a doloribus? Neque repudiandae repellat repellendus veniam!</p>
@@ -30,10 +40,11 @@
             </div>
         </div>
     </section>
+
+    <footer>
+        Todos los derechos reservados &copy;
+    </footer>
+    
+    <script src="BotonObsBlan.js"></script>
 </body>
-
-<footer>
-    Todos los derechos reservados &copy;
-</footer>
-
 </html>
