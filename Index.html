@@ -4,15 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Hojas de estilo -->
-    <link id="estilo-obs" rel="stylesheet" href="EstiloObs.css">
-    <link id="estilo-bla" rel="stylesheet" href="EstiloBla.css" disabled>
+    <link id="estilo-obs" rel="stylesheet" href="EstiloObs.css"disabled> 
+    <link id="estilo-bla" rel="stylesheet" href="EstiloBla.css" >
     <title>GECK Codex</title>
     
 </head>
 <body>
-    <section>
+    <section class="contenedor_principal">
+        
         <header>
-            <a href="#" class="logo">GECKCODEX</a>
+            <a href="#" class="logo">GECKCODEX; </a>
+            <div class="menu"><img src="menu.png" alt=""></div>
             <ul class="navegacion">
                 <li><a href="#" class="active">Inicio</a></li>
                 <li><a href="#">Proyectos</a></li>
@@ -38,12 +40,28 @@
                 consectetur, voluptas recusandae a doloribus? Neque repudiandae repellat repellendus veniam!</p>
                 <a href="#">Leer más</a>
             </div>
+            <div class="contenedor_imagen">
+                
+            </div>
         </div>
-    </section>
+        <ul class="redes_sociales">
+            <li><a href="#"><img src="facebook.png" alt="GECKCODEX_facebook"></a></li>
+            <li><a href="#"><img src="instagram.png" alt="GECKCODEX_instagram"></a></li>
+            <li><a href="#"><img src="x.png" alt="GECKCODEX_X"></a></li>
+        </ul>
 
+    </section>
+    <img src="logo vector.svg" alt="GECKCODEX" class="imagen_geck">
+    
     <footer>
         Todos los derechos reservados &copy;
     </footer>
+    <script>
+        const menuMarcador = document.querySelector('.menu');
+        menuMarcador.onclick = function(){
+            menuMarcador.classList.toggle('active')
+        }
+    </script>
     
     <script src="BotonObsBlan.js"></script>
 </body>
