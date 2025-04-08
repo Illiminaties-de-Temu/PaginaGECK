@@ -6,7 +6,10 @@ html {
     opacity: 0;
     background-color: #1a1a1D; /* Color base mientras carga */
 }
-
+li{
+    text-decoration: none;
+    list-style: none;
+}
 /* Estilos base críticos (sin transiciones iniciales) */
 * {
     margin: 0;
