@@ -58,10 +58,10 @@ header .logo {
     text-decoration: none;
     font-weight: 800;
     opacity: 0;
-    animation: deslizar_derecha 0.5s linear forwards;
+    animation: deslizar 0.5s linear forwards;
     animation-delay: 0.2s;
 }
-@keyframes deslizar_derecha{
+@keyframes deslizar{
     0%{
         transform: translateX(-100px);
         opacity: 0;
@@ -134,7 +134,7 @@ header ul li a:hover {
 }
 @keyframes deslizar_derecha{
     0%{
-        transform: translateX(-100px);
+        transform: translateX(100px);
         opacity: 0;
     }
     100%{
@@ -147,7 +147,11 @@ header ul li a:hover {
 .contenido .cajaTexto p {
     font-size: 1.2em;
     color: #1a1a1D;
+    opacity: 0;
+    animation: deslizar 0.5s linear forwards;
+    animation-delay: 1.75s;
 }
+
 
 .redes_sociales{
     position: absolute;
@@ -168,6 +172,9 @@ header ul li a:hover {
     justify-content: center;
     align-items: center;
     transition: 0.2s ease-in-out;
+    opacity: 0;
+    animation: deslizar 0.5s linear forwards;
+    animation-delay: 1.75s;
 }
 .redes_sociales li a:hover{
     background-color: #0A2472;
@@ -239,6 +246,9 @@ section {
     font-weight: 700;
     letter-spacing: 1px;
     text-decoration: none;
+    opacity: 0;
+    animation: deslizar_arriba 0.5s linear forwards;
+    animation-delay: calc(0.2s * var(--i));
 }
 .redes_sociales{
     position: absolute;
