@@ -4,16 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Hojas de estilo -->
-    <link id="estilo-obs" rel="stylesheet" href="EstiloObs.css"disabled> 
-    <link id="estilo-bla" rel="stylesheet" href="EstiloBla.css" >
+    <link id="estilo-obs" rel="stylesheet" href="EstiloObs.css" disabled> 
+    <link id="estilo-bla" rel="stylesheet" href="EstiloBla.css">
     <title>GECK Codex</title>
-    
 </head>
 <body>
     <section class="contenedor_principal">
-        
         <header>
-            <a href="#" class="logo">GECKCODEX; </a>
+            <a href="#" class="logo">GECKCODEX;</a>
             <div class="menu"></div>
             <ul class="navegacion">
                 <li><a href="Index.html" style="--i:1;" class="active">Inicio</a></li>
@@ -22,10 +20,10 @@
                 <li><a href="Equipo.html" style="--i:4;">Equipo</a></li>
                 <li><a href="VV.html" style="--i:5;">Visión & Valores</a></li>
                 <li><a href="Contactanos.html" style="--i:6;">Contáctanos</a></li>
-            
+                <li>
                     <button class="theme-switcher" id="cambiarEstilo" aria-label="Cambiar tema">
                         <svg class="theme-icon" viewBox="0 0 24 24" aria-hidden="true">
-                            <path fill="currentColor" />
+                            <path fill="currentColor" d="M12 3a9 9 0 1 0 9 9 10 10 0 0 0-9-9zm0 16a7 7 0 1 1 7-7 7 7 0 0 1-7 7z"/>
                         </svg>
                         <span class="theme-label">Cambiar Tema</span>
                     </button>
@@ -38,7 +36,7 @@
                 <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Aperiam expedita, 
                 dolor voluptate asperiores reprehenderit iure inventore vitae repudiandae blanditiis commodi, 
                 consectetur, voluptas recusandae a doloribus? Neque repudiandae repellat repellendus veniam!</p>
-                <a href="#">Leer más</a>
+                <a href="#" style="--i:7;">Leer más</a>
             </div>
             <div class="contenedor_imagen">
                 
@@ -49,20 +47,27 @@
             <li><a href="#" style="--i:13;"><img src="facebook.png" alt="GECKCODEX_facebook"></a></li>
             <li><a href="#" style="--i:14;"><img src="x.png" alt="GECKCODEX_X"></a></li>
         </ul>
-
     </section>
+    
     <img src="logo vector.svg" alt="GECKCODEX" class="imagen_geck">
     
     <footer>
         Todos los derechos reservados &copy;
     </footer>
+    
     <script>
-        const menuMarcador = document.querySelector('.menu');
-        const navegacion = document.querySelector('.navegacion');
-        menuMarcador.onclick = function(){
-            menuMarcador.classList.toggle('active');
-            navegacion.classList.toggle('active');
-        }
+        document.addEventListener('DOMContentLoaded', function() {
+            document.documentElement.classList.add('fully-loaded');
+            
+           
+            const menuMarcador = document.querySelector('.menu');
+            const navegacion = document.querySelector('.navegacion');
+            
+            menuMarcador.onclick = function(){
+                menuMarcador.classList.toggle('active');
+                navegacion.classList.toggle('active');
+            }
+        });
     </script>
     
     <script src="BotonObsBlan.js"></script>
