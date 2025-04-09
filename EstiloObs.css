@@ -152,23 +152,6 @@ header ul li a:hover {
     animation: deslizar 0.5s linear forwards;
     animation-delay: 1.75s;
 }
-
-.contenido .cajaTexto a {
-    display: inline-block;
-    margin-top: 20px;
-    padding: 15px 30px;
-    background: #0A2472;
-    color: #F8F9FA;
-    font-size: 1.2em;
-    border-radius: 40px;
-    font-weight: 700;
-    letter-spacing: 1px;
-    text-decoration: none;
-    opacity: 0;
-    animation: deslizar_arriba 0.5s linear forwards;
-    animation-delay: 2s;
-}
-
 .redes_sociales{
     position: absolute;
     bottom: 3rem;
@@ -191,9 +174,8 @@ header ul li a:hover {
     transition: 0.2s ease-in-out;
     opacity: 0;
     animation: deslizar 0.5s linear forwards;
-    animation-delay: 2.25s;
+    animation-delay: 1.75s;
 }
-
 .redes_sociales li a:hover{
     background-color: #0A2472;
     transform: translateY(-0.625rem);
@@ -203,6 +185,25 @@ header ul li a:hover {
     filter: invert(1);
     transform: scale(0.5);
 }
+.contenido .cajaTexto a {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 15px 30px;
+    background: #0A2472;
+    color: #F8F9FA;
+    font-size: 1.2em;
+    border-radius: 40px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-decoration: none;
+    opacity: 0;
+    animation: deslizar_arriba 0.5s linear forwards;
+    animation-delay: 2s;
+}
+
+
+
+
 
 .imagen_geck {
     position: absolute;
@@ -344,7 +345,6 @@ html.fully-loaded {
     
     .imagen_geck{
         max-width: 20rem;
-        left: 50%;
     }
     
     .contenido .cajaTexto h2{
@@ -353,14 +353,6 @@ html.fully-loaded {
     
     .contenido .cajaTexto {
         max-width: 100%;
-        text-align: center;
-    }
-    
-    .redes_sociales {
-        position: relative;
-        bottom: auto;
-        margin-top: 3rem;
-        justify-content: center;
     }
 }
 
