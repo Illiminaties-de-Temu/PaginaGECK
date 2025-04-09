@@ -57,6 +57,19 @@ header .logo {
     font-size: 2em;
     text-decoration: none;
     font-weight: 800;
+    opacity: 0;
+    animation: deslizar_derecha 0.5s linear forwards;
+    animation-delay: 0.2s;
+}
+@keyframes deslizar_derecha{
+    0%{
+        transform: translateX(-100px);
+        opacity: 0;
+    }
+    100%{
+        transform: translateX(0px);
+        opacity: 1;
+    }
 }
 
 header ul {
@@ -77,6 +90,20 @@ header ul li a {
     padding: 8px 18px;
     text-decoration: none;
     user-select: none;
+    opacity: 0;
+    animation: deslizar_arriba 0.5s linear forwards;
+    animation-delay: calc(0.2s * var(--i));
+
+}
+@keyframes deslizar_arriba{
+    0%{
+        transform: translateY(100px);
+        opacity: 0;
+    }
+    100%{
+        transform: translateY(0px);
+        opacity: 1;
+    }
 }
 
 header ul li a.active,
@@ -101,7 +128,21 @@ header ul li a:hover {
     margin-bottom: 10px;
     line-height: 1.2em;
     font-weight: 700;
+    opacity: 0;
+    animation: deslizar_derecha 0.5s linear forwards;
+    animation-delay: 1.5s;
 }
+@keyframes deslizar_derecha{
+    0%{
+        transform: translateX(-100px);
+        opacity: 0;
+    }
+    100%{
+        transform: translateX(0px);
+        opacity: 1;
+    }
+}
+
 
 .contenido .cajaTexto p {
     font-size: 1.2em;
@@ -296,6 +337,25 @@ html.fully-loaded {
     .navegacion{
         display: none;
     }
+    .navegacion.active{
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: #f5f5f5;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+    }
+    header ul li {
+        margin: 10px 0;
+    }
+    header ul li a{
+        margin-left: 0;
+        font-size: 1.5em;
+    }
     .menu{
         opacity: 1;
         position: fixed;
@@ -303,7 +363,7 @@ html.fully-loaded {
         right: 0.8rem;
         width: 2.5rem;
         height: 2.5rem;
-        background: #0A2472;
+        background: #0A2472 url(menu.png);
         background-size: 2rem;
         background-repeat: no-repeat;
         background-position: center;
@@ -312,9 +372,17 @@ html.fully-loaded {
         color: #f5f5f5;
         border-radius: 5px;
     }
-    .menu img{
-        
-        filter: invert(1);
-        transform: scale(0.5); 
+  
+    .menu.active{
+        background: #0A2472 url(cancelar.png);
+        background-size: 1.66rem;
+        background-repeat: no-repeat;
+        background-position: center;
+    }
+    .imagen_geck{
+        max-width: 26.66rem;
+    }
+    .contenido .cajaTexto h2{
+        font-size: 2.5em;
     }
 }

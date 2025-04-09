@@ -14,14 +14,14 @@
         
         <header>
             <a href="#" class="logo">GECKCODEX; </a>
-            <div class="menu"><img src="menu.png" alt=""></div>
+            <div class="menu"></div>
             <ul class="navegacion">
-                <li><a href="Index.html" class="active">Inicio</a></li>
-                <li><a href="Proyectos.html">Proyectos</a></li>
-                <li><a href="Historia.html">Historia</a></li>
-                <li><a href="Equipo.html">Equipo</a></li>
-                <li><a href="VV.html">Visión & Valores</a></li>
-                <li><a href="Contactanos.html">Contáctanos</a></li>
+                <li><a href="Index.html" style="--i:1;" class="active">Inicio</a></li>
+                <li><a href="Proyectos.html" style="--i:2;">Proyectos</a></li>
+                <li><a href="Historia.html" style="--i:3;">Historia</a></li>
+                <li><a href="Equipo.html" style="--i:4;">Equipo</a></li>
+                <li><a href="VV.html" style="--i:5;">Visión & Valores</a></li>
+                <li><a href="Contactanos.html" style="--i:6;">Contáctanos</a></li>
             
                     <button class="theme-switcher" id="cambiarEstilo" aria-label="Cambiar tema">
                         <svg class="theme-icon" viewBox="0 0 24 24" aria-hidden="true">
@@ -58,8 +58,10 @@
     </footer>
     <script>
         const menuMarcador = document.querySelector('.menu');
+        const navegacion = document.querySelector('.navegacion');
         menuMarcador.onclick = function(){
-            menuMarcador.classList.toggle('active')
+            menuMarcador.classList.toggle('active');
+            navegacion.classList.toggle('active');
         }
     </script>
     
