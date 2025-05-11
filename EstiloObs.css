@@ -1,22 +1,6 @@
 /* Estilos generales - Tema Oscuro Mejorado */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700;800;900&display=swap');
 
-<<<<<<< HEAD
-=======
-/* Prevención de FOUC - Contenido oculto hasta carga completa */
-html {
-    visibility: hidden;
-    opacity: 0;
-    background-color: #1a1a1D; /* Color base mientras carga (tema oscuro) */
-}
-
-li{
-    text-decoration: none;
-    list-style: none;
-}
-
-/* Estilos base críticos (sin transiciones iniciales) */
->>>>>>> 1460953ad2e7a5b26ae48b02fa73c684ec19966d
 * {
     margin: 0;
     padding: 0;
@@ -100,7 +84,6 @@ header .logo {
     position: relative;
     color: var(--color-primario);
     text-decoration: none;
-<<<<<<< HEAD
     font-size: 2em;
     font-weight: 700;
     letter-spacing: 1px;
@@ -116,23 +99,6 @@ header .logo:hover {
     display: flex;
     align-items: center;
     gap: 30px;
-=======
-    font-weight: 800;
-    opacity: 0;
-    animation: deslizar 0.5s linear forwards;
-    animation-delay: 0.2s;
-}
-
-@keyframes deslizar{
-    0%{
-        transform: translateX(-100px);
-        opacity: 0;
-    }
-    100%{
-        transform: translateX(0px);
-        opacity: 1;
-    }
->>>>>>> 1460953ad2e7a5b26ae48b02fa73c684ec19966d
 }
 
 header ul {
@@ -147,7 +113,6 @@ header ul li {
 
 header ul li a {
     text-decoration: none;
-<<<<<<< HEAD
     color: var(--color-texto);
     font-weight: 500;
     letter-spacing: 1px;
@@ -159,124 +124,6 @@ header ul li a {
 
 header ul li a::after {
     content: '';
-=======
-    user-select: none;
-    opacity: 0;
-    animation: deslizar_arriba 0.5s linear forwards;
-    animation-delay: calc(0.2s * var(--i));
-}
-
-@keyframes deslizar_arriba{
-    0%{
-        transform: translateY(100px);
-        opacity: 0;
-    }
-    100%{
-        transform: translateY(0px);
-        opacity: 1;
-    }
-}
-
-header ul li a.active,
-header ul li a:hover {
-    background-color: #0A2472;
-    color: #F8F9FA;
-    border-radius: 30px;
-}
-
-/* Contenido principal */
-.contenido {
-    position: relative;
-}
-
-.contenido .cajaTexto {
-    max-width: 550px;
-}
-
-.contenido .cajaTexto h2 {
-    color: #c99c33;
-    font-size: 3.5em;
-    margin-bottom: 10px;
-    line-height: 1.2em;
-    font-weight: 700;
-    opacity: 0;
-    animation: deslizar_derecha 0.5s linear forwards;
-    animation-delay: 1.5s;
-}
-
-@keyframes deslizar_derecha{
-    0%{
-        transform: translateX(100px);
-        opacity: 0;
-    }
-    100%{
-        transform: translateX(0px);
-        opacity: 1;
-    }
-}
-
-.contenido .cajaTexto p {
-    font-size: 1.2em;
-    color: #a4a4a7;
-    opacity: 0;
-    animation: deslizar 0.5s linear forwards;
-    animation-delay: 1.75s;
-}
-.redes_sociales{
-    position: absolute;
-    bottom: 3rem;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.redes_sociales li a{
-    position: relative;
-    display: inline-block;
-    margin-right: 1rem;
-    width: 3.125rem;
-    height: 3.125rem;
-    background: #c99c33;
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    transition: 0.2s ease-in-out;
-    opacity: 0;
-    animation: deslizar 0.5s linear forwards;
-    animation-delay: 1.75s;
-}
-.redes_sociales li a:hover{
-    background-color: #0A2472;
-    transform: translateY(-0.625rem);
-}
-
-.redes_sociales li a img{
-    filter: invert(1);
-    transform: scale(0.5);
-}
-.contenido .cajaTexto a {
-    display: inline-block;
-    margin-top: 20px;
-    padding: 15px 30px;
-    background: #0A2472;
-    color: #F8F9FA;
-    font-size: 1.2em;
-    border-radius: 40px;
-    font-weight: 700;
-    letter-spacing: 1px;
-    text-decoration: none;
-    opacity: 0;
-    animation: deslizar_arriba 0.5s linear forwards;
-    animation-delay: 2s;
-}
-
-
-
-
-
-.imagen_geck {
->>>>>>> 1460953ad2e7a5b26ae48b02fa73c684ec19966d
     position: absolute;
     bottom: 0;
     left: 50%;
@@ -285,7 +132,6 @@ header ul li a:hover {
     background-color: var(--color-primario);
     transition: var(--transicion-rapida);
     transform: translateX(-50%);
-<<<<<<< HEAD
 }
 
 header ul li a:hover::after {
@@ -307,31 +153,12 @@ header ul li a.active::after {
 }
 
 /* Botón de cambio de tema mejorado */
-=======
-    max-width: 26rem;
-    opacity: 0;
-    animation: fadeIn 3s ease-in-out forwards;
-    animation-delay: 0.5s;
-}
-
-@keyframes fadeIn{
-    from{
-        opacity: 0;
-    }
-    to{
-        opacity: 1;
-    }
-}
-
-/* Estilos del botón de tema */
->>>>>>> 1460953ad2e7a5b26ae48b02fa73c684ec19966d
 .theme-switcher {
     background: none;
     border: none;
     cursor: pointer;
     display: flex;
     align-items: center;
-<<<<<<< HEAD
     color: var(--color-texto);
     font-size: 0.9em;
     padding: 8px 15px;
@@ -339,36 +166,6 @@ header ul li a.active::after {
     transition: var(--transicion-rapida);
     background-color: rgba(255, 255, 255, 0.08);
     border: 1px solid rgba(255, 255, 255, 0.05);
-=======
-    gap: 8px;
-}
-
-.theme-icon {
-    width: 16px;
-    height: 16px;
-}
-
-.theme-label {
-    color: #ecf0f1;
-}
-
-.contenedor_principal{
-    justify-content: space-between;
-}
-
-/* Transiciones (se activan después de carga) */
-body.loaded,
-body.loaded header {
-    transition: background-color 0.5s ease, color 0.5s ease;
-}
-
-.contenido.loaded {
-    transition: opacity 0.5s ease;
-}
-
-.theme-switcher.loaded {
-    transition: all 0.3s ease;
->>>>>>> 1460953ad2e7a5b26ae48b02fa73c684ec19966d
 }
 
 .theme-switcher:hover {
@@ -396,7 +193,6 @@ body.loaded header {
     gap: 40px;
 }
 
-<<<<<<< HEAD
 .cajaTexto {
     position: relative;
     max-width: 600px;
@@ -903,12 +699,6 @@ footer {
 @media (max-width: 1200px) {
     .contenedor_principal {
         padding: 100px 40px 50px;
-=======
-/* Media Queries para responsividad */
-@media (max-width: 61.93rem) {
-    section{
-        padding: 150px 20px;
->>>>>>> 1460953ad2e7a5b26ae48b02fa73c684ec19966d
     }
 
     header {
@@ -1049,7 +839,6 @@ footer {
         padding: 20px;
     }
     
-<<<<<<< HEAD
     .equipo-grid {
         grid-template-columns: 1fr;
     }
@@ -1317,117 +1106,4 @@ footer {
     .compromiso {
         padding: 25px;
     }
-=======
-    .navegacion{
-        display: none;
-    }
-    
-    .navegacion.active{
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: #1a1a1D;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        flex-direction: column;
-    }
-    
-    header ul li {
-        margin: 10px 0;
-    }
-    
-    header ul li a{
-        margin-left: 0;
-        font-size: 1.5em;
-    }
-    
-    .menu{
-        opacity: 1;
-        position: fixed;
-        top: 0.8rem;
-        right: 0.8rem;
-        width: 2.5rem;
-        height: 2.5rem;
-        background: #0A2472 url(menu.png);
-        background-size: 2rem;
-        background-repeat: no-repeat;
-        background-position: center;
-        cursor: pointer;
-        z-index: 1000;
-        color: #f5f5f5;
-        border-radius: 5px;
-    }
-    
-    .menu.active{
-        background: #0A2472 url(cancelar.png);
-        background-size: 1.66rem;
-        background-repeat: no-repeat;
-        background-position: center;
-    }
-    
-    .imagen_geck{
-        max-width: 20rem;
-    }
-    
-    .contenido .cajaTexto h2{
-        font-size: 2.5em;
-    }
-    
-    .contenido .cajaTexto {
-        max-width: 100%;
-    }
-}
-
-/* Small mobile devices */
-@media (max-width: 30rem) {
-    .imagen_geck {
-        max-width: 16rem;
-    }
-    
-    .contenido .cajaTexto h2 {
-        font-size: 2em;
-    }
-    
-    .contenido .cajaTexto p {
-        font-size: 1em;
-    }
-    
-    .contenido .cajaTexto a {
-        padding: 12px 24px;
-        font-size: 1em;
-    }
-}
-
-/* For theme switching - light theme classes */
-body.light-theme {
-    background-color: #f5f5f5;
-    color: #333333;
-}
-
-body.light-theme header {
-    background-color: #f5f5f5;
-}
-
-body.light-theme header .logo {
-    color: #0A2472;
-}
-
-body.light-theme header ul li a {
-    color: #1a1a1D;
-}
-
-body.light-theme .contenido .cajaTexto h2 {
-    color: #0A2472;
-}
-
-body.light-theme .contenido .cajaTexto p {
-    color: #1a1a1D;
-}
-
-body.light-theme .navegacion.active {
-    background: #f5f5f5;
->>>>>>> 1460953ad2e7a5b26ae48b02fa73c684ec19966d
 }
