@@ -1,126 +1,1227 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<<<<<<< HEAD
-    <meta name="description" content="GECKCODEX - Explorando soluciones tecnológicas">
-    <meta name="keywords" content="GECKCODEX, desarrollo, tecnología">
-    <meta name="author" content="GECKCODEX">
+    <title>GECK Codex - Arquitectos Digitales</title>
     
-    <!-- Hojas de estilo -->
-    <link id="estilo-obs" rel="stylesheet" href="EstiloObs.css" disabled> 
-    <link id="estilo-bla" rel="stylesheet" href="EstiloBla.css">
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     
-=======
-    <!-- Hojas de estilo -->
-    <link id="estilo-obs" rel="stylesheet" href="EstiloObs.css" disabled> 
-    <link id="estilo-bla" rel="stylesheet" href="EstiloBla.css">
->>>>>>> 1460953ad2e7a5b26ae48b02fa73c684ec19966d
-    <title>GECK Codex</title>
+    <style>
+        :root {
+            --navy: #0B1426;
+            --navy-light: #1A2332;
+            --navy-medium: #2A3441;
+            --gold: #D4AF37;
+            --gold-light: #F4E4BC;
+            --gold-dark: #B8941F;
+            --white: #FFFFFF;
+            --white-soft: #F8F9FA;
+            --accent-blue: #1B365D;
+            --text-muted: #6B7280;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            color: var(--navy);
+            background: var(--white);
+            overflow-x: hidden;
+        }
+        
+        /* Animated Background Particles */
+        .bg-pattern {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: linear-gradient(135deg, var(--white) 0%, var(--white-soft) 100%);
+        }
+        
+        .particle {
+            position: absolute;
+            background: var(--gold);
+            border-radius: 50%;
+            opacity: 0.1;
+            animation: float-particle 8s ease-in-out infinite;
+        }
+        
+        .particle:nth-child(1) { width: 4px; height: 4px; top: 20%; left: 10%; animation-delay: 0s; }
+        .particle:nth-child(2) { width: 6px; height: 6px; top: 60%; left: 80%; animation-delay: 2s; }
+        .particle:nth-child(3) { width: 3px; height: 3px; top: 80%; left: 20%; animation-delay: 4s; }
+        .particle:nth-child(4) { width: 5px; height: 5px; top: 30%; left: 70%; animation-delay: 1s; }
+        .particle:nth-child(5) { width: 4px; height: 4px; top: 70%; left: 60%; animation-delay: 3s; }
+        
+        @keyframes float-particle {
+            0%, 100% { transform: translateY(0px) translateX(0px) rotate(0deg); opacity: 0.1; }
+            25% { transform: translateY(-30px) translateX(15px) rotate(90deg); opacity: 0.3; }
+            50% { transform: translateY(-60px) translateX(-10px) rotate(180deg); opacity: 0.2; }
+            75% { transform: translateY(-30px) translateX(-20px) rotate(270deg); opacity: 0.4; }
+        }
+        
+        /* Navigation */
+        nav {
+            background: rgba(11, 20, 38, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--gold);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: fixed;
+            width: 100%;
+            z-index: 1000;
+        }
+        
+        nav.scrolled {
+            background: rgba(11, 20, 38, 0.98);
+            box-shadow: 0 8px 40px rgba(11, 20, 38, 0.3);
+            border-bottom-color: var(--gold-dark);
+        }
+        
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-weight: 800;
+            font-size: 1.8rem;
+            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.02em;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .logo::after {
+            content: '⚡';
+            position: absolute;
+            right: -25px;
+            top: -5px;
+            font-size: 1rem;
+            color: var(--gold);
+            animation: pulse-glow 2s ease-in-out infinite;
+        }
+        
+        @keyframes pulse-glow {
+            0%, 100% { opacity: 0.7; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.1); }
+        }
+        
+        .nav-link {
+            position: relative;
+            color: var(--white);
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.75rem 1.25rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .nav-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+        
+        .nav-link:hover::before {
+            left: 100%;
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background: var(--gold);
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            transform: translateX(-50%);
+        }
+        
+        .nav-link:hover::after {
+            width: 80%;
+        }
+        
+        .nav-link:hover {
+            color: var(--gold-light);
+            transform: translateY(-2px);
+        }
+        
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 50%, var(--accent-blue) 100%);
+        }
+        
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 80%;
+            height: 200%;
+            background: radial-gradient(ellipse, rgba(212, 175, 55, 0.1) 0%, transparent 70%);
+            transform: rotate(-15deg);
+            animation: hero-glow 8s ease-in-out infinite;
+        }
+        
+        @keyframes hero-glow {
+            0%, 100% { opacity: 0.3; transform: rotate(-15deg) translateY(0px); }
+            50% { opacity: 0.5; transform: rotate(-15deg) translateY(-30px); }
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            color: var(--white);
+        }
+        
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.5rem 1rem;
+            background: rgba(212, 175, 55, 0.1);
+            border: 1px solid var(--gold);
+            border-radius: 50px;
+            color: var(--gold-light);
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 1.5rem;
+            animation: float-badge 3s ease-in-out infinite;
+        }
+        
+        @keyframes float-badge {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-5px); }
+        }
+        
+        .hero-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(3.5rem, 10vw, 7rem);
+            font-weight: 900;
+            line-height: 0.95;
+            margin-bottom: 1.5rem;
+            letter-spacing: -0.03em;
+            position: relative;
+        }
+        
+        .hero-title .highlight {
+            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            position: relative;
+        }
+        
+        .hero-title .highlight::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--gold), transparent);
+            animation: underline-glow 2s ease-in-out infinite;
+        }
+        
+        @keyframes underline-glow {
+            0%, 100% { opacity: 0.5; transform: scaleX(0.8); }
+            50% { opacity: 1; transform: scaleX(1.1); }
+        }
+        
+        .hero-subtitle {
+            font-size: 1.35rem;
+            color: rgba(255, 255, 255, 0.85);
+            margin-bottom: 2.5rem;
+            max-width: 650px;
+            line-height: 1.5;
+            font-weight: 400;
+        }
+        
+        .code-snippet {
+            background: rgba(11, 20, 38, 0.9);
+            border: 1px solid var(--gold);
+            color: var(--gold-light);
+            padding: 2rem;
+            border-radius: 16px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.95rem;
+            margin: 2rem 0;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+        
+        .code-snippet::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--gold), var(--gold-light), var(--gold));
+            animation: code-pulse 3s linear infinite;
+        }
+        
+        @keyframes code-pulse {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+        
+        .code-snippet .terminal-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+        }
+        
+        .terminal-dots {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .terminal-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+        
+        .terminal-dot:nth-child(1) { background: #ff5f56; }
+        .terminal-dot:nth-child(2) { background: #ffbd2e; }
+        .terminal-dot:nth-child(3) { background: #27ca3f; }
+        
+        /* Floating Cards */
+        .floating-element {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 16px;
+            padding: 1.5rem;
+            animation: floatElement 8s ease-in-out infinite;
+            color: var(--white);
+            font-weight: 600;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        .floating-element:nth-child(1) {
+            top: 15%;
+            right: 8%;
+            animation-delay: 0s;
+        }
+        
+        .floating-element:nth-child(2) {
+            top: 65%;
+            right: 12%;
+            animation-delay: 2.5s;
+        }
+        
+        .floating-element:nth-child(3) {
+            top: 35%;
+            left: 3%;
+            animation-delay: 5s;
+        }
+        
+        @keyframes floatElement {
+            0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 0.8; }
+            33% { transform: translateY(-25px) rotate(3deg); opacity: 1; }
+            66% { transform: translateY(-15px) rotate(-2deg); opacity: 0.9; }
+        }
+        
+        .floating-element::before {
+            content: '';
+            position: absolute;
+            top: -1px;
+            left: -1px;
+            right: -1px;
+            bottom: -1px;
+            background: linear-gradient(45deg, var(--gold), transparent, var(--gold));
+            border-radius: 16px;
+            z-index: -1;
+            animation: border-glow 3s ease-in-out infinite;
+        }
+        
+        @keyframes border-glow {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.8; }
+        }
+        
+        /* Service Cards */
+        .service-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2.5rem;
+            margin-top: 4rem;
+        }
+        
+        .service-card {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 2.5rem;
+            box-shadow: 0 15px 50px rgba(11, 20, 38, 0.1);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(212, 175, 55, 0.1);
+        }
+        
+        .service-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(135deg, var(--gold), var(--gold-light));
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .service-card:hover::before {
+            transform: scaleX(1);
+        }
+        
+        .service-card:hover {
+            transform: translateY(-15px) scale(1.02);
+            box-shadow: 0 25px 60px rgba(11, 20, 38, 0.15);
+            border-color: var(--gold);
+        }
+        
+        .service-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--navy), var(--accent-blue));
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .service-icon::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.3), transparent);
+            transition: left 0.6s ease;
+        }
+        
+        .service-card:hover .service-icon::before {
+            left: 100%;
+        }
+        
+        .service-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--navy);
+            letter-spacing: -0.01em;
+        }
+        
+        .service-description {
+            color: var(--text-muted);
+            line-height: 1.7;
+            font-size: 1rem;
+        }
+        
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            border: none;
+            font-size: 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.6s ease;
+        }
+        
+        .btn:hover::before {
+            left: 100%;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+            color: var(--navy);
+            box-shadow: 0 8px 25px rgba(212, 175, 55, 0.3);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(212, 175, 55, 0.4);
+        }
+        
+        .btn-secondary {
+            background: transparent;
+            color: var(--gold);
+            border: 2px solid var(--gold);
+        }
+        
+        .btn-secondary:hover {
+            background: var(--gold);
+            color: var(--navy);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.3);
+        }
+        
+        /* Stats Section */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 3rem;
+            margin: 4rem 0;
+        }
+        
+        .stat-item {
+            text-align: center;
+            padding: 2.5rem;
+            background: var(--white);
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(11, 20, 38, 0.08);
+            border: 1px solid rgba(212, 175, 55, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .stat-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 50px rgba(11, 20, 38, 0.12);
+            border-color: var(--gold);
+        }
+        
+        .stat-number {
+            font-family: 'Playfair Display', serif;
+            font-size: 3.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--navy), var(--accent-blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            position: relative;
+        }
+        
+        .stat-number::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 30px;
+            height: 3px;
+            background: var(--gold);
+            border-radius: 2px;
+        }
+        
+        .stat-label {
+            color: var(--text-muted);
+            margin-top: 1rem;
+            font-weight: 500;
+            font-size: 1.1rem;
+        }
+        
+        /* Section Headers */
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+        
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 3.5rem;
+            font-weight: 800;
+            color: var(--navy);
+            margin-bottom: 1.5rem;
+            letter-spacing: -0.02em;
+        }
+        
+        .section-subtitle {
+            font-size: 1.3rem;
+            color: var(--text-muted);
+            max-width: 700px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+        
+        .highlight-gold {
+            background: linear-gradient(135deg, var(--gold), var(--gold-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        /* Contact Section */
+        .contact-section {
+            background: linear-gradient(135deg, var(--navy) 0%, var(--accent-blue) 100%);
+            color: var(--white);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .contact-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="50" cy="50" r="1" fill="%23D4AF37" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+            opacity: 0.1;
+        }
+        
+        .contact-form {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 20px;
+            padding: 3rem;
+            max-width: 600px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .form-group {
+            margin-bottom: 2rem;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--gold-light);
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--white);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        
+        .form-input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: var(--gold);
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+            transform: scale(1.02);
+        }
+        
+        .form-textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+        
+        /* Footer */
+        footer {
+            background: var(--navy);
+            color: var(--white);
+            padding: 4rem 0 2rem;
+            margin-top: 0;
+            position: relative;
+        }
+        
+        footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--gold), var(--gold-light), var(--gold));
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 3rem;
+            margin-bottom: 3rem;
+        }
+        
+        .footer-logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--gold), var(--gold-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+        }
+        
+        .footer-description {
+            color: rgba(255, 255, 255, 0.8);
+            line-height: 1.6;
+            margin-bottom: 2rem;
+        }
+        
+        .footer-section h4 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: var(--gold-light);
+        }
+        
+        .footer-links {
+            list-style: none;
+        }
+        
+        .footer-links li {
+            margin-bottom: 0.8rem;
+        }
+        
+        .footer-links a {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .footer-links a:hover {
+            color: var(--gold-light);
+            transform: translateX(5px);
+        }
+        
+        .footer-bottom {
+            text-align: center;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(212, 175, 55, 0.2);
+            color: rgba(255, 255, 255, 0.6);
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 3rem;
+            }
+            
+            .floating-element {
+                display: none;
+            }
+            
+            .service-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .section-title {
+                font-size: 2.5rem;
+            }
+            
+            .contact-form {
+                padding: 2rem;
+                margin: 0 1rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
 <body>
-    <section class="contenedor_principal">
-        <header>
-<<<<<<< HEAD
-            <a href="index.html" class="logo" aria-label="Inicio GECKCODEX">GECKCODEX; </a>
-            <div class="menu" aria-label="Abrir menú" tabindex="0" role="button"></div>
-=======
-            <a href="#" class="logo">GECKCODEX;</a>
-            <div class="menu"></div>
->>>>>>> 1460953ad2e7a5b26ae48b02fa73c684ec19966d
-            <ul class="navegacion">
-                <li><a href="Index.html" style="--i:1;" class="active">Inicio</a></li>
-                <li><a href="Proyectos.html" style="--i:2;">Proyectos</a></li>
-                <li><a href="Historia.html" style="--i:3;">Historia</a></li>
-                <li><a href="Equipo.html" style="--i:4;">Equipo</a></li>
-                <li><a href="VV.html" style="--i:5;">Visión & Valores</a></li>
-                <li><a href="Contactanos.html" style="--i:6;">Contáctanos</a></li>
-                <li>
-                    <button class="theme-switcher" id="cambiarEstilo" aria-label="Cambiar tema">
-                        <svg class="theme-icon" viewBox="0 0 24 24" aria-hidden="true">
-                            <path fill="currentColor" d="M12 3a9 9 0 1 0 9 9 10 10 0 0 0-9-9zm0 16a7 7 0 1 1 7-7 7 7 0 0 1-7 7z"/>
-                        </svg>
-                        <span class="theme-label">Cambiar Tema</span>
-                    </button>
-                </li>
-            </ul>
-        </header>
-        
-        <div class="contenido">
-            <div class="cajaTexto">
-<<<<<<< HEAD
-                <h1>¡¡Bienvenidos!!</h1>
-                <p>En GECKCODEX exploramos nuevas fronteras digitales para crear soluciones 
-                tecnológicas innovadoras. Nuestro equipo se especializa en transformar ideas 
-                en realidades mediante código de alta calidad y diseño centrado en el usuario.</p>
-                <a href="Proyectos.html" class="btn-leer">Leer más</a>
-=======
-                <h2>¡¡Bienvenidos!!</h2>
-                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Aperiam expedita, 
-                dolor voluptate asperiores reprehenderit iure inventore vitae repudiandae blanditiis commodi, 
-                consectetur, voluptas recusandae a doloribus? Neque repudiandae repellat repellendus veniam!</p>
-                <a href="#" style="--i:7;">Leer más</a>
->>>>>>> 1460953ad2e7a5b26ae48b02fa73c684ec19966d
-            </div>
-            <div class="contenedor_imagen">
-                <!-- Contenedor para imagen principal -->
+    <!-- Animated Background -->
+    <div class="bg-pattern">
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+    </div>
+    
+    <!-- Navigation -->
+    <nav id="navbar">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <div class="logo">GECK Codex</div>
+                <div class="hidden md:flex space-x-2">
+                    <a href="#services" class="nav-link">Servicios</a>
+                    <a href="#about" class="nav-link">Nosotros</a>
+                    <a href="#contact" class="nav-link">Contacto</a>
+                </div>
             </div>
         </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero px-4 sm:px-6 lg:px-8">
+        <!-- Floating Elements -->
+        <div class="floating-element">
+            <div class="text-sm font-mono">🤖 AI/ML</div>
+        </div>
+        <div class="floating-element">
+            <div class="text-sm font-mono">☁️ Cloud</div>
+        </div>
+        <div class="floating-element">
+            <div class="text-sm font-mono">🚀 DevOps</div>
+        </div>
         
-        <ul class="redes_sociales">
-<<<<<<< HEAD
-            <li><a href="#" aria-label="Síguenos en Facebook"><img src="facebook.png" alt="" width="32" height="32"></a></li>
-            <li><a href="#" aria-label="Síguenos en Instagram"><img src="instagram.png" alt="" width="32" height="32"></a></li>
-            <li><a href="#" aria-label="Síguenos en X"><img src="x.png" alt="" width="32" height="32"></a></li>
-=======
-            <li><a href="#" style="--i:12;"><img src="instagram.png" alt="GECKCODEX_instagram"></a></li>
-            <li><a href="#" style="--i:13;"><img src="facebook.png" alt="GECKCODEX_facebook"></a></li>
-            <li><a href="#" style="--i:14;"><img src="x.png" alt="GECKCODEX_X"></a></li>
->>>>>>> 1460953ad2e7a5b26ae48b02fa73c684ec19966d
-        </ul>
+        <div class="max-w-7xl mx-auto">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+                <div class="hero-content">
+                    <div class="hero-badge">
+                        ✨ Arquitectos del Futuro Digital
+                    </div>
+                    <h1 class="hero-title">
+                        Código que<br>
+                        <span class="highlight">Transforma</span>
+                    </h1>
+                    <p class="hero-subtitle">
+                        No solo desarrollamos software, creamos experiencias digitales que revolucionan industrias. Cada proyecto es una obra maestra de ingeniería y creatividad.
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <a href="#contact" class="btn btn-primary">
+                            Iniciar Proyecto
+                        </a>
+                        <a href="#services" class="btn btn-secondary">
+                            Ver Servicios
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="relative">
+                    <div class="code-snippet">
+                        <div class="terminal-header">
+                            <div class="terminal-dots">
+                                <div class="terminal-dot"></div>
+                                <div class="terminal-dot"></div>
+                                <div class="terminal-dot"></div>
+                            </div>
+                            <span class="ml-4 text-sm opacity-75">geck-deploy.sh</span>
+                        </div>
+                        <div class="code-content">
+                            <div class="text-green-400">#!/bin/bash</div>
+                            <div class="text-blue-400">echo</div> <div class="text-yellow-300">"🚀 Desplegando innovación..."</div><br>
+                            <div class="text-purple-400">docker</div> <div class="text-blue-400">build</div> <div class="text-yellow-300">-t geck/app .</div><br>
+                            <div class="text-purple-400">kubectl</div> <div class="text-blue-400">apply</div> <div class="text-yellow-300">-f k8s/</div><br>
+                            <div class="text-green-400">echo</div> <div class="text-yellow-300">"✅ Proyecto desplegado con éxito!"</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </section>
-    
-<<<<<<< HEAD
-    <img src="logo vector.svg" alt="" class="imagen_geck" aria-hidden="true">
-=======
-    <img src="logo vector.svg" alt="GECKCODEX" class="imagen_geck">
->>>>>>> 1460953ad2e7a5b26ae48b02fa73c684ec19966d
-    
+
+    <!-- Services Section -->
+    <section id="services" class="py-24 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto">
+            <div class="section-header">
+                <h2 class="section-title">
+                    Nuestros <span class="highlight-gold">Servicios</span>
+                </h2>
+                <p class="section-subtitle">
+                    Soluciones tecnológicas de vanguardia que impulsan el crecimiento de tu negocio hacia el futuro digital.
+                </p>
+            </div>
+            
+            <div class="service-grid">
+                <div class="service-card">
+                    <div class="service-icon">🚀</div>
+                    <h3 class="service-title">Desarrollo Web Avanzado</h3>
+                    <p class="service-description">
+                        Aplicaciones web modernas con React, Vue.js, Angular y tecnologías de última generación. 
+                        Experiencias de usuario excepcionales con rendimiento optimizado.
+                    </p>
+                </div>
+                
+                <div class="service-card">
+                    <div class="service-icon">📱</div>
+                    <h3 class="service-title">Apps Móviles Nativas</h3>
+                    <p class="service-description">
+                        Desarrollo nativo para iOS y Android, así como soluciones multiplataforma con React Native 
+                        y Flutter. Tu negocio en la palma de la mano.
+                    </p>
+                </div>
+                
+                <div class="service-card">
+                    <div class="service-icon">☁️</div>
+                    <h3 class="service-title">Arquitectura Cloud</h3>
+                    <p class="service-description">
+                        Migración a la nube, arquitecturas serverless, microservicios y DevOps. 
+                        Escalabilidad automática con AWS, Azure y Google Cloud.
+                    </p>
+                </div>
+                
+                <div class="service-card">
+                    <div class="service-icon">🤖</div>
+                    <h3 class="service-title">Inteligencia Artificial</h3>
+                    <p class="service-description">
+                        Machine Learning, procesamiento de lenguaje natural, visión computacional 
+                        y automatización inteligente. El futuro de tu negocio, hoy.
+                    </p>
+                </div>
+                
+                <div class="service-card">
+                    <div class="service-icon">🔐</div>
+                    <h3 class="service-title">Ciberseguridad</h3>
+                    <p class="service-description">
+                        Auditorías de seguridad, implementación de protocolos avanzados y 
+                        monitoreo continuo. Protege tu empresa de amenazas digitales.
+                    </p>
+                </div>
+                
+                <div class="service-card">
+                    <div class="service-icon">📊</div>
+                    <h3 class="service-title">Analytics & Big Data</h3>
+                    <p class="service-description">
+                        Análisis de datos avanzado, dashboards interactivos y business intelligence. 
+                        Convierte datos en decisiones estratégicas rentables.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="py-20 px-4 sm:px-6 lg:px-8 bg-gray-50">
+        <div class="max-w-7xl mx-auto">
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-number">150+</div>
+                    <div class="stat-label">Proyectos Exitosos</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">98%</div>
+                    <div class="stat-label">Satisfacción Cliente</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">24/7</div>
+                    <div class="stat-label">Soporte Técnico</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">5⭐</div>
+                    <div class="stat-label">Calificación Promedio</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="py-24 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+                <div>
+                    <h2 class="section-title text-left mb-8">
+                        <span class="highlight-gold">Innovación</span> sin Límites
+                    </h2>
+                    <p class="text-lg text-gray-600 mb-6 leading-relaxed">
+                        En GECK Codex, no seguimos tendencias, las creamos. Somos un equipo de visionarios 
+                        tecnológicos que transforma ideas audaces en realidades digitales extraordinarias.
+                    </p>
+                    <p class="text-lg text-gray-600 mb-8 leading-relaxed">
+                        Cada línea de código que escribimos lleva el ADN de la excelencia. Utilizamos las 
+                        tecnologías más avanzadas del mercado y metodologías ágiles para entregar resultados 
+                        que superan expectativas.
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <a href="#contact" class="btn btn-primary">Conocer Más</a>
+                        <a href="#services" class="btn btn-secondary">Nuestro Proceso</a>
+                    </div>
+                </div>
+                <div class="relative">
+                    <div class="code-snippet">
+                        <div class="terminal-header">
+                            <div class="terminal-dots">
+                                <div class="terminal-dot"></div>
+                                <div class="terminal-dot"></div>
+                                <div class="terminal-dot"></div>
+                            </div>
+                            <span class="ml-4 text-sm opacity-75">innovation.js</span>
+                        </div>
+                        <div class="code-content">
+                            <div class="text-purple-400">const</div> <div class="text-blue-400">innovation</div> = {<br>
+                            &nbsp;&nbsp;<div class="text-green-400">creativity</div>: <div class="text-yellow-300">'unlimited'</div>,<br>
+                            &nbsp;&nbsp;<div class="text-green-400">technology</div>: <div class="text-yellow-300">'cutting-edge'</div>,<br>
+                            &nbsp;&nbsp;<div class="text-green-400">results</div>: <div class="text-yellow-300">'extraordinary'</div><br>
+                            };<br><br>
+                            <div class="text-purple-400">function</div> <div class="text-blue-400">transformIdeas</div>() {<br>
+                            &nbsp;&nbsp;<div class="text-purple-400">return</div> <div class="text-yellow-300">'Digital Revolution'</div>;<br>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="contact-section py-24 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto">
+            <div class="section-header">
+                <h2 class="section-title text-white">
+                    Comencemos tu <span class="highlight-gold">Transformación Digital</span>
+                </h2>
+                <p class="section-subtitle text-gray-300">
+                    ¿Listo para revolucionar tu negocio? Contactanos y descubre cómo podemos 
+                    convertir tu visión en una realidad digital extraordinaria.
+                </p>
+            </div>
+            
+            <form class="contact-form">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="form-group">
+                        <label class="form-label" for="name">Nombre Completo</label>
+                        <input type="text" id="name" class="form-input" placeholder="Tu nombre" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="email">Email</label>
+                        <input type="email" id="email" class="form-input" placeholder="tu@email.com" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="company">Empresa</label>
+                    <input type="text" id="company" class="form-input" placeholder="Nombre de tu empresa">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="project">Cuéntanos sobre tu proyecto</label>
+                    <textarea id="project" class="form-input form-textarea" placeholder="Describe tu idea, necesidades y objetivos..." required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary w-full">
+                    🚀 Iniciar Proyecto
+                </button>
+            </form>
+        </div>
+    </section>
+
+    <!-- Footer -->
     <footer>
-        Todos los derechos reservados &copy; <span id="year">2025</span> GECKCODEX
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="footer-content">
+                <div>
+                    <div class="footer-logo">GECK Codex</div>
+                    <p class="footer-description">
+                        Arquitectos del futuro digital. Transformamos ideas audaces en realidades 
+                        tecnológicas que revolucionan industrias y conectan el mundo.
+                    </p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gold hover:text-gold-light transition-colors">
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"/>
+                            </svg>
+                        </a>
+                        <a href="#" class="text-gold hover:text-gold-light transition-colors">
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                            </svg>
+                        </a>
+                        <a href="#" class="text-gold hover:text-gold-light transition-colors">
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12.017 0C5.396 0 .029 5.367.029 11.987c0 5.079 3.158 9.417 7.618 11.174-.105-.949-.199-2.403.041-3.439.219-.937 1.406-5.957 1.406-5.957s-.359-.72-.359-1.781c0-1.663.967-2.911 2.168-2.911 1.024 0 1.518.769 1.518 1.688 0 1.029-.653 2.567-.992 3.992-.285 1.193.6 2.165 1.775 2.165 2.128 0 3.768-2.245 3.768-5.487 0-2.861-2.063-4.869-5.008-4.869-3.41 0-5.409 2.562-5.409 5.199 0 1.033.394 2.143.889 2.749.089.108.102.202.76.829-.402 1.568-.445 1.765-.445 1.765-.151.634-.612.435-.612.435-2.403-.77-3.896-3.121-3.896-5.025 0-4.064 2.953-7.8 8.511-7.8 4.475 0 7.95 3.189 7.95 7.449 0 4.449-2.804 8.027-6.698 8.027-1.308 0-2.541-.68-2.963-1.489l-.807 3.081c-.292 1.119-1.08 2.524-1.606 3.379C9.025 23.789 10.47 24.001 12.017 24c6.624 0 11.99-5.367 11.99-11.988C24.007 5.367 18.641.001 12.017.001z"/>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Servicios</h4>
+                    <ul class="footer-links">
+                        <li><a href="#services">Desarrollo Web</a></li>
+                        <li><a href="#services">Apps Móviles</a></li>
+                        <li><a href="#services">Cloud & DevOps</a></li>
+                        <li><a href="#services">Inteligencia Artificial</a></li>
+                        <li><a href="#services">Ciberseguridad</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Empresa</h4>
+                    <ul class="footer-links">
+                        <li><a href="#about">Nosotros</a></li>
+                        <li><a href="#contact">Contacto</a></li>
+                        <li><a href="#">Blog</a></li>
+                        <li><a href="#">Careers</a></li>
+                        <li><a href="#">Portfolio</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Contacto</h4>
+                    <ul class="footer-links">
+                        <li><a href="mailto:hello@geckcodex.com">hello@geckcodex.com</a></li>
+                        <li><a href="tel:+52123456789">+52 123 456 789</a></li>
+                        <li>Chihuahua, México</li>
+                        <li>Disponible 24/7</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2025 GECK Codex. Todos los derechos reservados. Creando el futuro digital, una línea de código a la vez.</p>
+            </div>
+        </div>
     </footer>
-<<<<<<< HEAD
 
     <script>
-        // Actualizar año automáticamente
-        document.getElementById('year').textContent = new Date().getFullYear();
-
-        // Menú responsive
-        const menuMarcador = document.querySelector('.menu');
-        const navegacion = document.querySelector('.navegacion');
-        menuMarcador.onclick = function(){
-            menuMarcador.classList.toggle('active');
-            navegacion.classList.toggle('active');
-        }
-=======
-    
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            document.documentElement.classList.add('fully-loaded');
-            
-           
-            const menuMarcador = document.querySelector('.menu');
-            const navegacion = document.querySelector('.navegacion');
-            
-            menuMarcador.onclick = function(){
-                menuMarcador.classList.toggle('active');
-                navegacion.classList.toggle('active');
+        // Navbar scroll effect
+        window.addEventListener('scroll', function() {
+            const navbar = document.getElementById('navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
             }
         });
->>>>>>> 1460953ad2e7a5b26ae48b02fa73c684ec19966d
+
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Form submission
+        document.querySelector('.contact-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Simple form validation
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const project = document.getElementById('project').value;
+            
+            if (name && email && project) {
+                // Simulate form submission
+                alert('¡Gracias por tu interés! Nos pondremos en contacto contigo pronto.');
+                this.reset();
+            } else {
+                alert('Por favor, completa todos los campos requeridos.');
+            }
+        });
+
+        // Intersection Observer for animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver(function(entries) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        // Observe elements for animations
+        document.querySelectorAll('.service-card, .stat-item').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(30px)';
+            el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            observer.observe(el);
+        });
+
+        // Counter animation for stats
+        function animateCounters() {
+            const counters = document.querySelectorAll('.stat-number');
+            
+            counters.forEach(counter => {
+                const target = counter.innerText;
+                const isPercentage = target.includes('%');
+                const isRating = target.includes('⭐');
+                const isTime = target.includes('/');
+                
+                let finalNumber;
+                if (isPercentage) {
+                    finalNumber = parseInt(target);
+                } else if (isRating || isTime) {
+                    return; // Skip animation for these
+                } else {
+                    finalNumber = parseInt(target);
+                }
+                
+                if (isNaN(finalNumber)) return;
+                
+                let current = 0;
+                const increment = finalNumber / 50;
+                const timer = setInterval(() => {
+                    current += increment;
+                    if (current >= finalNumber) {
+                        counter.innerText = target;
+                        clearInterval(timer);
+                    } else {
+                        counter.innerText = Math.floor(current) + (isPercentage ? '%' : '+');
+                    }
+                }, 40);
+            });
+        }
+
+        // Trigger counter animation when stats section is visible
+        const statsSection = document.querySelector('.stats-grid');
+        if (statsSection) {
+            const statsObserver = new IntersectionObserver(function(entries) {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        animateCounters();
+                        statsObserver.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.5 });
+            
+            statsObserver.observe(statsSection);
+        }
     </script>
-    
-    <script src="BotonObsBlan.js"></script>
 </body>
 </html>
