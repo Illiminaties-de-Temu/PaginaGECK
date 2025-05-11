@@ -4,28 +4,26 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Hojas de estilo -->
-    <link id="estilo-obs" rel="stylesheet" href="EstiloObs.css"disabled> 
-    <link id="estilo-bla" rel="stylesheet" href="EstiloBla.css" >
-    <title>GECK Codex</title>
-    
+    <link id="estilo-obs" rel="stylesheet" href="EstiloObs.css" disabled> 
+    <link id="estilo-bla" rel="stylesheet" href="EstiloBla.css">
+    <title>Contáctanos - GECK Codex</title>
 </head>
 <body>
     <section class="contenedor_principal">
-        
         <header>
-            <a href="#" class="logo">GECKCODEX; </a>
-            <div class="menu"><img src="menu.png" alt=""></div>
+            <a href="Index.html" class="logo">GECKCODEX; </a>
+            <div class="menu"></div>
             <ul class="navegacion">
-                <li><a href="Index.html">Inicio</a></li>
-                <li><a href="Proyectos.html">Proyectos</a></li>
-                <li><a href="Historia.html">Historia</a></li>
-                <li><a href="Equipo.html">Equipo</a></li>
-                <li><a href="VV.html">Visión & Valores</a></li>
-                <li><a href="Contactanos.html"  class="active">Contáctanos</a></li>
-                
+                <li><a href="Index.html" style="--i:1;">Inicio</a></li>
+                <li><a href="Proyectos.html" style="--i:2;">Proyectos</a></li>
+                <li><a href="Historia.html" style="--i:3;">Historia</a></li>
+                <li><a href="Equipo.html" style="--i:4;">Equipo</a></li>
+                <li><a href="VV.html" style="--i:5;">Visión & Valores</a></li>
+                <li><a href="Contactanos.html" style="--i:6;" class="active">Contáctanos</a></li>
+                <li>
                     <button class="theme-switcher" id="cambiarEstilo" aria-label="Cambiar tema">
                         <svg class="theme-icon" viewBox="0 0 24 24" aria-hidden="true">
-                            <path fill="currentColor" />
+                            <path fill="currentColor" d="M12 2L2 12l10 10 10-10-10-10z" />
                         </svg>
                         <span class="theme-label">Cambiar Tema</span>
                     </button>
@@ -33,13 +31,61 @@
             </ul>
         </header>
 
-        <script>
-            const menuMarcador = document.querySelector('.menu');
-            menuMarcador.onclick = function(){
-                menuMarcador.classList.toggle('active')
-            }
-        </script>
-        
-        <script src="BotonObsBlan.js"></script>
+        <div class="contenido">
+            <div class="cajaTexto">
+                <h2>Contáctanos</h2>
+                <p>¿Tienes alguna pregunta o comentario? Nos encantaría saber de ti. Completa el formulario a continuación y te responderemos a la brevedad posible.</p>
+                
+                <form class="formulario-contacto">
+                    <div class="campo-formulario">
+                        <label for="nombre">Nombre completo</label>
+                        <input type="text" id="nombre" name="nombre" required>
+                    </div>
+                    
+                    <div class="campo-formulario">
+                        <label for="email">Correo electrónico</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                    
+                    <div class="campo-formulario">
+                        <label for="asunto">Asunto</label>
+                        <input type="text" id="asunto" name="asunto" required>
+                    </div>
+                    
+                    <div class="campo-formulario">
+                        <label for="mensaje">Mensaje</label>
+                        <textarea id="mensaje" name="mensaje" rows="5" required></textarea>
+                    </div>
+                    
+                    <button type="submit" class="boton-enviar">Enviar mensaje</button>
+                </form>
+            </div>
+            
+            <div class="info-contacto">
+                <h3>Información de contacto</h3>
+                <p><strong>Dirección:</strong> Av. Principal #123, Ciudad</p>
+                <p><strong>Teléfono:</strong> +123 456 7890</p>
+                <p><strong>Email:</strong> info@geckcodex.com</p>
+                
+                <div class="horario">
+                    <h4>Horario de atención</h4>
+                    <p>Lunes a Viernes: 9:00 - 18:00</p>
+                    <p>Sábados: 10:00 - 14:00</p>
+                </div>
+            </div>
+        </div>
 
+        <ul class="redes_sociales">
+            <li><a href="#"><img src="facebook.png" alt="GECKCODEX_facebook"></a></li>
+            <li><a href="#"><img src="instagram.png" alt="GECKCODEX_instagram"></a></li>
+            <li><a href="#"><img src="x.png" alt="GECKCODEX_X"></a></li>
+        </ul>
+    </section>
+
+    <footer>
+        Todos los derechos reservados &copy; GECKCODEX 2025
+    </footer>
+    
+    <script src="BotonObsBlan.js"></script>
 </body>
+</html>

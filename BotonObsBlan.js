@@ -1,89 +1,56 @@
-    // Configuración centralizada de temas
-    const themeConfig = {
-        obs: {
-            iconPath: 'M12,18C11.11,18 10.26,17.8 9.5,17.45C11.56,16.5 13,14.42 13,12C13,9.58 11.56,7.5 9.5,6.55C10.26,6.2 11.11,6 12,6A6,6 0 0,1 18,12A6,6 0 0,1 12,18M20,8.69V4H15.31L12,0.69L8.69,4H4V8.69L0.69,12L4,15.31V20H8.69L12,23.31L15.31,20H20V15.31L23.31,12L20,8.69Z',
-            label: 'Tema Claro',
-            next: 'bla'
-        },
-        bla: {
-            iconPath: 'M12,3A9,9 0 0,0 3,12A9,9 0 0,0 12,21A9,9 0 0,0 21,12A9,9 0 0,0 12,3M12,19A7,7 0 0,1 5,12A7,7 0 0,1 12,5A7,7 0 0,1 19,12A7,7 0 0,1 12,19Z',
-            label: 'Tema Oscuro',
-            next: 'obs'
+// Script para manejar el cambio de tema y la funcionalidad del menú
+document.addEventListener('DOMContentLoaded', function() {
+    // Elementos
+    const cambiarEstiloBtn = document.getElementById('cambiarEstilo');
+    const estiloObs = document.getElementById('estilo-obs');
+    const estiloBla = document.getElementById('estilo-bla');
+    const menuMarcador = document.querySelector('.menu');
+    const navegacion = document.querySelector('.navegacion');
+    
+    // Verificar si existe una preferencia guardada
+    const temaOscuro = localStorage.getItem('temaOscuro') === 'true';
+    
+    // Función para cambiar el tema
+    function cambiarTema(oscuro) {
+        if (oscuro) {
+            estiloObs.removeAttribute('disabled');
+            estiloBla.setAttribute('disabled', '');
+            document.body.classList.add('tema-oscuro');
+            document.body.classList.remove('tema-claro');
+            localStorage.setItem('temaOscuro', 'true');
+        } else {
+            estiloObs.setAttribute('disabled', '');
+            estiloBla.removeAttribute('disabled');
+            document.body.classList.add('tema-claro');
+            document.body.classList.remove('tema-oscuro');
+            localStorage.setItem('temaOscuro', 'false');
         }
-    };
-
-    // Estado inicial
-    let currentTheme = localStorage.getItem('temaPreferido') || 'obs';
-
-    // Elementos del DOM
-    const themeElements = {
-        obs: document.getElementById('estilo-obs'),
-        bla: document.getElementById('estilo-bla'),
-        button: document.getElementById('cambiarEstilo'),
-        icon: document.querySelector('.theme-icon path'),
-        label: document.querySelector('.theme-label')
-    };
-
-    // Función para aplicar el tema
-    function applyTheme(theme) {
-        // Desactivar todos los temas primero
-        Object.values(themeElements).forEach(el => {
-            if (el !== themeElements.button && el !== themeElements.icon && el !== themeElements.label && el.disabled !== undefined) {
-                el.disabled = true;
+    }
+    
+    // Aplicar tema guardado o predeterminado
+    cambiarTema(temaOscuro);
+    
+    // Evento para cambiar tema al hacer clic en el botón
+    cambiarEstiloBtn.addEventListener('click', function() {
+        const esTemaOscuroActual = localStorage.getItem('temaOscuro') === 'true';
+        cambiarTema(!esTemaOscuroActual);
+        
+        // Actualizar ícono del botón si es necesario
+        const temaIcono = cambiarEstiloBtn.querySelector('.theme-icon');
+        if (temaIcono) {
+            temaIcono.innerHTML = !esTemaOscuroActual 
+                ? '<path d="M12 3a9 9 0 0 0 0 18 9 9 0 0 0 0-18z"></path>' 
+                : '<path d="M12 2L2 12l10 10 10-10-10-10z"></path>';
+        }
+    });
+    
+    // Evento para el menú móvil
+    if (menuMarcador) {
+        menuMarcador.addEventListener('click', function() {
+            menuMarcador.classList.toggle('active');
+            if (navegacion) {
+                navegacion.classList.toggle('active');
             }
         });
-        
-        // Activar el tema seleccionado
-        if (themeElements[theme]) {
-            themeElements[theme].disabled = false;
-        }
-        
-        // Actualizar botón
-        const config = themeConfig[theme];
-        themeElements.icon.setAttribute('d', config.iconPath);
-        themeElements.label.textContent = config.label;
-        
-        // Guardar preferencia
-        localStorage.setItem('temaPreferido', theme);
-        currentTheme = theme;
     }
-
-    // Función para alternar temas
-    function toggleTheme() {
-        const nextTheme = themeConfig[currentTheme].next;
-        applyTheme(nextTheme);
-    }
-
-    // Inicialización
-    function initTheme() {
-        applyTheme(currentTheme);
-        themeElements.button.addEventListener('click', toggleTheme);
-        
-        // Verificar preferencia del sistema
-        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches && !localStorage.getItem('temaPreferido')) {
-            applyTheme('obs');
-        }
-    }
-
-    // Iniciar cuando el DOM esté listo
-    document.addEventListener('DOMContentLoaded', initTheme);
-
-    // Escuchar cambios en las preferencias del sistema
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
-        if (!localStorage.getItem('temaPreferido')) {
-            applyTheme(e.matches ? 'obs' : 'bla');
-        }
-    });
-
-    document.addEventListener('DOMContentLoaded', function() {
-        // Mostrar contenido principal
-        document.documentElement.classList.add('fully-loaded');
-        
-        // Activar transiciones después de breve retraso
-        setTimeout(function() {
-            document.body.classList.add('loaded');
-            document.querySelector('header').classList.add('loaded');
-            document.querySelector('.contenido').classList.add('loaded');
-            document.querySelector('.theme-switcher').classList.add('loaded');
-        }, 50);
-    });
+});
