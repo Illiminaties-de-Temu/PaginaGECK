@@ -17,7 +17,7 @@
                 <li><a href="Index.html" style="--i:1;">Inicio</a></li>
                 <li><a href="Proyectos.html" style="--i:2;"  class="active">Proyectos</a></li>
                 <li><a href="Historia.html" style="--i:3;">Historia</a></li>
-                <li><a href="Equipo.html" style="--i:4;">Equipo</a></li>
+                <!--<li><a href="Equipo.html" style="--i:4;">Equipo</a></li>-->
                 <li><a href="VV.html" style="--i:5;">Visión & Valores</a></li>
                 <li><a href="Contactanos.html" style="--i:6;">Contáctanos</a></li>
                 <li>
@@ -30,25 +30,32 @@
                 </li>
             </ul>
         </header>
-        <div class="contenedor_imagenes_pagina">
-        <div class="imagen_pagina"><img src="proyectos/pagina_login.png" alt=""></div>
-        <div class="imagen_pagina"><img src="proyectos/pagina_listas.png" alt=""></div>
-        <div class="imagen_pagina"><img src="proyectos/pagina_contraseña.png" alt=""></div>
-        <div class="imagen_pagina"><img src="proyectos/pagina_monitor_registro_lid.png" alt=""></div>
-        <div class="imagen_pagina"><img src="proyectos/pagina_monitor_registro_sub.png" alt=""></div>
-        <div class="imagen_pagina"><img src="proyectos/pagina_registro_personas.png" alt=""></div>
-        </div><br>
+        <div class="carrusel">
+            <div class="slides">
+                <div class="slide-img"><img src="proyectos/pagina_login.png" alt=""></div>
+                <div class="slide-img"><img src="proyectos/pagina_listas.png" alt=""></div>
+                <div class="slide-img"><img src="proyectos/pagina_contraseña.png" alt=""></div>
+                <div class="slide-img"><img src="proyectos/pagina_monitor_registro_lid.png" alt=""></div>
+                <div class="slide-img"><img src="proyectos/pagina_monitor_registro_sub.png" alt=""></div>
+                <div class="slide-img"><img src="proyectos/pagina_registro_personas.png" alt=""></div>
+            </div>
+            <div class="dots">
+                <span class="dot active" onclick="mostrarSlide(0)"></span>
+                <span class="dot" onclick="mostrarSlide(1)"></span>
+                <span class="dot" onclick="mostrarSlide(2)"></span>
+                <span class="dot" onclick="mostrarSlide(3)"></span>
+                <span class="dot" onclick="mostrarSlide(4)"></span>
+                <span class="dot" onclick="mostrarSlide(5)"></span>
+
+            </div>
+        </div>
+        <!--
         <div class="contenedor_imagenes_jv">
             <div class="imagen_jv"><img src="proyectos/jv_principal.jpg" alt=""></div>
             <div class="imagen_jv"><img src="proyectos/jv_1producto.jpg" alt=""></div>
             <div class="imagen_jv"><img src="proyectos/jv_3productos.jpg" alt=""></div>
             <div class="imagen_jv"><img src="proyectos/jv_cargo_hecho.jpg" alt=""></div>
-        </div>
-        <ul class="redes_sociales">
-            <li><a href="#" style="--i:12;"><img src="instagram.png" alt="GECKCODEX_instagram"></a></li>
-            <li><a href="#" style="--i:13;"><img src="facebook.png" alt="GECKCODEX_facebook"></a></li>
-            <li><a href="#" style="--i:14;"><img src="x.png" alt="GECKCODEX_X"></a></li>
-        </ul>
+        </div>-->
     </section>
     
     <footer>
@@ -68,6 +75,35 @@
                 navegacion.classList.toggle('active');
             }
         });
+        let index = 0;
+        const slides = document.querySelector('.slides');
+        const totalSlides = document.querySelectorAll('.slide-img').length;
+        const dotsContainer = document.getElementById('dots');
+
+        // Crear dots dinámicamente
+        for (let i = 0; i < totalSlides; i++) {
+        const dot = document.createElement('span');
+        dot.classList.add('dot');
+        if (i === 0) dot.classList.add('active');
+        dot.addEventListener('click', () => mostrarSlide(i));
+        dotsContainer.appendChild(dot);
+        }
+
+        function mostrarSlide(i) {
+        index = i;
+        slides.style.transform = `translateX(-${i * 100}%)`;
+
+        document.querySelectorAll('.dot').forEach((dot, idx) => {
+            dot.classList.toggle('active', idx === i);
+        });
+        }
+
+        function autoSlide() {
+        index = (index + 1) % totalSlides;
+        mostrarSlide(index);
+        }
+
+        setInterval(autoSlide, 5000);
     </script>
     
     <script src="BotonObsBlan.js"></script>
