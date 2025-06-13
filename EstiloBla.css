@@ -1614,6 +1614,7 @@ footer {
     aspect-ratio: 9 / 16; /* Relación vertical típica */
     background-color: #ffffff;
     border-radius: 20px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
 }
 
 .llavero .deslizados {
