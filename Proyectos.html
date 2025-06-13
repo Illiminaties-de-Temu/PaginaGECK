@@ -42,13 +42,15 @@
             <div class="dots" id="dots">
             </div>
         </div>
-        <!--
-        <div class="contenedor_imagenes_jv">
-            <div class="imagen_jv"><img src="proyectos/jv_principal.jpg" alt=""></div>
-            <div class="imagen_jv"><img src="proyectos/jv_1producto.jpg" alt=""></div>
-            <div class="imagen_jv"><img src="proyectos/jv_3productos.jpg" alt=""></div>
-            <div class="imagen_jv"><img src="proyectos/jv_cargo_hecho.jpg" alt=""></div>
-        </div>-->
+        <div class="llavero">
+            <div class="deslizados">
+                <div class="imagen-deslizada"><img src="proyectos/jv_principal.jpg" alt=""></div>
+                <div class="imagen-deslizada"><img src="proyectos/jv_1producto.jpg" alt=""></div>
+                <div class="imagen-deslizada"><img src="proyectos/jv_3productos.jpg" alt=""></div>
+                <div class="imagen-deslizada"><img src="proyectos/jv_cargo_hecho.jpg" alt=""></div>
+            </div>
+            <div class="botoncitos" id="botoncitos"></div>
+        </div>
     </section>
     
     <footer>
@@ -57,45 +59,54 @@
     
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-        document.documentElement.classList.add('fully-loaded');
+    document.documentElement.classList.add('fully-loaded');
 
-        const menuMarcador = document.querySelector('.menu');
-        const navegacion = document.querySelector('.navegacion');
-        
-        menuMarcador.onclick = function () {
-            menuMarcador.classList.toggle('active');
-            navegacion.classList.toggle('active');
-        };
+    const menuMarcador = document.querySelector('.menu');
+    const navegacion = document.querySelector('.navegacion');
+    
+    menuMarcador.onclick = function () {
+        menuMarcador.classList.toggle('active');
+        navegacion.classList.toggle('active');
+    };
 
-        let index = 0;
-        const slides = document.querySelector('.slides');
-        const totalSlides = document.querySelectorAll('.slide-img').length;
-        const dotsContainer = document.getElementById('dots');
+    // Función modular para cualquier carrusel
+    function iniciarCarrusel(contenedorSelector, slideSelector, dotContainerSelector, intervalo = 3000) {
+        let indice = 0;
+        const contenedor = document.querySelector(contenedorSelector);
+        const slides = document.querySelectorAll(slideSelector);
+        const dotsContainer = document.querySelector(dotContainerSelector);
 
-        for (let i = 0; i < totalSlides; i++) {
+        // Crear los dots
+        slides.forEach((_, i) => {
             const dot = document.createElement('span');
             dot.classList.add('dot');
             if (i === 0) dot.classList.add('active');
             dot.addEventListener('click', () => mostrarSlide(i));
             dotsContainer.appendChild(dot);
-        }
+        });
 
         function mostrarSlide(i) {
-            index = i;
-            slides.style.transform = `translateX(-${i * 100}%)`;
+            indice = i;
+            contenedor.style.transform = `translateX(-${i * 100}%)`;
 
-            document.querySelectorAll('.dot').forEach((dot, idx) => {
+            dotsContainer.querySelectorAll('.dot').forEach((dot, idx) => {
                 dot.classList.toggle('active', idx === i);
             });
         }
 
         function autoSlide() {
-            index = (index + 1) % totalSlides;
-            mostrarSlide(index);
+            indice = (indice + 1) % slides.length;
+            mostrarSlide(indice);
         }
 
-        setInterval(autoSlide, 3000);
-    });
+        mostrarSlide(0); // mostrar el primero
+        setInterval(autoSlide, intervalo);
+    }
+
+    // Iniciar carruseles
+    iniciarCarrusel('.slides', '.slide-img', '#dots');
+    iniciarCarrusel('.llavero .deslizados', '.llavero .imagen-deslizada', '#botoncitos');
+});
 
     </script>
     
