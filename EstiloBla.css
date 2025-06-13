@@ -1571,17 +1571,13 @@ footer {
   display: flex;
   transition: transform 0.5s ease-in-out;
   width: 100%;
-  will-change: transform;
-  align-items: center;
 }
 
 .slide-img {
   min-width: 100%;
-  max-width: 100%;
-  height: auto;
   object-fit: contain;
   border-radius: 0.5rem;
-  transform: translateX(50px);
+  transform: translate(3.5rem, 1rem);
 }
 
 .dots {
@@ -1603,3 +1599,4 @@ footer {
 .dot.active {
   background-color: #333;
 }
+

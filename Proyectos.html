@@ -39,14 +39,7 @@
                 <div class="slide-img"><img src="proyectos/pagina_monitor_registro_sub.png" alt=""></div>
                 <div class="slide-img"><img src="proyectos/pagina_registro_personas.png" alt=""></div>
             </div>
-            <div class="dots">
-                <span class="dot active" onclick="mostrarSlide(0)"></span>
-                <span class="dot" onclick="mostrarSlide(1)"></span>
-                <span class="dot" onclick="mostrarSlide(2)"></span>
-                <span class="dot" onclick="mostrarSlide(3)"></span>
-                <span class="dot" onclick="mostrarSlide(4)"></span>
-                <span class="dot" onclick="mostrarSlide(5)"></span>
-
+            <div class="dots" id="dots">
             </div>
         </div>
         <!--
@@ -63,47 +56,47 @@
     </footer>
     
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            document.documentElement.classList.add('fully-loaded');
-            
-           
-            const menuMarcador = document.querySelector('.menu');
-            const navegacion = document.querySelector('.navegacion');
-            
-            menuMarcador.onclick = function(){
-                menuMarcador.classList.toggle('active');
-                navegacion.classList.toggle('active');
-            }
-        });
+        document.addEventListener('DOMContentLoaded', function () {
+        document.documentElement.classList.add('fully-loaded');
+
+        const menuMarcador = document.querySelector('.menu');
+        const navegacion = document.querySelector('.navegacion');
+        
+        menuMarcador.onclick = function () {
+            menuMarcador.classList.toggle('active');
+            navegacion.classList.toggle('active');
+        };
+
         let index = 0;
         const slides = document.querySelector('.slides');
         const totalSlides = document.querySelectorAll('.slide-img').length;
         const dotsContainer = document.getElementById('dots');
 
-        // Crear dots dinámicamente
         for (let i = 0; i < totalSlides; i++) {
-        const dot = document.createElement('span');
-        dot.classList.add('dot');
-        if (i === 0) dot.classList.add('active');
-        dot.addEventListener('click', () => mostrarSlide(i));
-        dotsContainer.appendChild(dot);
+            const dot = document.createElement('span');
+            dot.classList.add('dot');
+            if (i === 0) dot.classList.add('active');
+            dot.addEventListener('click', () => mostrarSlide(i));
+            dotsContainer.appendChild(dot);
         }
 
         function mostrarSlide(i) {
-        index = i;
-        slides.style.transform = `translateX(-${i * 100}%)`;
+            index = i;
+            slides.style.transform = `translateX(-${i * 100}%)`;
 
-        document.querySelectorAll('.dot').forEach((dot, idx) => {
-            dot.classList.toggle('active', idx === i);
-        });
+            document.querySelectorAll('.dot').forEach((dot, idx) => {
+                dot.classList.toggle('active', idx === i);
+            });
         }
 
         function autoSlide() {
-        index = (index + 1) % totalSlides;
-        mostrarSlide(index);
+            index = (index + 1) % totalSlides;
+            mostrarSlide(index);
         }
 
-        setInterval(autoSlide, 5000);
+        setInterval(autoSlide, 3000);
+    });
+
     </script>
     
     <script src="BotonObsBlan.js"></script>
