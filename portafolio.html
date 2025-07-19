@@ -18,6 +18,279 @@
     <link rel="stylesheet" href="css/index/particulas.css">
     
 </head>
+
+<style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0f172a, #1e293b, #334155);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            color: white;
+            min-height: 100vh;
+        }
+        
+        .portfolio-section {
+            padding: 5rem 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .floating-shapes {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        .shape {
+            position: absolute;
+            background: linear-gradient(135deg, rgba(251, 191, 36, 0.1), rgba(245, 158, 11, 0.1));
+            border-radius: 50%;
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        .shape:nth-child(1) {
+            width: 200px;
+            height: 200px;
+            top: 10%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+        
+        .shape:nth-child(2) {
+            width: 150px;
+            height: 150px;
+            top: 60%;
+            right: 15%;
+            animation-delay: 2s;
+        }
+        
+        .shape:nth-child(3) {
+            width: 100px;
+            height: 100px;
+            bottom: 20%;
+            left: 20%;
+            animation-delay: 4s;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-30px) rotate(180deg); }
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+        
+        .section-title {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .section-subtitle {
+            font-size: 1.25rem;
+            color: #94a3b8;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+        
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-bottom: 4rem;
+        }
+        
+        .project-card {
+            background: rgba(30, 41, 59, 0.6);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 2rem;
+            border: 1px solid rgba(148, 163, 184, 0.1);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: translateY(20px);
+            opacity: 0;
+            animation: slideUp 0.8s ease-out forwards;
+        }
+        
+        .project-card:nth-child(1) { animation-delay: 0.1s; }
+        .project-card:nth-child(2) { animation-delay: 0.2s; }
+        .project-card:nth-child(3) { animation-delay: 0.3s; }
+        .project-card:nth-child(4) { animation-delay: 0.4s; }
+        .project-card:nth-child(5) { animation-delay: 0.5s; }
+        .project-card:nth-child(6) { animation-delay: 0.6s; }
+        .project-card:nth-child(7) { animation-delay: 0.7s; }
+        .project-card:nth-child(8) { animation-delay: 0.8s; }
+        .project-card:nth-child(9) { animation-delay: 0.9s; }
+        
+        @keyframes slideUp {
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        
+        .project-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 60px rgba(251, 191, 36, 0.15);
+            border-color: rgba(251, 191, 36, 0.3);
+        }
+        
+        .project-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #fbbf24, transparent);
+            transition: left 0.8s ease;
+        }
+        
+        .project-card:hover::before {
+            left: 100%;
+        }
+        
+        .confidential {
+            background: rgba(251, 191, 36, 0.05);
+            border: 2px solid rgba(251, 191, 36, 0.2);
+            position: relative;
+        }
+        
+        .confidential::after {
+            content: '★ PROYECTO ESTRELLA';
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            color: #0f172a;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.025em;
+        }
+        
+        .project-icon {
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
+            display: block;
+        }
+        
+        .project-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: white;
+            line-height: 1.3;
+        }
+        
+        .confidential .project-title {
+            color: #fbbf24;
+        }
+        
+        .project-description {
+            color: #94a3b8;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+            font-size: 1rem;
+        }
+        
+        .project-tech {
+            display: inline-block;
+            background: rgba(15, 23, 42, 0.8);
+            color: #fbbf24;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            border: 1px solid rgba(251, 191, 36, 0.2);
+        }
+        
+        .cta-container {
+            text-align: center;
+        }
+        
+        .cta-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.25rem 2.5rem;
+            font-weight: 600;
+            font-size: 1.125rem;
+            border-radius: 50px;
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            color: #0f172a;
+            text-decoration: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 15px rgba(251, 191, 36, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(251, 191, 36, 0.4);
+        }
+        
+        .cta-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+        
+        .cta-button:hover::before {
+            left: 100%;
+        }
+        
+        @media (max-width: 768px) {
+            .section-title {
+                font-size: 2rem;
+            }
+            
+            .projects-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            
+            .project-card {
+                padding: 1.5rem;
+            }
+            
+            .container {
+                padding: 0 1rem;
+            }
+        }
+    </style>
 <body>
       <!-- Navigation -->
     <nav id="navbar">
@@ -42,6 +315,93 @@
             </div>
         </div>
     </nav>
+
+     <section class="portfolio-section">
+        <div class="floating-shapes">
+            <div class="shape"></div>
+            <div class="shape"></div>
+            <div class="shape"></div>
+        </div>
+
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Proyectos Destacados</h2>
+                <p class="section-subtitle">Soluciones innovadoras que combinan tecnología de vanguardia con diseño excepcional</p>
+            </div>
+            
+            <div class="projects-grid">
+                
+                <!-- Proyecto 1 -->
+                <div class="project-card">
+                    <div class="project-icon">🌐</div>
+                    <h3 class="project-title">Página web para figura pública</h3>
+                    <p class="project-description">Diseño profesional, moderno y enfocado en presencia digital. Optimizado para funcionalidad y autoridad de marca.</p>
+                    <span class="project-tech">HTML, CSS, TS, Astro</span>
+                </div>
+                
+                <!-- Proyecto 2 -->
+                <div class="project-card">
+                    <div class="project-icon">🐄</div>
+                    <h3 class="project-title">App web: Control de ganado</h3>
+                    <p class="project-description">Gestión de costos, ganancias y pérdidas con interfaz amigable para uso rural y administrativo.</p>
+                    <span class="project-tech">PHP / TAIWIN / JS / MySQL</span>
+                </div>
+                
+                <!-- Proyecto 3 -->
+                <div class="project-card">
+                    <div class="project-icon">💪</div>
+                    <h3 class="project-title">App web: Gestión de gimnasio</h3>
+                    <p class="project-description">Interacción avanzada: verificación de rutinas, contador de calorías, métricas gráficas, sistema QR.</p>
+                    <span class="project-tech">Laravel, Vue.js, Chart.js</span>
+                </div>
+                
+                <!-- Proyecto 4: Secreto -->
+                <div class="project-card confidential">
+                    <div class="project-icon">🤖</div>
+                    <h3 class="project-title">Proyecto confidencial ①</h3>
+                    <p class="project-description">Tecnología móvil que mejora la postura en tiempo real usando inteligencia artificial.</p>
+                    <span class="project-tech">App móvil - IA - Visión por computadora</span>
+                </div>
+                
+                <!-- Proyecto 5: Secreto -->
+                <div class="project-card confidential">
+                    <div class="project-icon">🚗</div>
+                    <h3 class="project-title">Proyecto confidencial ②</h3>
+                    <p class="project-description">Sistema de prevención de accidentes por microsueños, con geolocalización y mapa interactivo.</p>
+                    <span class="project-tech">Android - IA - Mapa interactivo</span>
+                </div>
+                
+                <!-- Proyecto 6: Secreto -->
+                <div class="project-card confidential">
+                    <div class="project-icon">🏭</div>
+                    <h3 class="project-title">Proyecto confidencial ③</h3>
+                    <p class="project-description">Software para industria: análisis postural y prevención de lesiones laborales con cámaras inteligentes.</p>
+                    <span class="project-tech">IA - Visión por computadora - Industria 4.0</span>
+                </div>
+                
+                <!-- Proyecto 7 -->
+                <div class="project-card">
+                    <div class="project-icon">🏠</div>
+                    <h3 class="project-title">Sitio web para bienes raíces</h3>
+                    <p class="project-description">Catálogo visual, búsqueda por filtros, integración con WhatsApp y gestor de propiedades.</p>
+                    <span class="project-tech">HTML / CSS-BOOSTRAP / JS</span>
+                </div>
+                
+                <!-- Proyecto 8 -->
+                <div class="project-card">
+                    <div class="project-icon">🛍️</div>
+                    <h3 class="project-title">E-commerce: productos para hombre</h3>
+                    <p class="project-description">Tienda moderna con pasarela de pago, catálogo dinámico y enfoque en usabilidad móvil.</p>
+                    <span class="project-tech">WooCommerce / Shopify / Stripe</span>
+                </div>
+            
+            </div>
+            
+            <div class="cta-container">
+                <a href="contacto.html" class="cta-button">¿Tienes una idea? ¡Hablemos!</a>
+            </div>
+        </div>
+    </section>
 
     <!-- Menú móvil -->
     <div class="mobile-menu" id="mobileMenu">
@@ -101,8 +461,8 @@
             </div>
 
             <div class="footer-bottom">
-                <p>&copy; 2025 Chava Calderón. Todos los derechos reservados</p>
-                <p>Desarrollado por <a href="#" target="_blank">GECK Codex</a></p>
+                <p>&copy;  <a href="#" target="_blank">GECK Codex</a> Todos los derechos reservados</p>
+                
             </div>
         </div>
     </footer>
