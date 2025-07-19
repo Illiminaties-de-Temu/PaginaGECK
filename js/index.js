@@ -112,3 +112,139 @@
             
             statsObserver.observe(statsSection);
         }
+
+
+
+        
+        
+        // Función para crear partículas flotantes - MEJORADO
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            
+            function createParticle() {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                
+                // Tamaño más pequeño
+                const size = Math.random() * 2 + 1;
+                particle.style.width = size + 'px';
+                particle.style.height = size + 'px';
+                
+                // Posición aleatoria
+                particle.style.left = Math.random() * 100 + '%';
+                
+                // Duración más lenta
+                const duration = Math.random() * 4 + 6;
+                particle.style.animationDuration = duration + 's';
+                
+                // Retraso aleatorio
+                const delay = Math.random() * 2;
+                particle.style.animationDelay = delay + 's';
+                
+                // Opacidad reducida
+                particle.style.opacity = Math.random() * 0.3 + 0.1;
+                
+                particlesContainer.appendChild(particle);
+                
+                // Remover partícula después de la animación
+                setTimeout(() => {
+                    if (particle.parentNode) {
+                        particle.parentNode.removeChild(particle);
+                    }
+                }, (duration + delay) * 1000);
+            }
+            
+            // Crear menos partículas
+            setInterval(createParticle, 800);
+        }
+        
+        // Inicializar partículas cuando se carga la página
+        document.addEventListener('DOMContentLoaded', createParticles);
+        
+        // Efecto de parallax más sutil
+        document.addEventListener('mousemove', (e) => {
+            const shapes = document.querySelectorAll('.shape');
+            const mouseX = e.clientX / window.innerWidth;
+            const mouseY = e.clientY / window.innerHeight;
+            
+            shapes.forEach((shape, index) => {
+                const speed = (index + 1) * 0.2; // Reducido
+                const x = (mouseX - 0.5) * speed;
+                const y = (mouseY - 0.5) * speed;
+                
+                shape.style.transform += ` translate(${x}px, ${y}px)`;
+            });
+        });
+        
+        // Efecto de hover mejorado en iconos sociales
+        document.querySelectorAll('.social-icons a').forEach(icon => {
+            icon.addEventListener('mouseenter', () => {
+                icon.style.boxShadow = '0 0 25px rgba(0, 191, 255, 0.6)';
+            });
+            
+            icon.addEventListener('mouseleave', () => {
+                icon.style.boxShadow = '';
+            });
+        });
+   
+        // Funcionalidad del menú hamburguesa
+        document.addEventListener('DOMContentLoaded', function() {
+            const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+            const mobileMenu = document.getElementById('mobileMenu');
+            const navbar = document.getElementById('navbar');
+
+            // Toggle del menú móvil
+            mobileMenuToggle.addEventListener('click', function() {
+                mobileMenuToggle.classList.toggle('active');
+                mobileMenu.classList.toggle('active');
+            });
+
+            // Cerrar menú al hacer click en un enlace
+            const mobileNavLinks = mobileMenu.querySelectorAll('.nav-link');
+            mobileNavLinks.forEach(link => {
+                link.addEventListener('click', function() {
+                    mobileMenuToggle.classList.remove('active');
+                    mobileMenu.classList.remove('active');
+                });
+            });
+
+            // Cerrar menú al hacer click fuera
+            document.addEventListener('click', function(event) {
+                if (!mobileMenuToggle.contains(event.target) && !mobileMenu.contains(event.target)) {
+                    mobileMenuToggle.classList.remove('active');
+                    mobileMenu.classList.remove('active');
+                }
+            });
+
+            // Efecto de scroll en el navbar
+            window.addEventListener('scroll', function() {
+                if (window.scrollY > 50) {
+                    navbar.classList.add('scrolled');
+                } else {
+                    navbar.classList.remove('scrolled');
+                }
+            });
+
+            // Navegación suave
+            const navLinks = document.querySelectorAll('.nav-link');
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    const href = this.getAttribute('href');
+                    if (href.startsWith('#')) {
+                        e.preventDefault();
+                        const targetId = href.substring(1);
+                        const targetElement = document.getElementById(targetId);
+                        if (targetElement) {
+                            const offsetTop = targetElement.offsetTop - navbar.offsetHeight;
+                            window.scrollTo({
+                                top: offsetTop,
+                                behavior: 'smooth'
+                            });
+                        }
+                    }
+                });
+            });
+        });
+
+
+        

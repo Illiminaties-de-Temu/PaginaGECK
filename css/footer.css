@@ -1,0 +1,425 @@
+ :root {
+            --navy: #0a1628;
+            --navy-light: #1a2537;
+            --accent-blue: #2563eb;
+            --gold: #D4AF37;
+            --gold-dark: #B8941F;
+            --gold-light: #F4E4BC;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0a1628 0%, #1a2537 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .content {
+            flex: 1;
+            padding: 2rem;
+            color: white;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .content h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, var(--gold), var(--gold-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Footer Mejorado con Efectos Visuales */
+        footer {
+            background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 50%, var(--accent-blue) 100%);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            color: #eee;
+            text-align: center;
+            padding: 3rem 2rem 2rem;
+            position: relative;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+        }
+
+        /* Capa de partículas de fondo */
+        .particles-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* Figuras tecnológicas flotantes */
+        .tech-shapes {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        .tech-shape {
+            position: absolute;
+            background: linear-gradient(135deg, var(--gold-dark) 0%, var(--gold) 50%, var(--gold-light) 100%);
+            box-shadow: 0 4px 20px rgba(212, 175, 55, 0.3);
+            animation: techFloat 15s ease-in-out infinite;
+            opacity: 0.8;
+        }
+
+        /* Hexágono */
+        .tech-shape.hexagon {
+            width: 40px;
+            height: 35px;
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+        }
+
+        /* Chip de procesador */
+        .tech-shape.chip {
+            width: 35px;
+            height: 35px;
+            border-radius: 4px;
+            position: relative;
+        }
+
+        .tech-shape.chip::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 20px;
+            height: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 2px;
+        }
+
+        .tech-shape.chip::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 12px;
+            height: 12px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 1px;
+        }
+
+        /* Circuito */
+        .tech-shape.circuit {
+            width: 45px;
+            height: 8px;
+            border-radius: 2px;
+            position: relative;
+        }
+
+        .tech-shape.circuit::before {
+            content: '';
+            position: absolute;
+            top: -4px;
+            left: 10px;
+            width: 8px;
+            height: 16px;
+            background: inherit;
+            border-radius: 2px;
+        }
+
+        .tech-shape.circuit::after {
+            content: '';
+            position: absolute;
+            top: -4px;
+            right: 10px;
+            width: 8px;
+            height: 16px;
+            background: inherit;
+            border-radius: 2px;
+        }
+
+        /* Diamante tech */
+        .tech-shape.diamond {
+            width: 30px;
+            height: 30px;
+            transform: rotate(45deg);
+            border-radius: 4px;
+            position: relative;
+        }
+
+        .tech-shape.diamond::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 15px;
+            height: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 2px;
+        }
+
+        /* Engranaje */
+        .tech-shape.gear {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            position: relative;
+        }
+
+        .tech-shape.gear::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 16px;
+            height: 16px;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 50%;
+        }
+
+        /* Animaciones para las figuras tecnológicas */
+        @keyframes techFloat {
+            0%, 100% { 
+                transform: translateY(0px) rotate(0deg) scale(1);
+                opacity: 0.8;
+            }
+            25% { 
+                transform: translateY(-20px) rotate(90deg) scale(1.1);
+                opacity: 0.6;
+            }
+            50% { 
+                transform: translateY(-10px) rotate(180deg) scale(0.9);
+                opacity: 1;
+            }
+            75% { 
+                transform: translateY(-15px) rotate(270deg) scale(1.05);
+                opacity: 0.7;
+            }
+        }
+
+        /* Partículas individuales */
+        .particle {
+            position: absolute;
+            background: rgba(212, 175, 55, 0.6);
+            border-radius: 50%;
+            pointer-events: none;
+            animation: particleFloat 10s linear infinite;
+        }
+
+        @keyframes particleFloat {
+            0% {
+                transform: translateY(100vh) scale(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100px) scale(1);
+                opacity: 0;
+            }
+        }
+
+        /* Contenido del footer */
+        .footer-container {
+            max-width: 1200px;
+            margin: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+            position: relative;
+            z-index: 10;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-section h3 {
+            color: #fff;
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .footer-links {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+
+        .footer-links a {
+            color: #eee;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            padding: 0.3rem 0;
+            border-left: 2px solid transparent;
+            padding-left: 0.5rem;
+        }
+
+        .footer-links a:hover {
+            color: #D4AF37;
+            border-left-color: #D4AF37;
+            padding-left: 1rem;
+            transform: translateX(5px);
+        }
+
+        .footer-social {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .social-icons {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+        }
+
+        .social-icons a {
+            color: #eee;
+            font-size: 1.5rem;
+            transition: all 0.3s ease;
+            padding: 0.8rem;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 50px;
+            height: 50px;
+        }
+
+        .social-icons a:hover {
+            color: #D4AF37;
+            background-color: rgba(255, 242, 0, 0.2);
+            transform: scale(1.1) rotate(5deg);
+            box-shadow: 0 0 15px rgba(255, 230, 0, 0.3);
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+        }
+
+        .footer-bottom p {
+            margin: 0;
+            line-height: 1.6;
+        }
+
+        .footer-bottom a {
+            color: #ffd900;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .footer-bottom a:hover {
+            color: #fff;
+            text-shadow: 0 0 10px rgba(0, 191, 255, 0.5);
+        }
+
+        /* Media Queries */
+        @media (max-width: 768px) {
+            footer {
+                padding: 2rem 1rem 1.5rem;
+            }
+
+            .footer-content {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+                text-align: center;
+            }
+
+            .footer-section h3 {
+                font-size: 1.1rem;
+            }
+
+            .footer-links {
+                align-items: center;
+            }
+
+            .footer-links a {
+                border-left: none;
+                border-bottom: 2px solid transparent;
+                padding-left: 0;
+                padding-bottom: 0.3rem;
+            }
+
+            .footer-links a:hover {
+                border-left: none;
+                border-bottom-color: #D4AF37;
+                padding-left: 0;
+                transform: translateY(-2px);
+            }
+
+            .social-icons {
+                gap: 1rem;
+            }
+
+            .social-icons a {
+                font-size: 1.3rem;
+                width: 45px;
+                height: 45px;
+            }
+
+            /* Reducir figuras en móvil */
+            .tech-shape:nth-child(n+6) {
+                display: none;
+            }
+        }
+
+        @media (max-width: 480px) {
+            footer {
+                padding: 1.5rem 1rem;
+            }
+
+            .footer-content {
+                gap: 1rem;
+            }
+
+            .social-icons a {
+                font-size: 1.2rem;
+                width: 40px;
+                height: 40px;
+            }
+
+            .tech-shape:nth-child(n+4) {
+                display: none;
+            }
+        }

@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulario de Contacto Interactivo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="css/contacto/contacto.css">
+    <link rel="stylesheet" href="css/nav.css">
+    <link rel="stylesheet" href="css/footer.css">
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script>
+    // Inicializar EmailJS
+    emailjs.init('AP6gQhAqnDBrgMWED'); // Tu User ID aquí
+     </script>
+    
+        
+        
+</head>
+<body>
+
+     <!-- Navigation -->
+    <nav id="navbar">
+        <div class="nav-container">
+            <div class="nav-content">
+                <div class="logo">GECK Codex</div>
+                
+                <!-- Enlaces de navegación para desktop -->
+                <div class="nav-links">
+                    <a href="index.html" class="nav-link">Inicio</a>
+                    <a href="#about" class="nav-link">Nosotros</a>
+                    <a href="contacto.html" class="nav-link">Contacto</a>
+                    <a href="portafolio.html" class="nav-link">Portafolio</a>
+                </div>
+                
+                <!-- Botón hamburguesa para móvil -->
+                <div class="mobile-menu-toggle" id="mobileMenuToggle">
+                    <span class="hamburger-line"></span>
+                    <span class="hamburger-line"></span>
+                    <span class="hamburger-line"></span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Menú móvil -->
+    <div class="mobile-menu" id="mobileMenu">
+        <div class="nav-links">
+            <a href="index.html" class="nav-link">Servicios</a>
+            <a href="#about" class="nav-link">Nosotros</a>
+            <a href="contacto.html" class="nav-link">Contacto</a>
+            <a href="portafolio.html" class="nav-link">Portafolio</a>
+        </div>
+    </div>
+    
+    <section id="contact" class="contact-section py-24 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-4xl mx-auto">
+            <div class="text-center mb-12">
+                <h2 class="text-4xl md:text-5xl font-bold mb-6">
+                    <span class="highlight-gold">Comencemos tu Transformación Digital</span>
+                </h2>
+                <p class="text-xl text-gray-300 max-w-2xl mx-auto">
+                    ¿Listo para revolucionar tu negocio? Contactanos y descubre cómo podemos 
+                    convertir tu visión en una realidad digital extraordinaria.
+                </p>
+            </div>
+            
+            <form class="contact-form" id="contactForm">
+                <!-- Indicador de progreso -->
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                
+                <!-- Indicador de pasos -->
+                <div class="step-indicator">
+                    <div class="step active" data-step="1">
+                        <div class="step-number">1</div>
+                        <span>Información Personal</span>
+                    </div>
+                    <div class="step" data-step="2">
+                        <div class="step-number">2</div>
+                        <span>Tipo de Proyecto</span>
+                    </div>
+                    <div class="step" data-step="3">
+                        <div class="step-number">3</div>
+                        <span>Detalles del Proyecto</span>
+                    </div>
+                    <div class="step" data-step="4">
+                        <div class="step-number">4</div>
+                        <span>Confirmación</span>
+                    </div>
+                </div>
+                
+                <!-- Paso 1: Información Personal -->
+                <div class="form-step active" id="step1">
+                    <h3 class="text-xl font-semibold text-white mb-4">📋 Cuéntanos sobre ti</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="form-group">
+                            <label class="form-label" for="name">Nombre Completo</label>
+                            <div class="relative">
+                                <input type="text" id="name" class="form-input" placeholder="Tu nombre completo" required>
+                                <div class="input-glow"></div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="email">Email</label>
+                            <div class="relative">
+                                <input type="email" id="email" class="form-input" placeholder="tu@email.com" required>
+                                <div class="input-glow"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="company">Empresa</label>
+                        <div class="relative">
+                            <input type="text" id="company" class="form-input" placeholder="Nombre de tu empresa (opcional)">
+                            <div class="input-glow"></div>
+                        </div>
+                    </div>
+                    <div class="flex justify-end">
+                        <button type="button" class="btn btn-primary" onclick="nextStep()">
+                            Siguiente 👉
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Paso 2: Tipo de Proyecto -->
+                <div class="form-step" id="step2">
+                    <h3 class="text-xl font-semibold text-white mb-4">🎯 ¿Qué tipo de proyecto tienes en mente?</h3>
+                    <div class="project-type-grid">
+                        <div class="project-type-card" onclick="selectProjectType('website')">
+                            <div class="project-icon">🌐</div>
+                            <div class="project-title">Sitio Web</div>
+                            <div class="project-description">Landing page, sitio corporativo, portfolio</div>
+                        </div>
+                        <div class="project-type-card" onclick="selectProjectType('ecommerce')">
+                            <div class="project-icon">🛒</div>
+                            <div class="project-title">E-commerce</div>
+                            <div class="project-description">Tienda online, marketplace, plataforma de ventas</div>
+                        </div>
+                        <div class="project-type-card" onclick="selectProjectType('webapp')">
+                            <div class="project-icon">💻</div>
+                            <div class="project-title">Aplicación Web</div>
+                            <div class="project-description">Dashboard, CRM, sistema personalizado</div>
+                        </div>
+                        <div class="project-type-card" onclick="selectProjectType('mobile')">
+                            <div class="project-icon">📱</div>
+                            <div class="project-title">App Móvil</div>
+                            <div class="project-description">iOS, Android, aplicación híbrida</div>
+                        </div>
+                    </div>
+                    <div class="flex justify-between mt-8">
+                        <button type="button" class="btn btn-secondary" onclick="prevStep()">
+                            👈 Anterior
+                        </button>
+                        <button type="button" class="btn btn-primary" onclick="nextStep()" disabled id="nextBtn2">
+                            Siguiente 👉
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Paso 3: Detalles del Proyecto -->
+                <div class="form-step" id="step3">
+                    <h3 class="text-xl font-semibold text-white mb-4">📝 Cuéntanos más sobre tu proyecto</h3>
+                    <div class="form-group">
+                        <label class="form-label" for="project">Descripción del Proyecto</label>
+                        <div class="relative">
+                            <textarea id="project" class="form-input form-textarea" placeholder="Describe tu idea, necesidades, objetivos, público objetivo..." required></textarea>
+                            <div class="input-glow"></div>
+                        </div>
+                        <div class="character-count" id="charCount">0 / 500 caracteres</div>
+                        <div class="typing-indicator" id="typingIndicator">
+                            <span>Analizando tu proyecto</span>
+                            <div class="typing-dots">
+                                <div class="typing-dot"></div>
+                                <div class="typing-dot"></div>
+                                <div class="typing-dot"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="form-group">
+                            <label class="form-label" for="budget">Presupuesto Estimado</label>
+                            <div class="relative">
+                                <select id="budget" class="form-input" required>
+                                    <option value="">Selecciona tu presupuesto</option>
+                                    <option value="5000-10000">$5,000 - $10,000</option>
+                                    <option value="10000-25000">$10,000 - $25,000</option>
+                                    <option value="25000-50000">$25,000 - $50,000</option>
+                                    <option value="50000+">$50,000+</option>
+                                </select>
+                                <div class="input-glow"></div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="timeline">Tiempo Estimado</label>
+                            <div class="relative">
+                                <select id="timeline" class="form-input" required>
+                                    <option value="">¿Cuándo lo necesitas?</option>
+                                    <option value="asap">Lo antes posible</option>
+                                    <option value="1-2months">1-2 meses</option>
+                                    <option value="3-6months">3-6 meses</option>
+                                    <option value="flexible">Flexible</option>
+                                </select>
+                                <div class="input-glow"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="estimate-card" id="estimateCard" style="display: none;">
+                        <div class="estimate-price" id="estimatePrice">$15,000</div>
+                        <div class="text-sm text-gray-300">Estimación inicial basada en tu proyecto</div>
+                    </div>
+                    
+                    <div class="flex justify-between mt-8">
+                        <button type="button" class="btn btn-secondary" onclick="prevStep()">
+                            👈 Anterior
+                        </button>
+                        <button type="button" class="btn btn-primary" onclick="nextStep()">
+                            Siguiente 👉
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Paso 4: Confirmación -->
+                <div class="form-step" id="step4">
+                    <h3 class="text-xl font-semibold text-white mb-4">✅ Confirmación</h3>
+                    <div class="bg-slate-800 rounded-lg p-6 mb-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                            <div>
+                                <span class="text-gray-400">Nombre:</span>
+                                <span class="text-white ml-2" id="confirmName"></span>
+                            </div>
+                            <div>
+                                <span class="text-gray-400">Email:</span>
+                                <span class="text-white ml-2" id="confirmEmail"></span>
+                            </div>
+                            <div>
+                                <span class="text-gray-400">Empresa:</span>
+                                <span class="text-white ml-2" id="confirmCompany"></span>
+                            </div>
+                            <div>
+                                <span class="text-gray-400">Tipo de Proyecto:</span>
+                                <span class="text-white ml-2" id="confirmProjectType"></span>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <span class="text-gray-400">Descripción:</span>
+                            <p class="text-white mt-1" id="confirmDescription"></p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex justify-between">
+                        <button type="button" class="btn btn-secondary" onclick="prevStep()">
+                            👈 Anterior
+                        </button>
+                        <button type="submit" class="btn btn-primary" id="submitBtn">
+                            🚀 Enviar Proyecto
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="success-message" id="successMessage">
+                    <div class="text-2xl mb-2">🎉</div>
+                    <h4 class="text-lg font-semibold mb-2">¡Proyecto Enviado Exitosamente!</h4>
+                    <p>Te contactaremos dentro de las próximas 24 horas para discutir tu proyecto en detalle.</p>
+                </div>
+            </form>
+        </div>
+    </section>
+
+       <!-- Contenido del footer -->
+     <footer>
+        <div class="particles-background" id="particles"></div>
+        <div class="tech-shapes" id="techShapes"></div>
+        
+        <div class="footer-container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Servicios</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">Desarrollo Web</a></li>
+                        <li><a href="#">Aplicaciones Móviles</a></li>
+                        <li><a href="#">Consultoría Tech</a></li>
+                        <li><a href="#">Automatización</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Tecnologías</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">JavaScript</a></li>
+                        <li><a href="#">React</a></li>
+                        <li><a href="#">Node.js</a></li>
+                        <li><a href="#">Python</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Contacto</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">contacto@ejemplo.com</a></li>
+                        <li><a href="#">+52 123 456 7890</a></li>
+                        <li><a href="#">Chihuahua, México</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-social">
+                <ul class="social-icons">
+                    <li><a href="https://facebook.com" target="_blank"><i class="fab fa-facebook-f"></i></a></li>
+                    <li><a href="https://instagram.com" target="_blank"><i class="fab fa-instagram"></i></a></li>
+                    <li><a href="https://github.com" target="_blank"><i class="fab fa-github"></i></a></li>
+                    <li><a href="https://linkedin.com" target="_blank"><i class="fab fa-linkedin-in"></i></a></li>
+                    <li><a href="https://twitter.com" target="_blank"><i class="fab fa-twitter"></i></a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2025 Chava Calderón. Todos los derechos reservados</p>
+                <p>Desarrollado por <a href="#" target="_blank">GECK Codex</a></p>
+            </div>
+        </div>
+    </footer>
+
+<script src="js/contacto.js"></script>
+<script src="js/footer.js"></script>
+<script src="js/hamburgesa.js"></script>
+    

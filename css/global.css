@@ -1,0 +1,52 @@
+:root {
+            --navy: #0b1f49;
+            --navy-light: #0c1e3c;
+            --navy-medium: #2A3441;
+            --gold: #D4AF37;
+            --gold-light: #F4E4BC;
+            --gold-dark: #B8941F;
+            --white: #FFFFFF;
+            --white-soft: #F8F9FA;
+            --accent-blue: #1B365D;
+            --text-muted: #6B7280;
+            --nav-height: 80px;
+        }
+        body{
+            background:#0B1426;
+        }
+        
+
+        section {
+            padding-left: 1.5rem;
+            padding-right: 1.5rem;
+        }
+
+        @media (min-width: 640px) {
+            section {
+                padding-left: 2rem;
+                padding-right: 2rem;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            section {
+                padding-left: 3rem;
+                padding-right: 3rem;
+            }
+        }        
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            color: var(--navy);
+            background: var(--white);
+            overflow-x: hidden;
+            padding-top: var(--nav-height);
+        }
+        
