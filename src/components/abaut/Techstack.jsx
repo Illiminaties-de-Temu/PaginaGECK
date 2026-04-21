@@ -86,9 +86,9 @@ function BentoCard({ category, delay }) {
   return (
     <motion.div
       className={`bt-card bt-${category.id}`}
-      initial={{ opacity: 0, y: 32, scale: 0.97, filter: 'blur(8px)' }}
-      whileInView={{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }}
-      viewport={{ once: false, margin: '-50px' }}
+      initial={{ opacity: 0, y: 32, scale: 0.97 }}
+      whileInView={{ opacity: 1, y: 0, scale: 1 }}
+      viewport={{ once: true, margin: '-50px' }}
       transition={{ duration: 0.65, delay, ease: easeExpo }}
     >
       <span className="bt-label">{category.label}</span>
@@ -107,9 +107,9 @@ export default function TechStack() {
 
       <motion.div
         className="bt-heading"
-        initial={{ opacity: 0, y: 20, filter: 'blur(6px)' }}
-        whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-        viewport={{ once: false, margin: '-80px' }}
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: '-80px' }}
         transition={{ duration: 0.6, ease: easeExpo }}
       >
         <p className="bt-eyebrow">Stack Tecnológico</p>

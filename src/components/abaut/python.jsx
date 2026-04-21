@@ -1,535 +1,418 @@
-// src/components/abaut/python.jsx
+// python.jsx — Terminal animada sin setState durante animación
+// Técnica: refs + mutación directa del DOM → 0 re-renders tras la carga inicial
 import { useState, useEffect, useRef } from 'react';
 
+const CODE_LINES = [
+  { text: '', delay: 0 },
+  { text: '', delay: 100 },
+  { text: '', delay: 200 },
+  { text: '', delay: 300 },
+  { text: '                  ___  ___      ',                               delay: 400,  style: 'snake-head', isSnake: true, snakeIndex: 0  },
+  { text: '         \\/     /~  ╱    \\  ',                               delay: 500,  style: 'snake-tongue',isSnake: true, snakeIndex: 1, isTongue: true },
+  { text: '          \\____|           \\  ',                              delay: 600,  style: 'snake-head', isSnake: true, snakeIndex: 2  },
+  { text: '                 \\ _______/\\/ \\ ',                          delay: 700,  style: 'snake-body', isSnake: true, snakeIndex: 3  },
+  { text: '                         `/\\/\\/\\                    \\',     delay: 800,  style: 'snake-body', isSnake: true, snakeIndex: 4  },
+  { text: '                           |\\/\\/|                    \\',    delay: 900,  style: 'snake-body', isSnake: true, snakeIndex: 5  },
+  { text: '                          /\\/\\//                      \\',   delay: 1000, style: 'snake-body', isSnake: true, snakeIndex: 6  },
+  { text: '                         / / / /                       \\\\',  delay: 1100, style: 'snake-body', isSnake: true, snakeIndex: 7  },
+  { text: '                       /      /                         \\ \\', delay: 1200, style: 'snake-body', isSnake: true, snakeIndex: 8  },
+  { text: '                      /     /                            \\  \\',delay: 1300, style: 'snake-body', isSnake: true, snakeIndex: 9  },
+  { text: '                    /     /             _----_            \\   \\',delay:1400, style: 'snake-body', isSnake: true, snakeIndex: 10 },
+  { text: '                   /     /           _-~      ~-_         |   |', delay:1500, style: 'snake-body', isSnake: true, snakeIndex: 11 },
+  { text: '                  (      (        _-~    _--_    ~-_     _/   |', delay:1600, style: 'snake-body', isSnake: true, snakeIndex: 12 },
+  { text: '                   \\      ~-____-~    _-~    ~-_    ~-_-~    /',delay:1700, style: 'snake-tail', isSnake: true, snakeIndex: 13 },
+  { text: '                     ~-_           _-~          ~-_       _-~', delay:1800, style: 'snake-tail', isSnake: true, snakeIndex: 14 },
+  { text: '                        ~--______-~                ~-___-~',    delay:1900, style: 'snake-tail', isSnake: true, snakeIndex: 15 },
+  { text: '', delay: 2100 },
+  { text: '', delay: 2200 },
+];
 
-export default function Header() {
-  const [displayedLines, setDisplayedLines] = useState([]);
-  const [phase, setPhase] = useState(0);
-  const [tonguePhase, setTonguePhase] = useState(0);
+const TONGUES = [
+  '         \\/     /~  ╱    \\  ',
+  '         \\ /    /~  ╱    \\  ',
+  '         \\  /   /~  ╱    \\  ',
+  '         \\ /    /~  ╱    \\  ',
+];
 
-  // Estado animación barras
-  const [projectProgress, setProjectProgress] = useState(0);
-  const [clientProgress, setClientProgress] = useState(0);
-  const [dotPhase, setDotPhase] = useState(0);
+const renderBar = (p) => {
+  const filled = Math.round((p / 100) * 24);
+  return '│   ' + '█'.repeat(filled) + '░'.repeat(24 - filled) + `  ${p}%`;
+};
 
-  // Estado para animación de scroll
-  const [scrollProgress, setScrollProgress] = useState(0);
-  
-  const terminalRef = useRef(null);
+export default function PythonTerminal() {
+  const [lines, setLines]   = useState([]);     // único estado — sólo para renderizar las líneas
 
+  /* Refs para mutación directa del DOM — cero re-renders */
+  const wrapperRef    = useRef(null);
+  const terminalRef   = useRef(null);
+  const tongueRef     = useRef(null);
+  const projBarRef    = useRef(null);
+  const clientBarRef  = useRef(null);
+  const dotRef        = useRef(null);
+  const snakeRefs     = useRef({});             // snakeIndex → DOM element
 
-  const targetProject = 92;
-  const targetClient = 100;
+  const rafRef        = useRef(null);
+  const phaseRef      = useRef(0);
+  const mountedRef    = useRef(true);
 
-  const codeLines = [
-    { text: '', delay: 0 },
-    { text: '', delay: 100 },
-    { text: '', delay: 200 },
-    { text: '', delay: 300 },
-    { text: '                  ___  ___      ', delay: 400, style: 'snake-head', isSnake: true, snakeIndex: 0 },
-    { text: '         \\/     /~  ╱    \\  ', delay: 500, style: 'snake-tongue', isSnake: true, snakeIndex: 1, isTongue: true },
-    { text: '          \\____|           \\  ', delay: 600, style: 'snake-head', isSnake: true, snakeIndex: 2 },
-    { text: '                 \\ _______/\\/ \\ ', delay: 700, style: 'snake-body', isSnake: true, snakeIndex: 3 },
-    { text: '                         `/\\/\\/\\                    \\', delay: 800, style: 'snake-body', isSnake: true, snakeIndex: 4 },
-    { text: '                           |\\/\\/|                    \\', delay: 900, style: 'snake-body', isSnake: true, snakeIndex: 5 },
-    { text: '                          /\\/\\//                      \\', delay: 1000, style: 'snake-body', isSnake: true, snakeIndex: 6 },
-    { text: '                         / / / /                       \\\\', delay: 1100, style: 'snake-body', isSnake: true, snakeIndex: 7 },
-    { text: '                       /      /                         \\ \\', delay: 1200, style: 'snake-body', isSnake: true, snakeIndex: 8 },
-    { text: '                      /     /                            \\  \\', delay: 1300, style: 'snake-body', isSnake: true, snakeIndex: 9 },
-    { text: '                    /     /             _----_            \\   \\', delay: 1400, style: 'snake-body', isSnake: true, snakeIndex: 10 },
-    { text: '                   /     /           _-~      ~-_         |   |', delay: 1500, style: 'snake-body', isSnake: true, snakeIndex: 11 },
-    { text: '                  (      (        _-~    _--_    ~-_     _/   |', delay: 1600, style: 'snake-body', isSnake: true, snakeIndex: 12 },
-    { text: '                   \\      ~-____-~    _-~    ~-_    ~-_-~    /', delay: 1700, style: 'snake-tail', isSnake: true, snakeIndex: 13 },
-    { text: '                     ~-_           _-~          ~-_       _-~', delay: 1800, style: 'snake-tail', isSnake: true, snakeIndex: 14 },
-    { text: '                        ~--______-~                ~-___-~', delay: 1900, style: 'snake-tail', isSnake: true, snakeIndex: 15 },
-    { text: '', delay: 2100 },
-    { text: '', delay: 2200 },
-    { text: '', delay: 2300 },
-    { text: '', delay: 2400 },
-  ];
-
+  /* ── 1. Mostrar líneas una a una (efecto typewriter, una sola vez) ── */
   useEffect(() => {
-    // Mostrar líneas de la serpiente solo una vez
-    if (displayedLines.length === 0) {
-      codeLines.forEach((line) => {
-        setTimeout(() => setDisplayedLines((prev) => [...prev, line]), line.delay);
-      });
-    }
-
-    // Animación ondulante serpiente
-    const phaseInterval = setInterval(() => setPhase((prev) => (prev + 0.1) % (Math.PI * 2)), 50);
-
-    // Animación lengua
-    const tongueInterval = setInterval(() => setTonguePhase((prev) => (prev + 1) % 4), 150);
-
-    // Animación barras
-    const projectInterval = setInterval(() => {
-      setProjectProgress(prev => {
-        if (prev >= targetProject) { clearInterval(projectInterval); return prev; }
-        return prev + 1;
-      });
-    }, 20);
-
-    const clientInterval = setInterval(() => {
-      setClientProgress(prev => {
-        if (prev >= targetClient) { clearInterval(clientInterval); return prev; }
-        return prev + 1;
-      });
-    }, 20);
-
-    // Animación puntos soporte
-    const dotInterval = setInterval(() => setDotPhase(prev => (prev + 1) % 3), 500);
-
-    // Listener de scroll para animación enlazada
-    const handleScroll = () => {
-      const windowHeight = window.innerHeight;
-      
-      // Animación de entrada de la Terminal ENLAZADA AL SCROLL
-      if (terminalRef.current) {
-        const rect = terminalRef.current.getBoundingClientRect();
-        const elementTop = rect.top;
-        
-        // Rango más amplio para hacer la animación más lenta
-        const triggerPoint = windowHeight * 0.8;
-        const endPoint = windowHeight * 0.2;
-        
-        if (elementTop <= triggerPoint && elementTop >= endPoint) {
-          // Calcular progreso de 0 a 1
-          const progress = 1 - ((elementTop - endPoint) / (triggerPoint - endPoint));
-          // Aplicar easing para suavizar aún más
-          const easedProgress = progress * progress * (3 - 2 * progress); // smoothstep
-          setScrollProgress(Math.max(0, Math.min(1, easedProgress)));
-        } else if (elementTop < endPoint) {
-          setScrollProgress(1);
-        } else {
-          setScrollProgress(0);
-        }
-      }
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    handleScroll(); // Chequeo inicial
-
+    const timers = CODE_LINES.map((line) =>
+      setTimeout(() => {
+        if (!mountedRef.current) return;
+        setLines(prev => [...prev, line]);
+      }, line.delay)
+    );
     return () => {
-      clearInterval(phaseInterval);
-      clearInterval(tongueInterval);
-      clearInterval(projectInterval);
-      clearInterval(clientInterval);
-      clearInterval(dotInterval);
-      window.removeEventListener('scroll', handleScroll);
+      timers.forEach(clearTimeout);
+      mountedRef.current = false;
     };
   }, []);
 
-  const getTongueVariation = () => {
-    const tongues = [
-      '         \\/     /~  ╱    \\  ',
-      '         \\ /    /~  ╱    \\  ',
-      '         \\  /   /~  ╱    \\  ',
-      '         \\ /    /~  ╱    \\  ',
-    ];
-    return tongues[tonguePhase];
-  };
-
-  const getOffset = (index) => {
-    const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
-    const baseAmplitude = isMobile ? 1.5 : 3;
-    const frequency = 0.3;
-    const amplitudeMultiplier = isMobile
-    ? Math.pow(index / 16, 2) * 4
-    : Math.pow(index / 16, 2) * 10;
-    return Math.sin(phase + index * frequency) * (baseAmplitude + amplitudeMultiplier);
-  };
-
-  const renderBar = (progress) => {
-    const totalBlocks = 24;
-    const filledBlocks = Math.round((progress / 100) * totalBlocks);
-    const emptyBlocks = totalBlocks - filledBlocks;
-    return '█'.repeat(filledBlocks) + '░'.repeat(emptyBlocks) + `  ${progress}%`;
-  };
-
-  // Calcular transformaciones basadas en el progreso del scroll
-  const getScrollTransform = () => {
-    const translateY = 100 - (scrollProgress * 100); // De 100px a 0
-    const scale = 0.7 + (scrollProgress * 0.3); // De 0.7 a 1
-    const opacity = scrollProgress; // De 0 a 1
-    const rotateX = 20 - (scrollProgress * 20); // De 20deg a 0
-    
-    return {
-      transform: `translateY(${translateY}px) scale(${scale}) rotateX(${rotateX}deg)`,
-      opacity: opacity,
+  /* ── 2. Wave animation — RAF + mutación directa, CERO setState ───── */
+  useEffect(() => {
+    const tick = () => {
+      if (!mountedRef.current) return;
+      phaseRef.current = (phaseRef.current + 0.05) % (Math.PI * 2);
+      const mobile = window.innerWidth < 768;
+      const base = mobile ? 1.5 : 3;
+      for (let i = 0; i <= 15; i++) {
+        const el = snakeRefs.current[i];
+        if (!el) continue;
+        const amp = base + Math.pow(i / 16, 2) * (mobile ? 4 : 10);
+        el.style.transform = `translateX(${Math.sin(phaseRef.current + i * 0.3) * amp}px)`;
+      }
+      rafRef.current = requestAnimationFrame(tick);
     };
-  };
+    rafRef.current = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(rafRef.current);
+  }, []);
 
- 
+  /* ── 3. Tongue — interval + mutación directa ────────────────────── */
+  useEffect(() => {
+    let tp = 0;
+    const id = setInterval(() => {
+      if (tongueRef.current) tongueRef.current.textContent = TONGUES[tp % 4];
+      tp++;
+    }, 150);
+    return () => clearInterval(id);
+  }, []);
+
+  /* ── 4. Barras y dots — arrancan al entrar en viewport ──────────── */
+  useEffect(() => {
+    let proj = 0, client = 0, barsInt = null;
+
+    const startBars = () => {
+      if (barsInt) return;
+      barsInt = setInterval(() => {
+        let done = true;
+        if (proj < 92)  { proj++;   if (projBarRef.current)   projBarRef.current.textContent   = renderBar(proj);   done = false; }
+        if (client < 100) { client++; if (clientBarRef.current) clientBarRef.current.textContent = renderBar(client); done = false; }
+        if (done) clearInterval(barsInt);
+      }, 20);
+    };
+
+    let dp = 0;
+    const LABELS = ['ONLINE', 'DISPONIBLE', 'OK'];
+    const dotInt = setInterval(() => {
+      if (dotRef.current)
+        dotRef.current.textContent = '│   ' + LABELS.map((l, i) => dp === i ? `● ${l}` : `○ ${l}`).join('  ');
+      dp = (dp + 1) % 3;
+    }, 500);
+
+    /* IntersectionObserver para entrada y para disparar barras */
+    const obs = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
+        wrapperRef.current?.classList.add('is-visible');
+        startBars();
+      }
+    }, { threshold: 0.1 });
+
+    if (terminalRef.current) obs.observe(terminalRef.current);
+
+    return () => {
+      clearInterval(barsInt);
+      clearInterval(dotInt);
+      obs.disconnect();
+    };
+  }, []);
 
   return (
     <>
-      <header className="header">
-        <div className="header__container">
-          <div 
-            ref={terminalRef}
-            className="terminal"
-            style={getScrollTransform()}
-          >
-            {/* Header de la terminal */}
-            <div className="terminal__header">
-              <div className="terminal__buttons">
-                <div className="terminal__button terminal__button--red"></div>
-                <div className="terminal__button terminal__button--yellow"></div>
-                <div className="terminal__button terminal__button--green"></div>
-              </div>
-              <div className="terminal__title">python_digital.py</div>
-            </div>
+      <header className="py-header">
+        <div className="py-container">
 
-            {/* Contenido Terminal */}
-            <div className="terminal__body">
-              <div className="terminal__content">
-                {/* SERPIENTE */}
-                <div className="snake-container">
-                  <div className="snake">
-                    {displayedLines.map((line, index) => (
-                      <div 
-                        key={index}
-                        className={`snake-line ${line.style || ''}`}
-                        style={line.isSnake && typeof line.snakeIndex === 'number' ? {
-                          transform: `translateX(${getOffset(line.snakeIndex)}px)`,
-                          transition: 'transform 0.05s linear',
-                        } : {}}
-                      >
-                        {line.isTongue ? getTongueVariation() : line.text}
-                        {line.snakeIndex === 0 && (
-                          <span className="snake-eye">●</span>
-                        )}
-                        {index === displayedLines.length - 1 && line.text && (
-                          <span className="snake-cursor"></span>
-                        )}
-                      </div>
-                    ))}
-                  </div>
+          {/* El wrapper tiene la clase is-visible añadida por IntersectionObserver */}
+          <div ref={wrapperRef} className="py-anim-wrapper">
+            <div ref={terminalRef} className="py-terminal">
+
+              {/* Barra de título */}
+              <div className="py-bar">
+                <div className="py-dots">
+                  <span className="py-dot py-dot--red" />
+                  <span className="py-dot py-dot--yellow" />
+                  <span className="py-dot py-dot--green" />
                 </div>
+                <span className="py-title">python_digital.py</span>
+              </div>
 
-                {/* STATS */}
-                <div className="stats">
-                  <pre className="stat-box">
+              {/* Cuerpo */}
+              <div className="py-body">
+                <div className="py-content">
+
+                  {/* Serpiente */}
+                  <div className="py-snake-wrap">
+                    <div className="py-snake">
+                      {lines.map((line, idx) => (
+                        <div
+                          key={idx}
+                          className={`py-snake-line ${line.style || ''}`}
+                          ref={el => {
+                            if (el && line.isSnake && line.snakeIndex !== undefined)
+                              snakeRefs.current[line.snakeIndex] = el;
+                          }}
+                          style={{ transition: 'transform 0.05s linear' }}
+                        >
+                          {line.isTongue
+                            ? <span ref={tongueRef}>{line.text}</span>
+                            : line.text
+                          }
+                          {line.snakeIndex === 0 && <span className="py-eye">●</span>}
+                          {idx === lines.length - 1 && line.text && <span className="py-cursor" />}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Stats — solo el span interno cambia, el pre es estático */}
+                  <div className="py-stats">
+                    <pre className="py-stat">
 {`┌──────────────────────────────────┐
 │     PROYECTOS COMPLETADOS        │
-│   ${renderBar(projectProgress)}
+`}<span ref={projBarRef}>{renderBar(0)}</span>{`
 └──────────────────────────────────┘`}
-                  </pre>
+                    </pre>
 
-                  <pre className="stat-box">
+                    <pre className="py-stat">
 {`┌──────────────────────────────────┐
 │     CLIENTES SATISFECHOS         │
-│   ${renderBar(clientProgress)}
+`}<span ref={clientBarRef}>{renderBar(0)}</span>{`
 └──────────────────────────────────┘`}
-                  </pre>
+                    </pre>
 
-                  <pre className="stat-box">
+                    <pre className="py-stat">
 {`┌──────────────────────────────────┐
 │         SOPORTE 24/7             │
-│   ${['ONLINE','DISPONIBLE','OK'].map((label,i) => dotPhase===i ? `● ${label}` : `○ ${label}`).join('  ')}
+`}<span ref={dotRef}>{`│   ○ ONLINE  ○ DISPONIBLE  ○ OK`}</span>{`
 └──────────────────────────────────┘`}
-                  </pre>
+                    </pre>
+                  </div>
+
                 </div>
               </div>
-            </div>
 
-            {/* FOOTER DE LA TERMINAL */}
-            <div className="terminal__footer">
-              <div className="contact-button-container">
-               <button className="contact-button" onClick={() => window.location.href = '/contacto'}>
-                  <span className="contact-button__icon">►</span>
-                  <span className="contact-button__text">INICIAR CONTACTO</span>
+              {/* Footer */}
+              <div className="py-footer">
+                <button className="py-btn" onClick={() => window.location.href = '/contacto'}>
+                  <span className="py-btn__icon">►</span>
+                  <span>INICIAR CONTACTO</span>
                 </button>
               </div>
+
             </div>
           </div>
         </div>
       </header>
 
-      <style jsx>{`
-        .header {
+      <style>{`
+        /* ── Wrapper de animación de entrada ── */
+        .py-anim-wrapper {
+          opacity: 0;
+          transform: translateY(60px) rotateX(14deg) scale(0.92);
+          transition: opacity .8s cubic-bezier(0.22,1,0.36,1),
+                      transform .8s cubic-bezier(0.22,1,0.36,1);
+          perspective: 1200px;
+        }
+        .py-anim-wrapper.is-visible {
+          opacity: 1;
+          transform: translateY(0) rotateX(0deg) scale(1);
+        }
+
+        .py-header {
           min-height: 100vh;
           display: flex;
           align-items: center;
           justify-content: center;
           background: transparent;
-          position: relative;
-          overflow: hidden;
           padding: 2rem 1rem;
         }
-
-        .header__container {
+        .py-container {
           width: 100%;
           max-width: 1200px;
           margin: 0 auto;
-          position: relative;
-          z-index: 10;
           padding: 0 1rem;
         }
 
-        /* TERMINAL CON ANIMACIÓN ENLAZADA AL SCROLL */
-        .terminal {
-          background: linear-gradient(to bottom right, rgba(15, 23, 42, 0.9), rgba(0, 0, 0, 0.95));
-          backdrop-filter: blur(12px);
+        /* ── Terminal ── */
+        .py-terminal {
+          background: linear-gradient(135deg, rgba(15,23,42,0.92), rgba(0,0,0,0.96));
           border-radius: 1rem;
-          border: 2px solid rgba(212, 175, 55, 0.4);
-          box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+          border: 2px solid rgba(212,175,55,0.38);
+          box-shadow: 0 10px 40px rgba(0,0,0,0.4);
           overflow: hidden;
-          position: relative;
-          perspective: 1500px;
-          
-          /* Transición más suave y lenta */
-          transition: transform 0.15s ease-out, opacity 0.15s ease-out;
-          will-change: transform, opacity;
+          will-change: auto;
         }
 
-        .terminal__header {
+        /* Barra título */
+        .py-bar {
           background: #222220;
-          padding: 0.75rem 1rem;
+          padding: .7rem 1rem;
           display: flex;
           align-items: center;
           gap: 1rem;
-          border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+          border-bottom: 1px solid rgba(212,175,55,0.28);
         }
+        .py-dots { display: flex; gap: .45rem; }
+        .py-dot  { width: .72rem; height: .72rem; border-radius: 50%; }
+        .py-dot--red    { background: #ef4444; }
+        .py-dot--yellow { background: #eab308; }
+        .py-dot--green  { background: #22c55e; }
+        .py-title { color: #d4af37; font-size: .78rem; font-family: monospace; }
 
-        .terminal__buttons { display: flex; gap: 0.5rem; }
-        .terminal__button { width: 0.75rem; height: 0.75rem; border-radius: 50%; }
-        .terminal__button--red { background: #ef4444; }
-        .terminal__button--yellow { background: #eab308; }
-        .terminal__button--green { background: #22c55e; }
-        .terminal__title { color: #d4af37; font-size: 0.8rem; font-family: monospace; }
-
-        .terminal__body {
+        /* Cuerpo */
+        .py-body {
           padding: 1.5rem;
-          font-family: 'Courier New', 'Consolas', 'Menlo', monospace;
-          font-size: 0.95rem;
-          min-height: 350px;
+          font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+          font-size: .9rem;
+          min-height: 320px;
           background: #030C1D;
-          position: relative;
         }
-        .snake {
-          font-size: 0.95rem;
-          font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-          font-variant-ligatures: none;
-          letter-spacing: 0;
-          white-space: pre;
-        }
-
-        /* FOOTER DE LA TERMINAL - CARBON COMO EL HEADER */
-        .terminal__footer {
-          background: #222220;
-          padding: 1.5rem;
-          border-top: 1px solid rgba(212, 175, 55, 0.3);
-        }
-
-        .terminal__content {
+        .py-content {
           width: 100%;
           display: flex;
           flex-direction: column;
           gap: 1.5rem;
         }
 
-        .snake-container {
+        /* Serpiente */
+        .py-snake-wrap {
           width: 100%;
+          overflow: hidden;
           display: flex;
           justify-content: center;
-          overflow: hidden;
-          transform-origin: top center;
         }
-        .snake-line { line-height: 1; white-space: pre; position: relative; }
-        .snake-head { color: #d4af37; font-size: inherit; }
-        .snake-tongue { color: #f4d03f; font-size: inherit; }
-        .snake-body { color: #d4af37; }
-        .snake-tail { color: #b8921f; }
+        .py-snake {
+          font-size: .9rem;
+          font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+          font-variant-ligatures: none;
+          letter-spacing: 0;
+          white-space: pre;
+        }
+        .py-snake-line { line-height: 1; white-space: pre; position: relative; }
+        .snake-head   { color: #d4af37; }
+        .snake-tongue { color: #f4d03f; }
+        .snake-body   { color: #d4af37; }
+        .snake-tail   { color: #b8921f; }
 
-        .snake-eye {
+        .py-eye {
           position: absolute;
           color: #d4af37;
-          text-shadow: 0 0 12px #d4af37;
+          text-shadow: 0 0 10px #d4af37;
           left: 60%;
           top: 50%;
-          animation: pulse 2s infinite;
+          animation: py-pulse 2s infinite;
         }
-
-        .snake-cursor {
+        .py-cursor {
           display: inline-block;
-          width: 0.5rem;
-          height: 1rem;
+          width: .45rem;
+          height: .9rem;
           background: #d4af37;
-          margin-left: 0.25rem;
-          animation: blink 1.2s infinite;
+          margin-left: .25rem;
+          vertical-align: text-bottom;
+          animation: py-blink 1.2s step-end infinite;
         }
 
-        .stats {
+        /* Stats */
+        .py-stats {
           display: flex;
           flex-direction: column;
-          gap: 0.75rem;
-          color: rgba(212, 175, 55, 0.7);
-          font-size: 0.8rem;
-          width: 100%;
+          gap: .7rem;
+          color: rgba(212,175,55,.72);
+          font-size: .78rem;
           align-items: center;
         }
+        .py-stat {
+          line-height: 1.4;
+          margin: 0;
+          width: 100%;
+        }
 
-        .stat-box { line-height: 1.4; margin: 0; width: 100%; }
-
-        /* BOTÓN DE CONTACTO */
-        .contact-button-container {
+        /* Footer */
+        .py-footer {
+          background: #222220;
+          padding: 1.25rem 1.5rem;
+          border-top: 1px solid rgba(212,175,55,0.28);
           display: flex;
           justify-content: center;
         }
-
-        .contact-button {
-          background: linear-gradient(135deg, #d4af37 0%, #b8921f 100%);
+        .py-btn {
+          background: linear-gradient(135deg, #d4af37, #b8921f);
           border: 2px solid #d4af37;
           color: #000;
-          padding: 0.875rem 2rem;
+          padding: .85rem 2rem;
           font-family: monospace;
-          font-size: 0.9rem;
-          font-weight: bold;
-          border-radius: 0.5rem;
+          font-size: .88rem;
+          font-weight: 700;
+          border-radius: .5rem;
           cursor: pointer;
           display: flex;
           align-items: center;
-          gap: 0.75rem;
-          transition: all 0.3s ease;
-          box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+          gap: .75rem;
+          transition: transform .2s ease, box-shadow .2s ease;
+          box-shadow: 0 4px 14px rgba(212,175,55,.28);
           position: relative;
           overflow: hidden;
         }
-
-        .contact-button::before {
+        .py-btn::before {
           content: '';
           position: absolute;
-          top: 0;
-          left: -100%;
-          width: 100%;
-          height: 100%;
-          background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-          transition: left 0.5s ease;
+          inset: 0;
+          background: linear-gradient(90deg, transparent, rgba(255,255,255,.28), transparent);
+          transform: translateX(-100%);
+          transition: transform .5s ease;
         }
+        .py-btn:hover::before { transform: translateX(100%); }
+        .py-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 22px rgba(212,175,55,.45); }
+        .py-btn__icon { animation: py-pulse 2s infinite; }
 
-        .contact-button:hover::before {
-          left: 100%;
-        }
+        /* Keyframes */
+        @keyframes py-blink  { 0%,49%{opacity:1} 50%,100%{opacity:0} }
+        @keyframes py-pulse  { 0%,100%{transform:scale(1);opacity:1} 50%{transform:scale(1.18);opacity:.75} }
 
-        .contact-button:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 6px 20px rgba(212, 175, 55, 0.5);
-          border-color: #f4d03f;
-        }
-
-        .contact-button:active {
-          transform: translateY(0);
-          box-shadow: 0 2px 10px rgba(212, 175, 55, 0.4);
-        }
-
-        .contact-button__icon {
-          font-size: 1.1rem;
-          animation: pulse-icon 2s infinite;
-        }
-
-        .contact-button__text {
-          position: relative;
-          z-index: 1;
-        }
-
-        @keyframes blink { 0%, 50% { opacity: 1; } 51%, 100% { opacity: 0; } }
-        @keyframes pulse { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.2); opacity: 0.8; } }
-        @keyframes pulse-icon { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
-
+        /* Desktop 2 col */
         @media (min-width: 1280px) {
-          .terminal__content { display: grid; grid-template-columns: auto 1fr; align-items: center; gap: 2rem; }
+          .py-content { display: grid; grid-template-columns: auto 1fr; align-items: center; gap: 2rem; }
         }
 
-        /* MÓVIL - TODO EL TERMINAL SE REDUCE */
+        /* Mobile */
         @media (max-width: 768px) {
-          .header {
-            padding: 1rem 0.5rem;
-          }
-
-          .header__container {
-            padding: 0 0.5rem;
-            max-width: 100%;
-          }
-
-          /* TODO EL TERMINAL SE ESCALA */
-          .snake {
-            font-size:0.75rem;
-          }
-          
-
-          .terminal__body {
-            padding: 1rem;
-            min-height: 280px;
-            font-size: 0.75rem;
-          }
-
-          .terminal__footer {
-            padding: 1rem;
-          }
-
-          .terminal__header {
-            padding: 0.5rem 0.75rem;
-          }
-
-          .terminal__title {
-            font-size: 0.7rem;
-          }
-
-          .terminal__buttons {
-            gap: 0.4rem;
-          }
-
-          .terminal__button {
-            width: 0.6rem;
-            height: 0.6rem;
-          }
-
-         
-          .stat-box {
-            font-size: 0.7rem;
-          }
-
-          .stats {
-            gap: 0.5rem;
-          }
-
-          .terminal__content {
-            gap: 1rem;
-          }
-
-          .contact-button {
-            padding: 0.75rem 1.5rem;
-            font-size: 0.8rem;
-          }
+          .py-header { padding: 1rem .5rem; }
+          .py-container { padding: 0 .5rem; }
+          .py-body { padding: 1rem; min-height: 260px; font-size: .75rem; }
+          .py-snake { font-size: .7rem; }
+          .py-footer { padding: 1rem; }
+          .py-stat { font-size: .68rem; }
+        }
+        @media (max-width: 480px) {
+          .py-body { padding: .75rem; min-height: 220px; font-size: .7rem; }
+          .py-stat { font-size: .62rem; }
         }
 
-        /* MÓVILES PEQUEÑOS */
-        @media (max-width: 480px) {
-          .snake {
-            
-          }
-          
-
-          .terminal__body {
-            padding: 0.75rem;
-            min-height: 250px;
-            font-size: 0.7rem;
-          }
-
-          .terminal__footer {
-            padding: 0.75rem;
-          }
-
-          .stat-box {
-            font-size: 0.65rem;
-          }
-
-          .contact-button {
-            padding: 0.65rem 1.25rem;
-            font-size: 0.75rem;
-          }
+        /* Reduced motion */
+        @media (prefers-reduced-motion: reduce) {
+          .py-anim-wrapper { transition: none !important; opacity: 1 !important; transform: none !important; }
+          .py-eye, .py-cursor, .py-btn__icon { animation: none !important; opacity: 1; }
+          .py-snake-line { transition: none !important; }
         }
       `}</style>
     </>

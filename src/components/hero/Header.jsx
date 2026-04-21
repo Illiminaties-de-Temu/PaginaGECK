@@ -55,17 +55,20 @@ export default function Header() {
     <>
       <div ref={containerRef} className="hdr">
 
+        <p className="hdr__eyebrow">Agencia de Desarrollo Tecnológico · Parral, Chihuahua</p>
+
+        <h1 className="hdr__title">
+          Sitios web, apps y software
+          <span className="hdr__title-accent"> que generan resultados</span>
+        </h1>
+
         <p className="hdr__phrase">
-          Democratizando el uso de tecnologías
-          <br />
-          que transforman vidas y negocios,
-          <br />
-          de México para el mundo
+          Construimos productos digitales a medida para empresas y emprendedores en México — con el mismo nivel que Silicon Valley.
         </p>
 
         <div className="hdr__ctas">
           <a href="/portafolio" className="hdr__cta hdr__cta--solid">Ver nuestro trabajo</a>
-          <a href="/contacto"   className="hdr__cta hdr__cta--ghost">Hablemos</a>
+          <a href="/contacto"   className="hdr__cta hdr__cta--ghost">Cotiza tu proyecto</a>
         </div>
 
       </div>
@@ -93,14 +96,43 @@ export default function Header() {
           will-change: opacity, transform;
         }
 
-        /* ── Frase ── */
-        .hdr__phrase {
-          font-size: clamp(1.4rem, 2.8vw, 2.2rem);
-          font-weight: 300;
-          line-height: 1.65;
-          letter-spacing: 0.01em;
+        /* ── Eyebrow ── */
+        .hdr__eyebrow {
+          font-size: 0.7rem;
+          font-weight: 600;
+          letter-spacing: 0.28em;
+          text-transform: uppercase;
+          color: #D4AF37;
+          opacity: 0.85;
+          margin-bottom: 1.25rem;
+        }
+
+        /* ── Título h1 ── */
+        .hdr__title {
+          font-size: clamp(2rem, 5vw, 3.6rem);
+          font-weight: 800;
+          line-height: 1.1;
+          letter-spacing: -0.02em;
           color: #F4E4BC;
+          margin-bottom: 1.1rem;
+        }
+        .hdr__title-accent {
+          display: block;
+          color: #D4AF37;
+          font-weight: 300;
+        }
+
+        /* ── Subtítulo ── */
+        .hdr__phrase {
+          font-size: clamp(0.9rem, 1.6vw, 1.1rem);
+          font-weight: 300;
+          line-height: 1.7;
+          letter-spacing: 0.01em;
+          color: rgba(244,228,188,0.6);
           margin-bottom: 2.5rem;
+          max-width: 520px;
+          margin-left: auto;
+          margin-right: auto;
         }
 
         /* ── CTAs ── */
@@ -176,14 +208,10 @@ export default function Header() {
 
         /* ── Mobile ── */
         @media (max-width: 767px) {
-          .hdr__phrase {
-            font-size: clamp(1.2rem, 5vw, 1.5rem);
-          }
-
-          .hdr__cta {
-            padding: 0.7rem 1.5rem;
-            font-size: 0.8rem;
-          }
+          .hdr__title { font-size: clamp(1.7rem, 7vw, 2.4rem); }
+          .hdr__phrase { font-size: 0.88rem; }
+          .hdr__eyebrow { font-size: 0.62rem; letter-spacing: 0.18em; }
+          .hdr__cta { padding: 0.7rem 1.5rem; font-size: 0.8rem; }
         }
 
         /* ── Reduced motion ── */

@@ -4,6 +4,8 @@ import { Send, User, Mail, MessageSquare, Instagram } from 'lucide-react';
 export default function Contact() {
   const [formData, setFormData] = useState({ name: '', email: '', message: '' });
   const [submitted, setSubmitted] = useState(false);
+  const [loading,   setLoading]   = useState(false);
+  const [error,     setError]     = useState(false);
   const [visible, setVisible] = useState({ header: false, card: false });
 
   const headerRef = useRef(null);
@@ -43,8 +45,33 @@ export default function Contact() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setSubmitted(true);
-    setTimeout(() => { setFormData({ name: '', email: '', message: '' }); setSubmitted(false); }, 4000);
+    setLoading(true);
+    setError(false);
+    try {
+      const res = await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({
+          access_key: 'TU_ACCESS_KEY_AQUI',
+          subject: 'Nuevo contacto desde geckcodex.com',
+          from_name: 'Geck Codex Web',
+          name: formData.name,
+          email: formData.email,
+          message: formData.message,
+        }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setSubmitted(true);
+        setTimeout(() => { setFormData({ name: '', email: '', message: '' }); setSubmitted(false); }, 4000);
+      } else {
+        setError(true);
+      }
+    } catch {
+      setError(true);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -94,12 +121,11 @@ export default function Contact() {
           align-items: center;
           gap: 1.25rem;
           opacity: 0;
-          filter: blur(14px);
-          transform: translateY(50px) scale(0.97);
-          transition: all 0.9s cubic-bezier(0.23,1,0.32,1);
+          transform: translateY(40px);
+          transition: opacity 0.8s cubic-bezier(0.23,1,0.32,1), transform 0.8s cubic-bezier(0.23,1,0.32,1);
         }
         .ct-header.ct-in {
-          opacity: 1; filter: blur(0); transform: translateY(0) scale(1);
+          opacity: 1; transform: translateY(0);
         }
 
         .ct-badge {
@@ -131,10 +157,7 @@ export default function Contact() {
           color: #F4E4BC;
         }
         .ct-h1 span {
-          background: linear-gradient(135deg, #F4E4BC, #D4AF37, #B8941F);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          background-clip: text;
+          color: #D4AF37;
         }
 
         .ct-desc {
@@ -159,12 +182,11 @@ export default function Contact() {
             0 48px 100px rgba(0,0,0,0.55);
 
           opacity: 0;
-          filter: blur(14px);
-          transform: translateY(60px) scale(0.97);
-          transition: all 0.9s cubic-bezier(0.23,1,0.32,1) 0.15s;
+          transform: translateY(50px);
+          transition: opacity 0.8s cubic-bezier(0.23,1,0.32,1) 0.15s, transform 0.8s cubic-bezier(0.23,1,0.32,1) 0.15s;
         }
         .ct-card.ct-in {
-          opacity: 1; filter: blur(0); transform: translateY(0) scale(1);
+          opacity: 1; transform: translateY(0);
         }
 
         /* divisor vertical dorado */
@@ -205,10 +227,7 @@ export default function Contact() {
           line-height: 1.05;
           letter-spacing: -0.025em;
           margin: 0 0 10px;
-          background: linear-gradient(135deg, #F4E4BC, #D4AF37, #B8941F);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          background-clip: text;
+          color: #D4AF37;
         }
 
         .ct-left-sub {
@@ -239,12 +258,11 @@ export default function Contact() {
           position: relative;
           overflow: hidden;
         }
-        /* ── AZUL #1: línea lateral hover = acción disponible ── */
         .ct-method::after {
           content: '';
           position: absolute;
           left: 0; top: 0; bottom: 0; width: 3px;
-          background: #1a4fd6;
+          background: #D4AF37;
           transform: scaleY(0);
           transition: transform 0.25s cubic-bezier(0.23,1,0.32,1);
           transform-origin: center;
@@ -279,8 +297,7 @@ export default function Contact() {
           color: rgba(212,175,55,0.18);
           transition: all 0.25s ease; flex-shrink: 0;
         }
-        /* ── AZUL #1 también en la flecha ── */
-        .ct-method:hover .ct-marrow { color: #1a4fd6; transform: translateX(4px); }
+        .ct-method:hover .ct-marrow { color: #D4AF37; transform: translateX(4px); }
 
         .ct-avail {
           margin-top: 36px;
@@ -360,11 +377,10 @@ export default function Contact() {
           padding: 13px 14px 13px 42px;
           transition: border-color 0.22s, box-shadow 0.22s, background 0.22s;
         }
-        /* ── AZUL #2: foco de inputs = momento de interacción ── */
         .ct-input:focus, .ct-ta:focus {
-          border-color: #1a4fd6;
-          background: #24242a;
-          box-shadow: 0 0 0 3px rgba(26,79,214,0.14);
+          border-color: #D4AF37;
+          background: #252523;
+          box-shadow: 0 0 0 3px rgba(212,175,55,0.12);
         }
         .ct-input::placeholder, .ct-ta::placeholder {
           color: rgba(212,175,55,0.17);
@@ -384,33 +400,39 @@ export default function Contact() {
           gap: 14px; margin-top: 8px;
         }
 
-        /* ── AZUL #3: botón CTA = la acción más importante ── */
         .ct-btn {
           flex: 1; padding: 15px 24px;
-          background: #1a4fd6;
+          background: #D4AF37;
           border: none; border-radius: 11px;
-          color: #fff;
+          color: #0B1D33;
           font-family: inherit; font-size: 0.82rem;
-          font-weight: 700; letter-spacing: 0.1em;
+          font-weight: 800; letter-spacing: 0.1em;
           text-transform: uppercase; cursor: pointer;
           display: flex; align-items: center;
           justify-content: center; gap: 10px;
           transition: all 0.28s cubic-bezier(0.23,1,0.32,1);
-          box-shadow: 0 4px 24px rgba(26,79,214,0.45);
+          box-shadow: 0 4px 24px rgba(212,175,55,0.35);
           position: relative; overflow: hidden;
         }
-        .ct-btn::before {
-          content: ''; position: absolute; inset: 0;
-          background: linear-gradient(135deg, rgba(255,255,255,0.12), transparent);
-          opacity: 0; transition: opacity 0.25s;
-        }
-        .ct-btn:hover { transform: translateY(-3px); box-shadow: 0 10px 36px rgba(26,79,214,0.55); }
-        .ct-btn:hover::before { opacity: 1; }
+        .ct-btn:hover { transform: translateY(-3px); box-shadow: 0 10px 36px rgba(212,175,55,0.5); background: #e8c84a; }
         .ct-btn:active { transform: translateY(0); }
 
         .ct-hint {
           font-size: 0.66rem; color: rgba(212,175,55,0.2);
           text-align: right; line-height: 1.6; flex-shrink: 0;
+        }
+        .ct-btn:disabled { opacity: 0.7; cursor: not-allowed; transform: none !important; }
+        .ct-spinner {
+          width: 14px; height: 14px; border-radius: 50%;
+          border: 2px solid rgba(11,29,51,0.3);
+          border-top-color: #0B1D33;
+          animation: ct-spin 0.7s linear infinite;
+          flex-shrink: 0;
+        }
+        @keyframes ct-spin { to { transform: rotate(360deg); } }
+        .ct-error {
+          font-size: 0.72rem; color: #f87171;
+          margin-top: 8px; text-align: center;
         }
 
         /* ── SUCCESS ── */
@@ -458,10 +480,7 @@ export default function Contact() {
 
         .ct-stitle {
           font-size: 2.2rem; font-weight: 900;
-          background: linear-gradient(135deg, #F4E4BC, #D4AF37, #B8941F);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          background-clip: text;
+          color: #D4AF37;
           margin: 0 0 8px;
           animation: ctUp 0.4s 0.6s both;
         }
@@ -513,7 +532,7 @@ export default function Contact() {
           /* Ocultar flecha en móvil — no hay hover */
           .ct-marrow { display: none; }
 
-          /* La línea azul pasa a ser superior */
+          /* La línea dorada pasa a ser superior */
           .ct-method::after {
             left: 0; right: 0; top: 0; bottom: auto;
             width: 100%; height: 3px;
@@ -694,12 +713,17 @@ export default function Contact() {
                 </div>
 
                 <div className="ct-row">
-                  <button type="submit" className="ct-btn">
-                    <Send width={14} height={14} />
-                    Enviar mensaje
+                  <button type="submit" className="ct-btn" disabled={loading}>
+                    {loading
+                      ? <><span className="ct-spinner" />Enviando...</>
+                      : <><Send width={14} height={14} />Enviar mensaje</>
+                    }
                   </button>
                   <p className="ct-hint">Sin spam.<br />Nunca.</p>
                 </div>
+                {error && (
+                  <p className="ct-error">No se pudo enviar. Escríbenos por WhatsApp.</p>
+                )}
               </form>
 
               {submitted && (

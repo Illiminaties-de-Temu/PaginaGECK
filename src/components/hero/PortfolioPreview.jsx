@@ -7,7 +7,7 @@ const PROJECTS = [
     title: 'App de Gestión de Flotas',
     description: 'Plataforma móvil para monitoreo y gestión de unidades en tiempo real.',
     tag: 'App Móvil',
-    logo: '/assets/image/CapitalTransport.png',
+    logo: '/assets/image/CapitalTransport.webp',
     accent: '#1a3a5c',
   },
   {
@@ -16,7 +16,7 @@ const PROJECTS = [
     title: 'Plataforma Web para Gimnasio',
     description: 'Sistema de control de membresías, acceso y pagos para socios.',
     tag: 'Web App',
-    logo: '/assets/image/gym.png',
+    logo: '/assets/image/gym.webp',
     accent: '#2a1a0e',
   },
   {
@@ -25,7 +25,7 @@ const PROJECTS = [
     title: 'Sistema de Gafetes Digitales',
     description: 'Plataforma para generación y gestión de credenciales municipales.',
     tag: 'Software',
-    logo: '/assets/image/parral.png',
+    logo: '/assets/image/parral.webp',
     accent: '#1a2a1a',
   },
 ];

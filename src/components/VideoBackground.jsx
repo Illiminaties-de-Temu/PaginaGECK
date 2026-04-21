@@ -58,7 +58,7 @@ export default function VideoBackground({ children }) {
             muted
             playsInline
             preload="metadata"
-            poster="/assets/image/geck-poster.jpg"
+            poster="/assets/image/geck-poster.webp"
             className="hero-video"
             key={isMobile ? 'mobile' : 'desktop'}
           >
