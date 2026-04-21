@@ -5,22 +5,15 @@ import { useState, useEffect, useRef } from 'react';
  * Los que no tienen imagen usan su gradiente como fondo.
  */
 const PROJECTS = [
-  { id:1,  title:'Chuchulucos',      tagline:'Botanas Artesanales',           cat:'landing',  image:'/assets/image/portafolio/chuchu.webp',           gradient:'linear-gradient(145deg,#3b0764,#6d28d9,#db2777)', link:'https://chuchulucos.geckcodex.com/' },
-  { id:2,  title:'Agend-In',         tagline:'Citas vía WhatsApp',            cat:'landing',  image:'/assets/image/portafolio/agendin.webp',           gradient:'linear-gradient(145deg,#1e1b4b,#4f46e5,#0ea5e9)', link:'https://agend-in.geckcodex.com/' },
-  { id:3,  title:'LandingKit',       tagline:'Plantilla Pro',                 cat:'landing',  image:'/assets/image/portafolio/landig.webp',            gradient:'linear-gradient(145deg,#2e1065,#7c3aed,#c026d3)', link:'https://landig-plantilla.geckcodex.com/' },
-  { id:4,  title:'Chava Calderón',   tagline:'Figura de Autoridad',           cat:'landing',  image:'/assets/image/portafolio/chava.webp',             gradient:'linear-gradient(145deg,#1a0636,#6d28d9,#9d174d)', link:'https://chavacalderon.mx/' },
-  { id:5,  title:'BizBot',           tagline:'Tu Negocio en WhatsApp',        cat:'landing',  image:'/assets/image/portafolio/lofo.webp',              gradient:'linear-gradient(145deg,#0f172a,#1e3a8a,#312e81)' },
-  { id:6,  title:'Mi Caja POS',      tagline:'POS Bueno, Bonito y Barato',    cat:'landing',  image:'/assets/image/portafolio/micaja.webp',            gradient:'linear-gradient(145deg,#1c1917,#92400e,#d97706)', link:'https://mi-caja.geckcodex.com/' },
-  { id:7,  title:'FleetTrack',       tagline:'Gestión de Flotilla',           cat:'mobile',   image:'/assets/image/portafolio/capital transpor.webp',  gradient:'linear-gradient(145deg,#0c1a3d,#1d4ed8,#0ea5e9)' },
-  { id:8,  title:'SpendWise',        tagline:'Control de Gastos',             cat:'mobile',   image:'/assets/image/portafolio/mando.webp',             gradient:'linear-gradient(145deg,#0e2a5c,#2563eb,#06b6d4)' },
-  { id:9,  title:'GymHub',           tagline:'Gestión de Gimnasio',           cat:'webapp',   image:'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=480&q=80&auto=format&fit=crop', gradient:'linear-gradient(145deg,#0a2e1a,#15803d,#0d9488)' },
-  { id:10, title:'StoreTools',       tagline:'Tiendas de Conveniencia',       cat:'webapp',   image:'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=480&q=80&auto=format&fit=crop', gradient:'linear-gradient(145deg,#0d3321,#16a34a,#0f766e)' },
-  { id:11, title:'BadgePrint',       tagline:'Gafetes Gubernamentales',       cat:'webapp',   image:'https://images.unsplash.com/photo-1568992688065-536aad8a12f6?w=480&q=80&auto=format&fit=crop', gradient:'linear-gradient(145deg,#1c1917,#064e3b,#0f766e)' },
-  { id:12, title:'SafePosture',      tagline:'Ergonomía Industrial',          cat:'software', image:'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=480&q=80&auto=format&fit=crop', gradient:'linear-gradient(145deg,#1e0a3c,#6d28d9,#4338ca)' },
-  { id:13, title:'RanchoControl',    tagline:'Gestión de Rancho',             cat:'software', image:'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=480&q=80&auto=format&fit=crop', gradient:'linear-gradient(145deg,#0f172a,#5b21b6,#4f46e5)' },
-  { id:14, title:'DrowsyGuard',      tagline:'Anti-Somnolencia',              cat:'software', image:'https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=480&q=80&auto=format&fit=crop', gradient:'linear-gradient(145deg,#1a0533,#7c3aed,#6d28d9)' },
-  { id:15, title:'EduAI',            tagline:'ML para Escuelas',              cat:'software', image:'https://images.unsplash.com/photo-1546410531-bb4caa6b424d?w=480&q=80&auto=format&fit=crop', gradient:'linear-gradient(145deg,#09090b,#5b21b6,#4338ca)' },
-  { id:16, title:'GeckCRM',          tagline:'CRM para Negocios',             cat:'software', image:'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=480&q=80&auto=format&fit=crop', gradient:'linear-gradient(145deg,#170d2e,#7c3aed,#2563eb)' },
+  { id:1, title:'Chuchulucos',    tagline:'Botanas Artesanales',        cat:'landing',  image:'/assets/image/portafolio/chuchu.webp',          gradient:'linear-gradient(145deg,#3b0764,#6d28d9,#db2777)', link:'https://chuchulucos.geckcodex.com/' },
+  { id:2, title:'Agend-In',       tagline:'Citas Automáticas WhatsApp', cat:'landing',  image:'/assets/image/portafolio/agendin.webp',         gradient:'linear-gradient(145deg,#1e1b4b,#4f46e5,#0ea5e9)', link:'https://agend-in.geckcodex.com/' },
+  { id:3, title:'LandingKit',     tagline:'Plantilla Pro para Landings',cat:'landing',  image:'/assets/image/portafolio/landig.webp',          gradient:'linear-gradient(145deg,#2e1065,#7c3aed,#c026d3)', link:'https://landig-plantilla.geckcodex.com/' },
+  { id:4, title:'Chava Calderón', tagline:'Figura de Autoridad',        cat:'landing',  image:'/assets/image/portafolio/chava.webp',           gradient:'linear-gradient(145deg,#1a0636,#6d28d9,#9d174d)', link:'https://chavacalderon.mx/' },
+  { id:5, title:'Mando',          tagline:'Tu Negocio en WhatsApp',     cat:'landing',  image:'/assets/image/portafolio/mando.webp',           gradient:'linear-gradient(145deg,#0f172a,#1e3a8a,#312e81)' },
+  { id:6, title:'Mi Caja POS',    tagline:'POS para Negocios Locales',  cat:'landing',  image:'/assets/image/portafolio/micaja.webp',          gradient:'linear-gradient(145deg,#1c1917,#92400e,#d97706)', link:'https://mi-caja.geckcodex.com/' },
+  { id:7, title:'FleetTrack',     tagline:'Gestión de Flotilla',        cat:'mobile',   image:'/assets/image/portafolio/capital transpor.webp',gradient:'linear-gradient(145deg,#0c1a3d,#1d4ed8,#0ea5e9)' },
+  { id:8, title:'Coronado Gym',   tagline:'Gym & Membresías',           cat:'webapp',   image:'/assets/image/portafolio/coronado-gym.webp',    gradient:'linear-gradient(145deg,#0a2e1a,#15803d,#0d9488)' },
+  { id:9, title:'GeckCRM',        tagline:'CRM para Negocios',          cat:'software', image:'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=480&q=80&auto=format&fit=crop', gradient:'linear-gradient(145deg,#170d2e,#7c3aed,#2563eb)' },
 ];
 
 const CAT_ACCENT = {
