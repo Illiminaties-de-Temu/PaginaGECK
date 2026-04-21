@@ -6,7 +6,7 @@ export default function MobileSection() {
     <ServiceSection
       videoDesktop="/assets/video/cel.mp4"
       videoMobile="/assets/video/cel.mp4"
-      poster="/assets/image/cel-poster.jpg"
+      poster="/assets/image/cel-poster.webp"
       title="Desarrollo Móvil"
       description="Apps móviles nativas y multiplataforma que tus usuarios amarán y usarán todos los días"
       link="/servicios#mobile"

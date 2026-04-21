@@ -186,7 +186,7 @@ export default function GeckNavbar() {
   const [mobileMenuClosing, setMobileMenuClosing] = useState(false);
   const [langMenuOpen, setLangMenuOpen] = useState(false);
   const [navVisible, setNavVisible] = useState(true);
-  const [lastScrollY, setLastScrollY] = useState(0);
+  const lastScrollYRef = useRef(0);
   const langMenuRef = useRef(null);
   const navRef = useRef(null);
 
@@ -196,13 +196,13 @@ export default function GeckNavbar() {
     const handleScroll = () => {
       const current = window.scrollY;
       if (current < 10) setNavVisible(true);
-      else if (current > lastScrollY && current > 100) setNavVisible(false);
-      else if (current < lastScrollY) setNavVisible(true);
-      setLastScrollY(current);
+      else if (current > lastScrollYRef.current && current > 100) setNavVisible(false);
+      else if (current < lastScrollYRef.current) setNavVisible(true);
+      lastScrollYRef.current = current;
     };
-    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [lastScrollY]);
+  }, []);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -245,6 +245,17 @@ export default function GeckNavbar() {
         * { box-sizing: border-box; }
         .nav-desktop { display: flex; }
         .mobile-menu-btn { display: none; }
+        @media (max-width: 1100px) and (min-width: 769px) {
+          .nav-links-center { gap: 2rem !important; }
+          .nav-links-center a { font-size: 1rem !important; }
+        }
+        @media (max-width: 900px) and (min-width: 769px) {
+          .nav-links-center { gap: 1.4rem !important; }
+          .nav-links-center a { font-size: 0.9rem !important; }
+          .contact-button { padding: 0.6rem 1rem !important; font-size: 0.85rem !important; }
+          .nav-logo-img { width: 56px !important; height: 56px !important; }
+          .nav-logo-text { font-size: 1.6rem !important; }
+        }
         @media (max-width: 768px) {
           .nav-desktop { display: none !important; }
           .mobile-menu-btn { display: flex !important; align-items: center; justify-content: center; }
@@ -252,7 +263,7 @@ export default function GeckNavbar() {
           .logo-text-desktop { display: none !important; }
           .nav-container { padding: 0 1rem !important; position: relative !important; }
         }
-        .mobile-menu { position: fixed; top: 70px; left: 0; right: 0; bottom: 0; background: linear-gradient(180deg, rgba(2,6,20,0.45) 0%, rgba(2,6,20,0.3) 100%); backdrop-filter: blur(60px) saturate(200%); z-index: 55; animation: slideDownFade 0.5s cubic-bezier(0.34,1.56,0.64,1); }
+        .mobile-menu { position: fixed; top: 76px; left: 0; right: 0; bottom: 0; background: linear-gradient(180deg, rgba(2,6,20,0.45) 0%, rgba(2,6,20,0.3) 100%); backdrop-filter: blur(60px) saturate(200%); z-index: 55; animation: slideDownFade 0.5s cubic-bezier(0.34,1.56,0.64,1); }
         @keyframes slideDownFade { 0% { opacity: 0; transform: translateY(-50px); } 100% { opacity: 1; transform: translateY(0); } }
         .mobile-menu-closing { animation: slideUpFade 0.4s forwards; }
         @keyframes slideUpFade { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-50px); } }
@@ -272,7 +283,7 @@ export default function GeckNavbar() {
           background: "linear-gradient(135deg, rgba(2,6,20,0.40) 0%, rgba(2,6,20,0.40) 100%)",
           backdropFilter: "blur(40px) saturate(180%)",
           borderBottom: "1px solid rgba(212, 175, 55, 0.3)",
-          position: "sticky", top: 0, zIndex: 50, height: "70px",
+          position: "sticky", top: 0, zIndex: 50, height: "76px",
           transform: navVisible ? "translateY(0)" : "translateY(-100%)",
           transition: "transform 0.4s",
         }}
@@ -283,8 +294,8 @@ export default function GeckNavbar() {
         <div className="nav-container" style={{ padding: "0 2rem", height: "100%", display: "flex", alignItems: "center", justifyContent: "space-between", position: "relative", zIndex: 2, maxWidth: "2200px", margin: "0 auto" }}>
 
           <a href="/" className="logo-container" style={{ display: "flex", alignItems: "center", gap: "0.75rem", textDecoration: "none", zIndex: 3 }}>
-            <img src="/assets/image/logo.png" alt="Geck Codex" style={{ width: "65px", height: "65px", objectFit: "contain" }} />
-            <span className="logo-text logo-text-desktop" style={{ fontSize: "2rem", fontWeight: "bold" }}>
+            <img src="/assets/image/logo.webp" alt="Geck Codex" className="nav-logo-img" style={{ width: "72px", height: "72px", objectFit: "contain" }} />
+            <span className="logo-text logo-text-desktop nav-logo-text" style={{ fontSize: "2rem", fontWeight: "bold" }}>
               <AnimatedLogo text="Geck Codex" />
             </span>
           </a>
@@ -293,7 +304,7 @@ export default function GeckNavbar() {
             <AnimatedLogo text="Geck Codex" />
           </span>
 
-          <div className="nav-desktop" style={{ gap: "3.5rem", position: "absolute", left: "50%", transform: "translateX(-50%)", display: "flex", alignItems: "center" }}>
+          <div className="nav-desktop nav-links-center" style={{ gap: "3.5rem", position: "absolute", left: "50%", transform: "translateX(-50%)", display: "flex", alignItems: "center" }}>
             {navLinks.map(({ key, icon, href }) => (
               <MagneticLink key={key} href={href} icon={icon} text={t[key]} />
             ))}

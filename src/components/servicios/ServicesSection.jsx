@@ -89,7 +89,7 @@ const services = {
         "Velocidad de carga ultrarrápida (Core Web Vitals)", 
         "Integración con Google Analytics y CRM"
       ], 
-      image: "/assets/image/servicios/webser.png",     
+      image: "/assets/image/servicios/webser.webp",     
       size: "large"    
     },
 
@@ -105,7 +105,7 @@ const services = {
         "Diseño intuitivo siguiendo guidelines", 
         "Publicación en App Store y Google Play"
       ],             
-      image: "/assets/image/servicios/celser.png",     
+      image: "/assets/image/servicios/celser.webp",     
       size: "large"    
     },
 
@@ -121,7 +121,7 @@ const services = {
         "Optimización operativa y reducción de costos", 
         "Integración con sistemas y plataformas existentes"
       ],                                    
-      image: "/assets/image/servicios/iaser.png",      
+      image: "/assets/image/servicios/iaser.webp",      
       size: "large"    
     },
 
@@ -137,7 +137,7 @@ const services = {
         "Integración con envíos y tracking", 
         "Panel de administración"
       ],                                              
-      image: "/assets/image/servicios/ecomersser.png", 
+      image: "/assets/image/servicios/ecomersser.webp", 
       size: "medium"   
     },
 
@@ -153,7 +153,7 @@ const services = {
         "Dashboard con métricas en tiempo real", 
         "API REST para integraciones"
       ],                                   
-      image: "/assets/image/servicios/saasser.png",     
+      image: "/assets/image/servicios/saasser.webp",     
       size: "medium"   
     },
 
@@ -169,7 +169,7 @@ const services = {
         "Bots de tareas repetitivas (RPA)", 
         "Ahorro de tiempo real"
       ],                                                    
-      image: "/assets/image/servicios/autoserv.png",   
+      image: "/assets/image/servicios/autoserv.webp",   
       size: "small"    
     },
 
@@ -185,7 +185,7 @@ const services = {
         "Dashboards y reportes con KPIs", 
         "Mantenimiento y soporte continuo"
       ],                                           
-      image: "/assets/image/servicios/medidaser.png",  
+      image: "/assets/image/servicios/medidaser.webp",  
       size: "small"    
     },
   ],
@@ -203,7 +203,7 @@ const services = {
         "Prototipos interactivos", 
         "Implementación pixel-perfect"
       ],                                                               
-      image: "/assets/image/servicios/ui-ux.png",     
+      image: "/assets/image/servicios/ui-ux.webp",     
       size: "large"    
     },
 
@@ -219,7 +219,7 @@ const services = {
         "Community management", 
         "Reportes mensuales de métricas"
       ],                                                             
-      image: "/assets/image/servicios/social.png",     
+      image: "/assets/image/servicios/social.webp",     
       size: "large"    
     },
   ],
@@ -237,7 +237,7 @@ const services = {
         "Proyecciones financieras claras", 
         "Reportes de crecimiento"
       ],                                                          
-      image: "/assets/image/servicios/inversion.png",   
+      image: "/assets/image/servicios/inversion.webp",   
       size: "featured" 
     },
   ]

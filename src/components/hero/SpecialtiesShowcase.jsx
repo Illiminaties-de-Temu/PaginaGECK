@@ -9,7 +9,7 @@ const SERVICES = [
     buttonText: 'Explorar IA',
     videoDesktop: '/assets/video/ia.mp4',
     videoMobile: '/assets/video/ia-cel.mp4',
-    poster: '/assets/image/ia-poster.jpg',
+    poster: '/assets/image/ia-poster.webp',
     tag: 'Inteligencia Artificial',
   },
   {
@@ -20,7 +20,7 @@ const SERVICES = [
     buttonText: 'Explorar Web',
     videoDesktop: '/assets/video/web.mp4',
     videoMobile: '/assets/video/web-movil.mp4',
-    poster: '/assets/image/web-poster.jpg',
+    poster: '/assets/image/web-poster.webp',
     tag: 'Web & E-commerce',
   },
   {
@@ -31,7 +31,7 @@ const SERVICES = [
     buttonText: 'Explorar Móvil',
     videoDesktop: '/assets/video/cel.mp4',
     videoMobile: '/assets/video/cel.mp4',
-    poster: '/assets/image/cel-poster.jpg',
+    poster: '/assets/image/cel-poster.webp',
     tag: 'iOS & Android',
   },
 ];

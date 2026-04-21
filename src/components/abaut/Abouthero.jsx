@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { motion, useScroll, useTransform, useSpring } from 'framer-motion';
+import { motion, useScroll, useTransform } from 'framer-motion';
 
 export default function AboutHero() {
   const [MapComponent, setMapComponent] = useState(null);
@@ -13,16 +13,15 @@ export default function AboutHero() {
 
   // El texto sube más rápido (Efecto Capa Superior)
   const yText = useTransform(scrollYProgress, [0, 1], [0, -300]);
-  const springText = useSpring(yText, { stiffness: 80, damping: 20 });
 
   // El mapa sube más lento (Efecto Capa de Fondo)
   const yMap = useTransform(scrollYProgress, [0, 1], [0, -150]);
-  const springMap = useSpring(yMap, { stiffness: 80, damping: 20 });
 
   // Desvanecimiento común al salir
   const opacity = useTransform(scrollYProgress, [0, 0.7], [1, 0]);
 
   useEffect(() => {
+    import('leaflet/dist/leaflet.css');
     import('react-leaflet').then((module) => {
       const { MapContainer, TileLayer, Marker, Popup, Circle, useMap } = module;
       import('leaflet').then((L) => {
@@ -72,15 +71,11 @@ export default function AboutHero() {
 
   return (
     <>
-      <style dangerouslySetInnerHTML={{ __html: `
-        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;600;900&display=swap');
-      `}} />
-
       <section className="about-hero" ref={heroRef}>
         {/* COLUMNA IZQUIERDA - TEXTO DESLIZANTE */}
         <div className="about-hero__text-side">
           <motion.div 
-            style={{ y: springText, opacity }}
+            style={{ y: yText, opacity }}
             initial={{ opacity: 0, y: 100 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -100,7 +95,7 @@ export default function AboutHero() {
         {/* COLUMNA DERECHA - MAPA DESLIZANTE */}
         <div className="about-hero__map-side">
           <motion.div 
-            style={{ y: springMap, opacity }}
+            style={{ y: yMap, opacity }}
             initial={{ opacity: 0, y: 150 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -108,10 +103,7 @@ export default function AboutHero() {
             className="about-hero__map-wrapper"
           >
             {MapComponent ? (
-              <>
-                <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
-                <MapComponent />
-              </>
+              <MapComponent />
             ) : (
               <div className="about-hero__map-loading"><span>Estableciendo conexión...</span></div>
             )}

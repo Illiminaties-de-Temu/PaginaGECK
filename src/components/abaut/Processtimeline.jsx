@@ -37,9 +37,9 @@ export default function ProcessTimeline() {
       {/* Heading */}
       <motion.div
         className="pt-heading"
-        initial={{ opacity: 0, y: 20, filter: 'blur(6px)' }}
-        whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-        viewport={{ once: false, margin: '-80px' }}
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: '-80px' }}
         transition={{ duration: 0.6, ease: easeExpo }}
       >
         <p className="pt-eyebrow">Nuestro Proceso</p>
@@ -56,7 +56,7 @@ export default function ProcessTimeline() {
           className="pt-line"
           initial={{ scaleX: 0 }}
           whileInView={{ scaleX: 1 }}
-          viewport={{ once: false, margin: '-80px' }}
+          viewport={{ once: true, margin: '-80px' }}
           transition={{ duration: 1.1, delay: 0.2, ease: easeExpo }}
           style={{ transformOrigin: 'left center' }}
         />
@@ -65,9 +65,9 @@ export default function ProcessTimeline() {
           <motion.div
             key={step.number}
             className="pt-step"
-            initial={{ opacity: 0, y: 36, filter: 'blur(8px)' }}
-            whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-            viewport={{ once: false, margin: '-60px' }}
+            initial={{ opacity: 0, y: 36 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-60px' }}
             transition={{ duration: 0.65, delay: i * 0.1, ease: easeExpo }}
           >
             {/* Círculo con spring */}
@@ -75,7 +75,7 @@ export default function ProcessTimeline() {
               className="pt-circle"
               initial={{ scale: 0.4, opacity: 0 }}
               whileInView={{ scale: 1, opacity: 1 }}
-              viewport={{ once: false, margin: '-60px' }}
+              viewport={{ once: true, margin: '-60px' }}
               transition={{
                 delay: 0.1 + i * 0.1,
                 type: 'spring',
@@ -91,7 +91,7 @@ export default function ProcessTimeline() {
               className="pt-content"
               initial={{ opacity: 0, y: 12 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: false, margin: '-60px' }}
+              viewport={{ once: true, margin: '-60px' }}
               transition={{ duration: 0.5, delay: 0.15 + i * 0.1, ease: easeExpo }}
             >
               <h3 className="pt-step-title">{step.title}</h3>

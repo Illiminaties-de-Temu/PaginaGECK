@@ -1,490 +1,278 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
-const ClientCarousel = () => {
-  const [hoveredIndex, setHoveredIndex] = useState(null);
-  const [scrollProgress, setScrollProgress] = useState(0);
-  const [hasAnimated, setHasAnimated] = useState(false);
-  const [touchedIndex, setTouchedIndex] = useState(null);
-  const [tooltipPosition, setTooltipPosition] = useState('center');
-  const animationRef = useRef(null);
-  const containerRef = useRef(null);
-  const offsetRef = useRef(0);
-  const componentRef = useRef(null);
-  const touchStartRef = useRef(null);
-  const logoRefs = useRef({});
+const CLIENTS = [
+  { id:1, name:'Gobierno Municipal de Parral', logo:'assets/image/parral.webp',          desc:'Plataforma para la creación de gafetes gubernamentales' },
+  { id:2, name:'Las Chikis Restaurante',       logo:'assets/image/laschikis.webp',        desc:'Sistema de análisis de datos en tiempo real' },
+  { id:3, name:'Capital Transport LLP',        logo:'assets/image/CapitalTransport.webp', desc:'App móvil para gestión de flotillas vehiculares' },
+  { id:4, name:'Instituto Tecnológico de Parral', logo:'assets/image/yec.webp',           desc:'Software para empresas 4.0' },
+  { id:5, name:'Coronado Gym',                 logo:'assets/image/gym.webp',              desc:'Plataforma web para control del gimnasio' },
+];
 
-  const clients = [
-    {
-      id: 1,
-      name: "Gobierno Municipal de Parral",
-      logo: "assets/image/parral.png",
-      description: "Plataforma para la creación de gafetes"
-    },
-    {
-      id: 2,
-      name: "Las Chikis Restaurante",
-      logo: "assets/image/laschikis.png",
-      description: "Sistema de análisis de datos en tiempo real"
-    },
-    {
-      id: 3,
-      name: "Capital Transport LLP",
-      logo: "assets/image/CapitalTransport.png",
-      description: "App móvil para gestión de flotas"
-    },
-    {
-      id: 4,
-      name: "Instituto Tecnológico de Parral",
-      logo: "assets/image/yec.webp",
-      description: "Software para empresas 4.0"
-    },
-    {
-      id: 5,
-      name: "Coronado Gym",
-      logo: "assets/image/gym.png",
-      description: "Plataforma web para control del gimnasio y plataforma para sus miembros"
-    }
-  ];
+export default function ClientCarousel() {
+  const [activeId,  setActiveId]  = useState(null);
+  const [tooltip,   setTooltip]   = useState(null); // { client, top, left }
+  const [paused,    setPaused]    = useState(false);
+  const sectionRef                = useRef(null);
 
-  // Calcular posición del tooltip basado en la posición del logo
-  const calculateTooltipPosition = (index) => {
-    const logoElement = logoRefs.current[index];
-    if (!logoElement) return 'center';
-
-    const rect = logoElement.getBoundingClientRect();
-    const viewportWidth = window.innerWidth;
-    const tooltipWidth = viewportWidth < 1024 ? 256 : 320; // 64*4 o 80*4 (w-64 o w-80)
-    
-    const centerX = rect.left + rect.width / 2;
-    const tooltipLeft = centerX - tooltipWidth / 2;
-    const tooltipRight = centerX + tooltipWidth / 2;
-
-    // Si el tooltip se sale por la izquierda
-    if (tooltipLeft < 16) return 'left';
-    // Si el tooltip se sale por la derecha
-    if (tooltipRight > viewportWidth - 16) return 'right';
-    // Si está centrado
-    return 'center';
-  };
-
-  const handleTouchStart = (index, e) => {
-    touchStartRef.current = {
-      index,
-      time: Date.now(),
-      x: e.touches[0].clientX,
-      y: e.touches[0].clientY
-    };
-  };
-
-  const handleTouchEnd = (index, e) => {
-    if (!touchStartRef.current) return;
-    
-    const touchEnd = {
-      time: Date.now(),
-      x: e.changedTouches[0].clientX,
-      y: e.changedTouches[0].clientY
-    };
-    
-    const deltaTime = touchEnd.time - touchStartRef.current.time;
-    const deltaX = Math.abs(touchEnd.x - touchStartRef.current.x);
-    const deltaY = Math.abs(touchEnd.y - touchStartRef.current.y);
-    
-    if (deltaTime < 300 && deltaX < 10 && deltaY < 10) {
-      const newIndex = touchedIndex === index ? null : index;
-      setTouchedIndex(newIndex);
-      setHoveredIndex(null);
-      
-      // Calcular posición del tooltip
-      if (newIndex !== null) {
-        setTimeout(() => {
-          setTooltipPosition(calculateTooltipPosition(newIndex));
-        }, 0);
-      }
-    }
-    
-    touchStartRef.current = null;
-  };
-
-  const handleMouseEnter = (index) => {
-    setHoveredIndex(index);
-    setTouchedIndex(null);
-    // Calcular posición del tooltip
-    setTimeout(() => {
-      setTooltipPosition(calculateTooltipPosition(index));
-    }, 0);
-  };
-
-  const handleMouseLeave = () => {
-    setHoveredIndex(null);
-  };
-
-  // Scroll-linked animation con Intersection Observer
+  /* Entrada — IntersectionObserver, sin scroll event */
   useEffect(() => {
-    const handleScroll = () => {
-      if (!componentRef.current) return;
-
-      const rect = componentRef.current.getBoundingClientRect();
-      const windowHeight = window.innerHeight;
-      
-      const startPoint = windowHeight * 1.0;
-      const endPoint = windowHeight * 0.1;
-      
-      if (rect.top <= startPoint && rect.top >= endPoint) {
-        const progress = 1 - ((rect.top - endPoint) / (startPoint - endPoint));
-        const clampedProgress = Math.max(0, Math.min(1, progress));
-        setScrollProgress(clampedProgress);
-        
-        if (clampedProgress > 0.05 && !hasAnimated) {
-          setHasAnimated(true);
-        }
-      } else if (rect.top > startPoint) {
-        setScrollProgress(0);
-      } else if (rect.top < endPoint) {
-        setScrollProgress(1);
-      }
-    };
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            window.addEventListener('scroll', handleScroll, { passive: true });
-            handleScroll();
-          } else {
-            window.removeEventListener('scroll', handleScroll);
-          }
-        });
-      },
-      { 
-        rootMargin: '100px 0px 100px 0px'
-      }
+    const el = sectionRef.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) { el.classList.add('is-visible'); obs.disconnect(); } },
+      { threshold: 0.12 }
     );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
 
-    if (componentRef.current) {
-      observer.observe(componentRef.current);
-    }
-
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-      if (componentRef.current) {
-        observer.unobserve(componentRef.current);
-      }
-    };
-  }, [hasAnimated]);
-
+  /* Cerrar tooltip al scroll */
   useEffect(() => {
-    const handleClickOutside = (e) => {
-      if (touchedIndex !== null && containerRef.current && !containerRef.current.contains(e.target)) {
-        setTouchedIndex(null);
-      }
-    };
+    if (!tooltip) return;
+    const close = () => { setTooltip(null); setActiveId(null); setPaused(false); };
+    window.addEventListener('scroll', close, { passive: true, once: true });
+    return () => window.removeEventListener('scroll', close);
+  }, [tooltip]);
 
-    if (touchedIndex !== null) {
-      document.addEventListener('touchstart', handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener('touchstart', handleClickOutside);
-    };
-  }, [touchedIndex]);
-
-  useEffect(() => {
-    let lastTime = performance.now();
-    
-    const animate = (currentTime) => {
-      if (hoveredIndex === null && touchedIndex === null && containerRef.current) {
-        const deltaTime = currentTime - lastTime;
-        lastTime = currentTime;
-        
-        const speed = 20;
-        offsetRef.current += (speed * deltaTime) / 1000;
-        
-        const itemWidth = 200;
-        const setWidth = itemWidth * clients.length;
-        
-        if (offsetRef.current >= setWidth) {
-          offsetRef.current = offsetRef.current % setWidth;
-        }
-        
-        containerRef.current.style.transform = `translateX(-${offsetRef.current}px)`;
-      } else {
-        lastTime = currentTime;
-      }
-      
-      animationRef.current = requestAnimationFrame(animate);
-    };
-
-    animationRef.current = requestAnimationFrame(animate);
-
-    return () => {
-      if (animationRef.current) {
-        cancelAnimationFrame(animationRef.current);
-      }
-    };
-  }, [hoveredIndex, touchedIndex, clients.length]);
-
-  // Recalcular posición del tooltip en resize
-  useEffect(() => {
-    const handleResize = () => {
-      if (hoveredIndex !== null || touchedIndex !== null) {
-        const activeIndex = hoveredIndex !== null ? hoveredIndex : touchedIndex;
-        setTooltipPosition(calculateTooltipPosition(activeIndex));
-      }
-    };
-
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, [hoveredIndex, touchedIndex]);
-
-  // Función para obtener las clases del tooltip según su posición
-  const getTooltipClasses = () => {
-    const baseClasses = "absolute top-full mt-6 lg:mt-8 w-64 lg:w-80 z-30";
-    
-    switch (tooltipPosition) {
-      case 'left':
-        return `${baseClasses} left-0`;
-      case 'right':
-        return `${baseClasses} right-0`;
-      default: // center
-        return `${baseClasses} left-1/2 transform -translate-x-1/2`;
-    }
+  const handleEnter = (client, e) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const cx   = rect.left + rect.width / 2;
+    const vw   = window.innerWidth;
+    const tipW = 280;
+    let left   = cx - tipW / 2;
+    if (left < 12)          left = 12;
+    if (left + tipW > vw - 12) left = vw - tipW - 12;
+    setTooltip({ client, top: rect.bottom + 12, left });
+    setActiveId(client.id);
+    setPaused(true);
   };
 
-  // Función para obtener las clases de la flecha según posición
-  const getArrowClasses = () => {
-    const baseClasses = "absolute -top-2 w-4 h-4 bg-white rotate-45 border-l-2 border-t-2 border-[#D4AF37]/40";
-    
-    switch (tooltipPosition) {
-      case 'left':
-        return `${baseClasses} left-8`;
-      case 'right':
-        return `${baseClasses} right-8`;
-      default: // center
-        return `${baseClasses} left-1/2 transform -translate-x-1/2`;
-    }
+  const handleLeave = () => {
+    setTooltip(null);
+    setActiveId(null);
+    setPaused(false);
   };
 
   return (
-    <div ref={componentRef} className="w-full bg-[#222220] relative overflow-hidden pt-16 md:pt-20 lg:pt-24">
-      {/* Línea dorada animada de entrada */}
-      {scrollProgress > 0 && (
-        <div className="absolute top-0 left-0 w-full h-1 z-50 overflow-hidden">
-          <div 
-            className="h-full bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent"
-            style={{
-              width: '40%',
-              transform: `translateX(${Math.min(scrollProgress * 250, 250)}%)`,
-              boxShadow: '0 0 20px #D4AF37, 0 0 40px #D4AF37',
-              opacity: Math.min(scrollProgress * 2, 1),
-              transition: 'transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.6s ease-out'
-            }}
-          />
+    <>
+      <section ref={sectionRef} className="cc-section">
+
+        {/* Gradientes laterales */}
+        <div className="cc-fade cc-fade--l" aria-hidden="true" />
+        <div className="cc-fade cc-fade--r" aria-hidden="true" />
+
+        {/* Título */}
+        <header className="cc-header">
+          <h2 className="cc-h2">Compañías, Organizaciones y Más</h2>
+          <p className="cc-lead">con las cuales hemos colaborado</p>
+        </header>
+
+        {/* Track — CSS animation, dirección IZQUIERDA A DERECHA */}
+        <div className="cc-viewport">
+          <div className={`cc-track${paused ? ' is-paused' : ''}`}>
+            {[...CLIENTS, ...CLIENTS, ...CLIENTS, ...CLIENTS].map((c, i) => {
+              const isActive = activeId === c.id;
+              return (
+                <div
+                  key={i}
+                  className={`cc-logo${isActive ? ' is-active' : activeId !== null ? ' is-dim' : ''}`}
+                  onMouseEnter={(e) => handleEnter(c, e)}
+                  onMouseLeave={handleLeave}
+                >
+                  <img
+                    src={c.logo}
+                    alt={c.name}
+                    className="cc-logo__img"
+                    loading="lazy"
+                    decoding="async"
+                    draggable="false"
+                  />
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+      </section>
+
+      {/* Tooltip — position: fixed */}
+      {tooltip && (
+        <div
+          className="cc-tooltip"
+          style={{ top: tooltip.top, left: tooltip.left }}
+          onMouseEnter={() => setPaused(true)}
+          onMouseLeave={handleLeave}
+        >
+          <p className="cc-tooltip__name">{tooltip.client.name}</p>
+          <p className="cc-tooltip__desc">{tooltip.client.desc}</p>
+          <div className="cc-tooltip__bar" />
         </div>
       )}
 
-      {/* Ondas doradas de fondo */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <svg 
-          className="absolute w-full h-full opacity-5" 
-          xmlns="http://www.w3.org/2000/svg"
-          preserveAspectRatio="none"
-        >
-          <defs>
-            <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="#D4AF37" stopOpacity="0" />
-              <stop offset="50%" stopColor="#D4AF37" stopOpacity="1" />
-              <stop offset="100%" stopColor="#D4AF37" stopOpacity="0" />
-            </linearGradient>
-          </defs>
-          
-          <path
-            d="M0,200 Q250,150 500,200 T1000,200 T1500,200 T2000,200"
-            stroke="url(#goldGradient)"
-            strokeWidth="3"
-            fill="none"
-            opacity="0.6"
-          >
-            <animate
-              attributeName="d"
-              dur="8s"
-              repeatCount="indefinite"
-              values="
-                M0,200 Q250,150 500,200 T1000,200 T1500,200 T2000,200;
-                M0,200 Q250,250 500,200 T1000,200 T1500,200 T2000,200;
-                M0,200 Q250,150 500,200 T1000,200 T1500,200 T2000,200
-              "
-            />
-          </path>
-          
-          <path
-            d="M0,300 Q250,350 500,300 T1000,300 T1500,300 T2000,300"
-            stroke="url(#goldGradient)"
-            strokeWidth="2"
-            fill="none"
-            opacity="0.4"
-          >
-            <animate
-              attributeName="d"
-              dur="6s"
-              repeatCount="indefinite"
-              values="
-                M0,300 Q250,350 500,300 T1000,300 T1500,300 T2000,300;
-                M0,300 Q250,250 500,300 T1000,300 T1500,300 T2000,300;
-                M0,300 Q250,350 500,300 T1000,300 T1500,300 T2000,300
-              "
-            />
-          </path>
-          
-          <path
-            d="M0,400 Q250,380 500,400 T1000,400 T1500,400 T2000,400"
-            stroke="url(#goldGradient)"
-            strokeWidth="2.5"
-            fill="none"
-            opacity="0.3"
-          >
-            <animate
-              attributeName="d"
-              dur="10s"
-              repeatCount="indefinite"
-              values="
-                M0,400 Q250,380 500,400 T1000,400 T1500,400 T2000,400;
-                M0,400 Q250,420 500,400 T1000,400 T1500,400 T2000,400;
-                M0,400 Q250,380 500,400 T1000,400 T1500,400 T2000,400
-              "
-            />
-          </path>
-        </svg>
-      </div>
-
-      {/* Título Section */}
-      <div 
-        className="text-center py-8 md:py-12 px-4 relative z-10"
-        style={{
-          opacity: Math.max(0, Math.min(1, (scrollProgress - 0.15) * 1.8)),
-          transform: `translateY(${Math.max(0, (1 - scrollProgress) * 80 - 12)}px)`,
-          transition: 'opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1)'
-        }}
-      >
-        <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#D4AF37] mb-2 md:mb-3">
-          Compañías, Organizaciones y Más
-        </h2>
-        <p 
-          className="text-base md:text-lg text-[#F4E4BC] font-light tracking-wide"
-          style={{
-            opacity: Math.max(0, Math.min(1, (scrollProgress - 0.25) * 1.6)),
-            transform: `translateY(${Math.max(0, (1 - scrollProgress) * 60 - 8)}px)`,
-            transition: 'opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1), transform 0.9s cubic-bezier(0.16, 1, 0.3, 1)'
-          }}
-        >
-          con las cuales hemos colaborado
-        </p>
-      </div>
-
-      {/* Carousel Section */}
-      <div 
-        className="relative w-full h-[280px] md:h-[350px] lg:h-[400px] overflow-hidden py-6 md:py-10"
-        style={{
-          opacity: Math.max(0, Math.min(1, (scrollProgress - 0.35) * 1.5)),
-          transform: `translateY(${Math.max(0, (1 - scrollProgress) * 100 - 35)}px) scale(${0.92 + (scrollProgress * 0.08)})`,
-          transition: 'opacity 1s cubic-bezier(0.16, 1, 0.3, 1), transform 1s cubic-bezier(0.16, 1, 0.3, 1)'
-        }}
-      >
-        {/* Gradientes laterales */}
-        <div className="absolute left-0 top-0 bottom-0 w-20 md:w-40 bg-gradient-to-r from-[#222220] via-[#222220]/80 to-transparent z-10 pointer-events-none"></div>
-        <div className="absolute right-0 top-0 bottom-0 w-20 md:w-40 bg-gradient-to-l from-[#222220] via-[#222220]/80 to-transparent z-10 pointer-events-none"></div>
-
-        {/* Carousel Container */}
-        <div 
-          ref={containerRef}
-          className="flex items-center gap-8 md:gap-12 lg:gap-16 h-full"
-          style={{
-            transition: 'none',
-            willChange: 'transform'
-          }}
-        >
-          {[...clients, ...clients, ...clients].map((client, index) => {
-            const isActive = hoveredIndex === index || touchedIndex === index;
-            const isOtherActive = (hoveredIndex !== null && hoveredIndex !== index) || 
-                                  (touchedIndex !== null && touchedIndex !== index);
-            
-            return (
-              <div
-                key={`${client.id}-${index}`}
-                className="flex-shrink-0"
-                ref={el => logoRefs.current[index] = el}
-                onMouseEnter={() => handleMouseEnter(index)}
-                onMouseLeave={handleMouseLeave}
-                onTouchStart={(e) => handleTouchStart(index, e)}
-                onTouchEnd={(e) => handleTouchEnd(index, e)}
-              >
-                <div className={`
-                  relative bg-white rounded-xl md:rounded-2xl shadow-xl
-                  w-24 h-24 md:w-32 md:h-32 lg:w-36 lg:h-36
-                  flex items-center justify-center p-4 md:p-6
-                  transition-all duration-700 ease-out cursor-pointer
-                  ${isActive
-                    ? 'scale-110 md:scale-125 shadow-2xl z-20 ring-2 md:ring-4 ring-[#D4AF37]' 
-                    : isOtherActive
-                      ? 'opacity-15 blur-sm scale-90' 
-                      : 'hover:scale-105'
-                  }
-                `}>
-                  {isActive && (
-                    <div className="absolute inset-0 bg-[#D4AF37] rounded-xl md:rounded-2xl opacity-30 blur-xl md:blur-2xl -z-10 scale-150 animate-pulse"></div>
-                  )}
-                  
-                  <img 
-                    src={client.logo} 
-                    alt={client.name}
-                    className={`
-                      max-w-full max-h-full object-contain
-                      transition-all duration-700
-                      ${isActive ? '' : 'filter grayscale opacity-80'}
-                    `}
-                  />
-
-                  {/* Tooltip con posicionamiento inteligente */}
-                  {isActive && (
-                    <div 
-                      className={getTooltipClasses()}
-                      style={{
-                        animation: 'slideDown 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)'
-                      }}
-                    >
-                      <div className="bg-white rounded-xl lg:rounded-2xl shadow-2xl p-4 lg:p-6 border-2 border-[#D4AF37]/40">
-                        <h4 className="text-[#0B1D33] font-bold text-base lg:text-lg mb-2 lg:mb-3">
-                          {client.name}
-                        </h4>
-                        <p className="text-[#6B7280] text-sm lg:text-base leading-relaxed">
-                          {client.description}
-                        </p>
-                        <div className="h-0.5 lg:h-1 w-16 lg:w-20 bg-gradient-to-r from-[#D4AF37] to-[#B8941F] rounded-full mt-3 lg:mt-4"></div>
-                      </div>
-                      {/* Flecha del tooltip con posicionamiento dinámico */}
-                      <div className={getArrowClasses()}></div>
-                    </div>
-                  )}
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-
       <style>{`
-        @keyframes slideDown {
-          from {
-            opacity: 0;
-            transform: translateY(-15px) scale(0.95);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0) scale(1);
-          }
+        /* ── SECTION ─────────────────────────────────────── */
+        .cc-section {
+          background: #222220;
+          padding: 5rem 0 4.5rem;
+          position: relative;
+          overflow: hidden;
+          border-top: 1px solid rgba(212,175,55,0.06);
+          /* Entrada */
+          opacity: 0;
+          transform: translateY(28px);
+          transition: opacity .85s cubic-bezier(0.22,1,0.36,1), transform .85s cubic-bezier(0.22,1,0.36,1);
+        }
+        .cc-section.is-visible { opacity: 1; transform: translateY(0); }
+
+        .cc-fade {
+          position: absolute;
+          top: 0; bottom: 0;
+          width: clamp(60px, 10vw, 140px);
+          z-index: 10;
+          pointer-events: none;
+        }
+        .cc-fade--l { left: 0;  background: linear-gradient(to right, #222220, transparent); }
+        .cc-fade--r { right: 0; background: linear-gradient(to left,  #222220, transparent); }
+
+        /* ── HEADER ──────────────────────────────────────── */
+        .cc-header {
+          text-align: center;
+          margin-bottom: 2.5rem;
+          padding: 0 1rem;
+        }
+        .cc-h2 {
+          font-size: clamp(1.6rem, 4vw, 2.6rem);
+          font-weight: 900;
+          color: #D4AF37;
+          margin: 0 0 .5rem;
+          line-height: 1.1;
+        }
+        .cc-lead {
+          font-size: .9rem;
+          color: rgba(244,228,188,0.42);
+          margin: 0;
+          letter-spacing: .04em;
+        }
+
+        /* ── VIEWPORT ────────────────────────────────────── */
+        .cc-viewport {
+          overflow: hidden;
+          padding: .75rem 0;
+        }
+
+        /* ── TRACK — CSS animation, izquierda → derecha ─── */
+        /*
+         * 4 copias + margin-right en cada logo (no gap en track).
+         * margin-right garantiza que cada item ocupa width+spacing exactos,
+         * haciendo que -50% coincida perfecto con el clone del item 1.
+         */
+        .cc-track {
+          display: flex;
+          align-items: center;
+          width: max-content;
+          will-change: transform;
+          animation: cc-right 30s linear infinite;
+        }
+        .cc-track.is-paused { animation-play-state: paused; }
+
+        @keyframes cc-right {
+          from { transform: translateX(-50%); }
+          to   { transform: translateX(0); }
+        }
+
+        /* ── LOGO CARD ───────────────────────────────────── */
+        .cc-logo {
+          flex-shrink: 0;
+          width: 130px;
+          height: 130px;
+          margin-right: 48px;
+          background: #fff;
+          border-radius: 18px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 20px;
+          cursor: pointer;
+          box-shadow: 0 4px 18px rgba(0,0,0,0.35);
+          border: 1.5px solid transparent;
+          transition:
+            transform    .35s cubic-bezier(0.22,1,0.36,1),
+            border-color .25s ease,
+            box-shadow   .25s ease,
+            opacity      .25s ease,
+            filter       .25s ease;
+          will-change: transform;
+        }
+        .cc-logo:hover,
+        .cc-logo.is-active {
+          transform: scale(1.12);
+          border-color: #D4AF37;
+          box-shadow: 0 20px 50px rgba(0,0,0,0.55), 0 0 0 1px rgba(212,175,55,0.25);
+        }
+        .cc-logo.is-dim {
+          opacity: .22;
+          filter: grayscale(1);
+          transform: scale(.92);
+        }
+        .cc-logo__img {
+          max-width: 100%;
+          max-height: 100%;
+          object-fit: contain;
+          transition: filter .3s ease;
+        }
+        .cc-logo:not(.is-active):not(:hover) .cc-logo__img {
+          filter: grayscale(.7) opacity(.75);
+        }
+
+        /* ── TOOLTIP ─────────────────────────────────────── */
+        .cc-tooltip {
+          position: fixed;
+          z-index: 9000;
+          width: 280px;
+          background: #fff;
+          border-radius: 14px;
+          padding: 1rem 1.1rem;
+          box-shadow: 0 20px 60px rgba(0,0,0,0.2), 0 0 0 1.5px rgba(212,175,55,0.28);
+          animation: cc-tip-in .28s cubic-bezier(0.34,1.56,0.64,1);
+        }
+        @keyframes cc-tip-in {
+          from { opacity: 0; transform: translateY(-8px) scale(.97); }
+          to   { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .cc-tooltip__name {
+          font-size: .9rem;
+          font-weight: 800;
+          color: #0B1D33;
+          margin: 0 0 .3rem;
+        }
+        .cc-tooltip__desc {
+          font-size: .78rem;
+          color: #6B7280;
+          margin: 0 0 .75rem;
+          line-height: 1.45;
+        }
+        .cc-tooltip__bar {
+          height: 3px;
+          width: 44px;
+          background: linear-gradient(90deg, #D4AF37, #B8941F);
+          border-radius: 100px;
+        }
+
+        /* ── MOBILE ──────────────────────────────────────── */
+        @media (max-width: 768px) {
+          .cc-section { padding: 3.5rem 0 3rem; }
+          .cc-logo { width: 100px; height: 100px; padding: 14px; border-radius: 14px; margin-right: 32px; }
+          .cc-track { animation-duration: 22s; }
+        }
+
+        /* ── REDUCED MOTION ──────────────────────────────── */
+        @media (prefers-reduced-motion: reduce) {
+          .cc-section { transition: none !important; opacity: 1; transform: none; }
+          .cc-track { animation: none !important; transform: translateX(-50%) !important; }
+          .cc-logo { transition: none !important; will-change: auto; }
+          .cc-tooltip { animation: none !important; }
         }
       `}</style>
-    </div>
+    </>
   );
-};
-
-export default ClientCarousel;
+}
