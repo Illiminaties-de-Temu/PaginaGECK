@@ -9,127 +9,103 @@ export default function ServiceSection({
   link,
   buttonText 
 }) {
-  const [letterOpacity, setLetterOpacity] = useState(0);
+  const [scrollProgress, setScrollProgress] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
   const sectionRef = useRef(null);
 
   /* ===========================
-     Detectar mobile
+      Detección de Mobile
      =========================== */
   useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth <= 767);
-    };
-
+    const checkMobile = () => setIsMobile(window.innerWidth <= 767);
     checkMobile();
     window.addEventListener('resize', checkMobile);
-
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
   /* ===========================
-     Scroll logic
+      Lógica de Scroll "Carrusel"
      =========================== */
   useEffect(() => {
     const handleScroll = () => {
       if (!sectionRef.current) return;
 
-      const sectionTop = sectionRef.current.offsetTop;
-      const sectionHeight = sectionRef.current.offsetHeight;
+      const rect = sectionRef.current.getBoundingClientRect();
       const windowHeight = window.innerHeight;
-      const scrollY = window.scrollY;
 
-      const sectionCenter = sectionTop + sectionHeight / 2;
-      const viewportCenter = scrollY + windowHeight / 2;
+      // Calculamos cuánto de la sección está visible (0 a 1)
+      // 0 = la sección empieza a asomar por abajo
+      // 0.5 = la sección está centrada
+      // 1 = la sección terminó de pasar
+      const sectionVisibleHeight = windowHeight + rect.height;
+      const currentPos = windowHeight - rect.top;
+      const progress = currentPos / sectionVisibleHeight;
 
-      const distance = (viewportCenter - sectionCenter) / (windowHeight / 2);
-      const progress = (distance + 1) / 2;
-
-      setLetterOpacity(progress);
+      setScrollProgress(Math.min(Math.max(progress, 0), 1));
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
     handleScroll();
-
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   /* ===========================
-     Opacidades
+      Cálculos de Movimiento
      =========================== */
-  const getVideoOpacity = () => {
-    if (letterOpacity < 0.15) return 0;
-    if (letterOpacity > 0.85) return 0;
+  
+  // El video solo es visible cuando la sección está cerca del centro (0.3 a 0.7)
+  const videoOpacity = scrollProgress > 0.1 && scrollProgress < 0.9 ? 1 : 0;
 
-    if (letterOpacity <= 0.5) {
-      return Math.min(1, (letterOpacity - 0.15) / 0.25);
-    } else {
-      return Math.max(0, 1 - (letterOpacity - 0.5) / 0.35);
-    }
-  };
-
-  const getTextOpacity = () => {
-    if (letterOpacity < 0.25) return 0;
-    if (letterOpacity > 0.75)
-      return Math.max(0, 1 - (letterOpacity - 0.75) / 0.25);
-
-    if (letterOpacity <= 0.5) {
-      return (letterOpacity - 0.25) / 0.25;
-    }
-
-    return 1;
-  };
-
-  const getTextParallax = () => {
-    if (letterOpacity < 0.5) {
-      return 600 - (letterOpacity / 0.5) * 600;
-    } else {
-      return -((letterOpacity - 0.5) / 0.5) * 300;
-    }
-  };
-
-  const videoOpacity = getVideoOpacity();
-  const textOpacity = getTextOpacity();
-  const textParallax = getTextParallax();
-
-  const videoSrc = isMobile ? videoMobile : videoDesktop;
+  // El texto viaja desde abajo (100%) hasta arriba (-100%)
+  // Ajustamos el rango para que el "punto dulce" (centro) sea en scrollProgress 0.5
+  const textY = (0.5 - scrollProgress) * 1500; // Multiplicador de velocidad de desplazamiento
+  const textOpacity = scrollProgress > 0.3 && scrollProgress < 0.7 ? 1 : 0;
 
   return (
     <>
       <section className="service-section" ref={sectionRef}>
-        {/* VIDEO */}
-        <div className="service-section__video-container">
+        
+        {/* FONTO FIJO (VIDEOS) */}
+        <div 
+          className="service-section__video-wrapper"
+          style={{ opacity: videoOpacity }}
+        >
           <video
-            autoPlay
-            loop
-            muted
-            playsInline
-            poster={poster}
-            className="service-section__video"
-            style={{
-              opacity: videoOpacity,
-              transition: 'opacity 1.2s cubic-bezier(0.16, 1, 0.3, 1)'
-            }}
+            autoPlay loop muted playsInline
+            key={isMobile ? 'm' : 'd'}
+            className={`service-section__video ${!isMobile ? 'is-active' : ''}`}
+            style={{ opacity: !isMobile ? 1 : 0 }}
           >
-            <source src={videoSrc} type="video/mp4" />
+            <source src={videoDesktop} type="video/mp4" />
           </video>
+
+          <video
+            autoPlay loop muted playsInline
+            className={`service-section__video ${isMobile ? 'is-active' : ''}`}
+            style={{ opacity: isMobile ? 1 : 0 }}
+          >
+            <source src={videoMobile} type="video/mp4" />
+          </video>
+          
+          <div className="service-section__overlay" />
         </div>
 
-        {/* CONTENIDO */}
+        {/* CAPA DE TEXTO QUE "SUBE" */}
         <div
-          className="service-section__content"
+          className="service-section__content-container"
           style={{
+            transform: `translateY(${textY}px)`,
             opacity: textOpacity,
-            transform: `translateY(${textParallax}px)`,
-            transition: 'opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1)'
           }}
         >
-          <h2 className="service-section__title">{title}</h2>
-          <p className="service-section__description">{description}</p>
-          <a href={link} className="service-section__button">
-            <span className="service-section__button-text">{buttonText}</span>
-            <span className="service-section__button-arrow">→</span>
-          </a>
+          <div className="service-section__text-box">
+            <h2 className="service-section__title">{title}</h2>
+            <p className="service-section__description">{description}</p>
+            <a href={link} className="service-section__button">
+              <span>{buttonText}</span>
+              <span className="arrow">→</span>
+            </a>
+          </div>
         </div>
       </section>
 
@@ -137,71 +113,93 @@ export default function ServiceSection({
         .service-section {
           position: relative;
           width: 100%;
-          height: 100vh;
+          height: 150vh; /* Altura extra para dar margen al desplazamiento del texto */
+          background: #030c1d;
           display: flex;
+          justify-content: center;
           align-items: center;
           overflow: hidden;
-          background: #030c1d;
         }
 
-        .service-section__video-container {
-          position: absolute;
-          inset: 0;
-          z-index: 0;
+        /* Video fijo como fondo */
+        .service-section__video-wrapper {
+          position: fixed; /* Mantiene el video quieto mientras el scroll sucede */
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          z-index: 1;
+          pointer-events: none;
+          transition: opacity 0.8s ease;
         }
 
         .service-section__video {
           position: absolute;
-          top: 50%;
-          left: 50%;
-          min-width: 100%;
-          min-height: 100%;
-          transform: translate(-50%, -50%);
+          top: 0; left: 0;
+          width: 100%; height: 100%;
           object-fit: cover;
-          filter: brightness(0.5) contrast(1.1);
+          filter: brightness(0.4);
+          transition: opacity 1s ease;
         }
 
-        .service-section__content {
+        .service-section__overlay {
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(to bottom, #030c1d 0%, transparent 20%, transparent 80%, #030c1d 100%);
+        }
+
+        /* Contenedor del contenido que se mueve */
+        .service-section__content-container {
           position: relative;
-          z-index: 10;
-          max-width: 700px;
-          padding-left: 5rem;
-          padding-right: 2rem;
+          z-index: 2;
+          width: 100%;
+          display: flex;
+          justify-content: flex-start;
+          padding-left: 10%;
+          will-change: transform, opacity;
+          transition: opacity 0.5s ease-out;
+        }
+
+        .service-section__text-box {
+          max-width: 650px;
         }
 
         .service-section__title {
-          font-size: 4rem;
+          font-size: clamp(3rem, 6vw, 5rem);
           font-weight: 900;
-          margin-bottom: 1.5rem;
-          background: linear-gradient(135deg, #F4E4BC, #D4AF37, #B8941F);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
+          color: #D4AF37;
+          margin-bottom: 20px;
+          text-transform: uppercase;
+          line-height: 1;
         }
 
         .service-section__description {
-          font-size: 1.5rem;
+          font-size: clamp(1.1rem, 2vw, 1.4rem);
           color: #F4E4BC;
-          margin-bottom: 2.5rem;
+          line-height: 1.6;
+          margin-bottom: 40px;
         }
 
-        /* MOBILE */
+        .service-section__button {
+          display: inline-flex;
+          align-items: center;
+          gap: 15px;
+          padding: 15px 35px;
+          border: 2px solid #D4AF37;
+          color: #D4AF37;
+          text-decoration: none;
+          font-weight: bold;
+          transition: all 0.3s ease;
+        }
+
+        .service-section__button:hover {
+          background: #D4AF37;
+          color: #030c1d;
+        }
+
         @media (max-width: 767px) {
-          .service-section__video {
-            transform: translate(-50%, -50%) scale(1.15);
-            object-position: center top;
-          }
-
-          .service-section__content {
-            padding: 1.5rem;
-          }
-
-          .service-section__title {
-            font-size: 2rem;
-          }
-
-          .service-section__description {
-            font-size: 1.125rem;
-          }
+          .service-section { height: 120vh; }
+          .service-section__content-container { padding-left: 5%; padding-right: 5%; }
         }
       `}</style>
     </>
