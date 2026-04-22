@@ -1,10 +1,11 @@
-import { useState, useEffect, useRef } from "react";
+﻿import { useState, useEffect, useLayoutEffect, useRef } from "react";
 import { Menu, X, Briefcase, Info, BookOpen, Globe, Mail, Layers } from "lucide-react";
+import { translations as allTranslations } from "../i18n/translations";
 
-const translations = {
-  en: { portfolio: "Portfolio", about: "About Us", blog: "Blog", services: "Services", contact: "Contact", language: "Language" },
-  es: { portfolio: "Portafolio", about: "Nosotros", blog: "Blog", services: "Servicios", contact: "Contacto", language: "Idioma" },
-  pt: { portfolio: "Portfólio", about: "Sobre Nós", blog: "Blog", services: "Serviços", contact: "Contato", language: "Idioma" },
+const navTranslations = {
+  en: allTranslations.en.nav,
+  es: allTranslations.es.nav,
+  pt: allTranslations.pt.nav,
 };
 
 const languageOptions = [
@@ -15,6 +16,15 @@ const languageOptions = [
 
 function DisperseText({ text, isHovered }) {
   const letters = text.split("");
+  const offsetsRef = useRef(null);
+  if (!offsetsRef.current) {
+    offsetsRef.current = letters.map(() => ({
+      x: (Math.random() - 0.5) * 20,
+      y: (Math.random() - 0.5) * 20,
+      r: (Math.random() - 0.5) * 45,
+    }));
+  }
+  const offsets = offsetsRef.current;
   return (
     <span style={{ display: "inline-block", position: "relative" }}>
       {letters.map((letter, index) => (
@@ -24,12 +34,12 @@ function DisperseText({ text, isHovered }) {
             display: "inline-block",
             transition: "all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55)",
             transform: isHovered
-              ? `translate(${(Math.random() - 0.5) * 20}px, ${(Math.random() - 0.5) * 20}px) rotate(${(Math.random() - 0.5) * 45}deg) scale(0.8)`
+              ? `translate(${offsets[index].x}px, ${offsets[index].y}px) rotate(${offsets[index].r}deg) scale(0.8)`
               : "translate(0, 0) rotate(0deg) scale(1)",
             opacity: isHovered ? 0.3 : 1,
           }}
         >
-          {letter === " " ? "\u00A0" : letter}
+          {letter === " " ? " " : letter}
         </span>
       ))}
     </span>
@@ -39,19 +49,18 @@ function DisperseText({ text, isHovered }) {
 function MagneticLink({ href, icon: Icon, text }) {
   const [hover, setHover] = useState(false);
   const [disperseHover, setDisperseHover] = useState(false);
-  const [position, setPosition] = useState({ x: 0, y: 0 });
   const linkRef = useRef(null);
 
   const handleMouseMove = (e) => {
     if (!linkRef.current) return;
     const rect = linkRef.current.getBoundingClientRect();
-    const centerX = rect.left + rect.width / 2;
-    const centerY = rect.top + rect.height / 2;
-    setPosition({ x: (e.clientX - centerX) * 0.3, y: (e.clientY - centerY) * 0.3 });
+    const x = (e.clientX - rect.left - rect.width / 2) * 0.3;
+    const y = (e.clientY - rect.top - rect.height / 2) * 0.3;
+    linkRef.current.style.transform = `translate(${x}px, ${y}px)`;
   };
 
   const handleMouseLeave = () => {
-    setPosition({ x: 0, y: 0 });
+    if (linkRef.current) linkRef.current.style.transform = "translate(0, 0)";
     setHover(false);
     setTimeout(() => setDisperseHover(false), 100);
   };
@@ -67,8 +76,8 @@ function MagneticLink({ href, icon: Icon, text }) {
         display: "flex", alignItems: "center", gap: "0.5rem",
         color: "var(--white-soft)", fontSize: "1.25rem",
         transition: "color 0.3s ease", padding: "0.5rem 0",
-        transform: `translate(${position.x}px, ${position.y}px)`,
         textDecoration: "none", cursor: "pointer",
+        willChange: "transform",
       }}
     >
       <Icon size={18} style={{ transition: "all 0.3s ease", color: hover ? "var(--gold)" : "inherit" }} />
@@ -81,6 +90,15 @@ function AnimatedLogo({ text }) {
   const [isHovered, setIsHovered] = useState(false);
   const [disperseActive, setDisperseActive] = useState(false);
   const letters = text.split("");
+  const offsetsRef = useRef(null);
+  if (!offsetsRef.current) {
+    offsetsRef.current = letters.map(() => ({
+      x: (Math.random() - 0.5) * 25,
+      y: (Math.random() - 0.5) * 25,
+      r: (Math.random() - 0.5) * 50,
+    }));
+  }
+  const offsets = offsetsRef.current;
 
   return (
     <span
@@ -96,7 +114,7 @@ function AnimatedLogo({ text }) {
             transition: "all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55)",
             transitionDelay: `${index * 0.03}s`,
             transform: disperseActive
-              ? `translate(${(Math.random() - 0.5) * 25}px, ${(Math.random() - 0.5) * 25}px) rotate(${(Math.random() - 0.5) * 50}deg) scale(0.7)`
+              ? `translate(${offsets[index].x}px, ${offsets[index].y}px) rotate(${offsets[index].r}deg) scale(0.7)`
               : "translate(0, 0) rotate(0deg) scale(1)",
             opacity: disperseActive ? 0.4 : 1,
             background: "linear-gradient(135deg, var(--white), var(--gold))",
@@ -104,7 +122,7 @@ function AnimatedLogo({ text }) {
             WebkitTextFillColor: "transparent", color: "transparent",
           }}
         >
-          {letter === " " ? "\u00A0" : letter}
+          {letter === " " ? " " : letter}
         </span>
       ))}
     </span>
@@ -181,7 +199,12 @@ function AnimatedWaves() {
 }
 
 export default function GeckNavbar() {
-  const [language, setLanguage] = useState("es");
+  const [language, setLanguage] = useState('es');
+
+  useLayoutEffect(() => {
+    const stored = localStorage.getItem('geck-language') || 'es';
+    if (stored !== 'es') setLanguage(stored);
+  }, []);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mobileMenuClosing, setMobileMenuClosing] = useState(false);
   const [langMenuOpen, setLangMenuOpen] = useState(false);
@@ -190,7 +213,7 @@ export default function GeckNavbar() {
   const langMenuRef = useRef(null);
   const navRef = useRef(null);
 
-  const t = translations[language];
+  const t = navTranslations[language];
 
   useEffect(() => {
     const handleScroll = () => {
@@ -219,6 +242,8 @@ export default function GeckNavbar() {
 
   const handleLanguageChange = (code) => {
     setLanguage(code);
+    localStorage.setItem('geck-language', code);
+    window.dispatchEvent(new CustomEvent('geck-language-change', { detail: { lang: code } }));
     setLangMenuOpen(false);
     if (mobileMenuOpen) closeMobileMenu();
   };
@@ -349,23 +374,42 @@ export default function GeckNavbar() {
       </nav>
 
       {mobileMenuOpen && (
-        <div className={`mobile-menu ${mobileMenuClosing ? "mobile-menu-closing" : ""}`}>
-          <div style={{ padding: "2rem", display: "flex", flexDirection: "column", gap: "1.5rem", marginTop: "2rem" }}>
+        <div className={`mobile-menu ${mobileMenuClosing ? "mobile-menu-closing" : ""}`}
+          style={{ overflowY: "auto" }}
+        >
+          <div style={{ padding: "2rem", display: "flex", flexDirection: "column", gap: "1.5rem", marginTop: "2rem", paddingBottom: "3rem" }}>
             {navLinks.map(({ key, icon: Icon, href }) => (
               <a key={key} href={href} onClick={handleNavLinkClick} className="mobile-nav-link" style={{ display: "flex", alignItems: "center", gap: "1rem", padding: "1.25rem", borderRadius: "15px", color: "white", textDecoration: "none", fontSize: "1.5rem", fontWeight: "600" }}>
                 <Icon size={24} style={{ color: "var(--gold)" }} /> {t[key]}
               </a>
             ))}
-            {/* ← LINK en lugar de button con openDrawer */}
             <a href="/contacto" className="mobile-contact-link">
               <Mail size={24} /> {t.contact}
             </a>
-            <div style={{ marginTop: "2rem" }}>
-              <p style={{ color: "rgba(255,255,255,0.5)", marginBottom: "1rem" }}>{t.language}</p>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "0.5rem" }}>
+            <div>
+              <p style={{ color: "rgba(255,255,255,0.5)", marginBottom: "1rem", fontSize: "0.8rem", letterSpacing: "0.15em", textTransform: "uppercase" }}>{t.language}</p>
+              <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
                 {languageOptions.map((opt) => (
-                  <button key={opt.code} onClick={() => handleLanguageChange(opt.code)} className={`mobile-lang-btn ${language === opt.code ? "active" : ""}`} style={{ padding: "1rem", borderRadius: "12px", background: "rgba(2,6,20,0.4)", border: "1px solid rgba(212,175,55,0.2)", color: "white" }}>
-                    {opt.flag}
+                  <button
+                    key={opt.code}
+                    onClick={() => handleLanguageChange(opt.code)}
+                    className={`mobile-lang-btn ${language === opt.code ? "active" : ""}`}
+                    style={{
+                      display: "flex", alignItems: "center", gap: "0.75rem",
+                      padding: "0.9rem 1.25rem", borderRadius: "12px",
+                      background: language === opt.code ? "rgba(212,175,55,0.18)" : "rgba(2,6,20,0.4)",
+                      border: language === opt.code ? "1px solid var(--gold)" : "1px solid rgba(212,175,55,0.2)",
+                      color: "white", cursor: "pointer", fontSize: "1rem", fontWeight: language === opt.code ? "700" : "400",
+                      width: "100%", textAlign: "left",
+                    }}
+                  >
+                    <span style={{ fontSize: "1.4rem" }}>{opt.flag}</span>
+                    <span>{opt.label}</span>
+                    {language === opt.code && (
+                      <svg style={{ marginLeft: "auto", color: "var(--gold)" }} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M5 13l4 4L19 7" />
+                      </svg>
+                    )}
                   </button>
                 ))}
               </div>

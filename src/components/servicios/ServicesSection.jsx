@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
+import { useLanguage } from '../../hooks/useLanguage';
 
 
 /* ─── CATEGORY ICON COMPONENTS ─────────────────────────────── */
@@ -41,210 +42,42 @@ const CategoryIconInversion = () => (
 );
 
 /* ─── CATEGORIES DATA ────────────────────────────────────────── */
-const categories = [
-  {
-    id: 0,
-    name: "Desarrollo",
-    description: "Construimos tu presencia digital",
-    IconComponent: CategoryIconDesarrollo,
-    gradient: "linear-gradient(135deg, #030C1D 0%, #0A1D35 60%, #0d2845 100%)",
-    accentColor: "#D4AF37",
-    glowColor: "rgba(212, 175, 55, 0.2)",
-    borderActive: "rgba(88, 74, 28, 0.6)",
-  },
-  {
-    id: 1,
-    name: "Marketing & Diseño",
-    description: "Te hacemos brillar",
-    IconComponent: CategoryIconMarketing,
-    gradient: "linear-gradient(135deg, #030C1D 0%, #0A1D35 60%, #0d2845 100%)",
-    accentColor: "#D4AF37",
-    glowColor: "rgba(212, 175, 55, 0.2)",
-    borderActive: "rgba(88, 74, 28, 0.6)",
-  },
-  {
-    id: 2,
-    name: "Inversión",
-    description: "Únete a nuestros proyectos",
-    IconComponent: CategoryIconInversion,
-    gradient: "linear-gradient(135deg, #030C1D 0%, #0A1D35 60%, #0d2845 100%)",
-    accentColor: "#D4AF37",
-    glowColor: "rgba(212, 175, 55, 0.2)",
-    borderActive: "rgba(88, 74, 28, 0.6)",
-  }
+const categoriesBase = [
+  { id: 0, IconComponent: CategoryIconDesarrollo, gradient: "linear-gradient(135deg, #030C1D 0%, #0A1D35 60%, #0d2845 100%)", accentColor: "#D4AF37", glowColor: "rgba(212, 175, 55, 0.2)", borderActive: "rgba(88, 74, 28, 0.6)" },
+  { id: 1, IconComponent: CategoryIconMarketing,  gradient: "linear-gradient(135deg, #030C1D 0%, #0A1D35 60%, #0d2845 100%)", accentColor: "#D4AF37", glowColor: "rgba(212, 175, 55, 0.2)", borderActive: "rgba(88, 74, 28, 0.6)" },
+  { id: 2, IconComponent: CategoryIconInversion,  gradient: "linear-gradient(135deg, #030C1D 0%, #0A1D35 60%, #0d2845 100%)", accentColor: "#D4AF37", glowColor: "rgba(212, 175, 55, 0.2)", borderActive: "rgba(88, 74, 28, 0.6)" },
 ];
 
-/* ─── SERVICES DATA ──────────────────────────────────────────── */
-const services = {
+/* ─── SERVICES STATIC DATA (no text) ────────────────────────── */
+const servicesStatic = {
   0: [
-    { 
-      id: 0, 
-      slug: "web",            
-      name: "Desarrollo Web",          
-      tagline: "Tu Negocio en Internet, Pero Bien Hecho",  
-      description: "Desarrollamos soluciones web completas adaptadas a las necesidades reales de tu negocio. Desde plataformas corporativas hasta sistemas complejos, construimos productos digitales escalables, seguros y optimizados para un crecimiento sostenible. Utilizamos las tecnologías que mejor se ajusten a cada proyecto, garantizando rendimiento, estabilidad y una correcta evolución a largo plazo.", 
-      features: [
-        "Responsive design para móvil, tablet y desktop", 
-        "Optimización SEO para aparecer en Google", 
-        "Velocidad de carga ultrarrápida (Core Web Vitals)", 
-        "Integración con Google Analytics y CRM"
-      ], 
-      image: "/assets/image/servicios/webser.webp",     
-      size: "large"    
-    },
-
-    { 
-      id: 1, 
-      slug: "mobile",         
-      name: "Apps Móviles",            
-      tagline: "Apps que la Gente Usa Todos los Días",     
-      description: "Desarrollamos aplicaciones móviles con Flutter para iOS y Android desde una sola base de código, reduciendo costos y acelerando el lanzamiento. Creamos apps rápidas, escalables y diseñadas para crecer junto con tu negocio.",               
-      features: [
-        "Desarrollo multiplataforma con Flutter", 
-        "Notificaciones push para mantener engagement", 
-        "Diseño intuitivo siguiendo guidelines", 
-        "Publicación en App Store y Google Play"
-      ],             
-      image: "/assets/image/servicios/celser.webp",     
-      size: "large"    
-    },
-
-    { 
-      id: 2, 
-      slug: "ia",             
-      name: "Inteligencia Artificial", 
-      tagline: "IA Aplicada a Resultados Reales",                    
-      description: "Implementamos soluciones de Inteligencia Artificial orientadas a mejorar, analizar y eficientizar procesos dentro de tu negocio. Desde automatización inteligente y análisis predictivo hasta modelos que optimizan operaciones y reducen costos, integramos IA de forma estratégica para que tu empresa tome decisiones más precisas y opere con mayor eficiencia.",                         
-      features: [
-        "Automatización inteligente de procesos", 
-        "Modelos predictivos y análisis avanzado de datos", 
-        "Optimización operativa y reducción de costos", 
-        "Integración con sistemas y plataformas existentes"
-      ],                                    
-      image: "/assets/image/servicios/iaser.webp",      
-      size: "large"    
-    },
-
-    { 
-      id: 3, 
-      slug: "ecommerce",      
-      name: "E-commerce",              
-      tagline: "Tienda Online que Vende de Verdad",        
-      description: "Montamos tu tienda online completa con Shopify, WooCommerce o custom. Carrito, pagos con tarjeta, envíos, inventario - todo integrado.",                                              
-      features: [
-        "Catálogo con filtros y búsqueda", 
-        "Pagos (Stripe, MercadoPago, PayPal)", 
-        "Integración con envíos y tracking", 
-        "Panel de administración"
-      ],                                              
-      image: "/assets/image/servicios/ecomersser.webp", 
-      size: "medium"   
-    },
-
-    { 
-      id: 4, 
-      slug: "saas",           
-      name: "SaaS & Plataformas",      
-      tagline: "Plataformas que Cobran Solas",             
-      description: "Creamos plataformas tipo Netflix o Spotify: tus clientes pagan mensual, el sistema cobra automático y tú ves crecer los ingresos.",                                               
-      features: [
-        "Suscripciones recurrentes automáticas", 
-        "Multi-tenant: miles de usuarios", 
-        "Dashboard con métricas en tiempo real", 
-        "API REST para integraciones"
-      ],                                   
-      image: "/assets/image/servicios/saasser.webp",     
-      size: "medium"   
-    },
-
-    { 
-      id: 5, 
-      slug: "automatizacion", 
-      name: "Automatización",          
-      tagline: "Deja que el Software Haga el Trabajo",     
-      description: "Automatizamos procesos que te quitan horas. Conectamos tus sistemas para que trabajen solos. Menos trabajo manual = menos errores.",                                                
-      features: [
-        "Workflows (Zapier, Make o n8n)", 
-        "Integración entre sistemas (APIs)", 
-        "Bots de tareas repetitivas (RPA)", 
-        "Ahorro de tiempo real"
-      ],                                                    
-      image: "/assets/image/servicios/autoserv.webp",   
-      size: "small"    
-    },
-
-    { 
-      id: 6, 
-      slug: "custom",         
-      name: "Software a Medida",       
-      tagline: "Software Hecho Para Tu Negocio",           
-      description: "Desarrollamos sistemas empresariales personalizados 100% a tu medida. ERP, CRM, gestión de inventario, facturación - lo que necesites.",                                          
-      features: [
-        "Análisis de procesos y necesidades", 
-        "Desarrollo custom desde cero", 
-        "Dashboards y reportes con KPIs", 
-        "Mantenimiento y soporte continuo"
-      ],                                           
-      image: "/assets/image/servicios/medidaser.webp",  
-      size: "small"    
-    },
+    { id: 0, slug: 'web',            image: '/assets/image/servicios/webser.webp',     size: 'large'    },
+    { id: 1, slug: 'mobile',         image: '/assets/image/servicios/celser.webp',     size: 'large'    },
+    { id: 2, slug: 'ia',             image: '/assets/image/servicios/iaser.webp',      size: 'large'    },
+    { id: 3, slug: 'ecommerce',      image: '/assets/image/servicios/ecomersser.webp', size: 'medium'   },
+    { id: 4, slug: 'saas',           image: '/assets/image/servicios/saasser.webp',    size: 'medium'   },
+    { id: 5, slug: 'automatizacion', image: '/assets/image/servicios/autoserv.webp',   size: 'small'    },
+    { id: 6, slug: 'custom',         image: '/assets/image/servicios/medidaser.webp',  size: 'small'    },
   ],
-
   1: [
-    { 
-      id: 7, 
-      slug: "diseno",         
-      name: "Diseño UI/UX",            
-      tagline: "Diseño que Vende y Enamora",               
-      description: "Diseñamos interfaces que la gente entiende al instante y quiere usar. Combinamos diseño bonito con usabilidad real.",                                                               
-      features: [
-        "Research y testing con usuarios", 
-        "Diseño system escalable", 
-        "Prototipos interactivos", 
-        "Implementación pixel-perfect"
-      ],                                                               
-      image: "/assets/image/servicios/ui-ux.webp",     
-      size: "large"    
-    },
-
-    { 
-      id: 8, 
-      slug: "redes-sociales", 
-      name: "Social Media",            
-      tagline: "Redes Sociales que Generan Negocio",       
-      description: "Gestionamos tus redes con estrategia. Creamos contenido que tu audiencia quiere ver y compartir.",                                                                               
-      features: [
-        "Estrategia de contenido", 
-        "Calendario editorial y producción", 
-        "Community management", 
-        "Reportes mensuales de métricas"
-      ],                                                             
-      image: "/assets/image/servicios/social.webp",     
-      size: "large"    
-    },
+    { id: 7, slug: 'diseno',         image: '/assets/image/servicios/ui-ux.webp',      size: 'large'    },
+    { id: 8, slug: 'redes-sociales', image: '/assets/image/servicios/social.webp',     size: 'large'    },
   ],
-
   2: [
-    { 
-      id: 9, 
-      slug: "inversion",      
-      name: "Venture Studio",          
-      tagline: "Invierte en Productos Tech Reales",        
-      description: "Creamos nuestros propios productos digitales y buscamos inversionistas inteligentes para escalarlos. Productos con tracción real.",                                               
-      features: [
-        "Usuarios reales y validación", 
-        "Modelos de negocio probados", 
-        "Proyecciones financieras claras", 
-        "Reportes de crecimiento"
-      ],                                                          
-      image: "/assets/image/servicios/inversion.webp",   
-      size: "featured" 
-    },
-  ]
+    { id: 9, slug: 'inversion',      image: '/assets/image/servicios/inversion.webp',  size: 'featured' },
+  ],
 };
 /* ─── MAIN COMPONENT ─────────────────────────────────────────── */
 export default function ImprovedServices() {
- 
+  const { t } = useLanguage();
+  const categories = categoriesBase.map((c, i) => ({ ...c, ...t.services.categories[i] }));
+  const services = Object.fromEntries(
+    Object.entries(servicesStatic).map(([catId, items]) => [
+      catId,
+      items.map(s => ({ ...s, ...t.services.items[s.slug] })),
+    ])
+  );
+
   const [activeCategory, setActiveCategory] = useState(0);
   const [expandedServiceId, setExpandedServiceId] = useState(null);
   const [isClosing, setIsClosing] = useState(false);
@@ -258,10 +91,9 @@ export default function ImprovedServices() {
     return () => window.removeEventListener('resize', check);
   }, []);
 
-  const expandedServiceData = useMemo(() => {
-    if (expandedServiceId === null) return null;
-    return Object.values(services).flat().find(s => s.id === expandedServiceId);
-  }, [expandedServiceId]);
+  const expandedServiceData = expandedServiceId === null
+    ? null
+    : Object.values(services).flat().find(s => s.id === expandedServiceId);
 
   const closeExpanded = useCallback(() => {
     setIsClosing(true);
@@ -320,9 +152,9 @@ export default function ImprovedServices() {
     <>
       <section className="improved-services">
         <div className="improved-services__hero">
-          <span className="improved-services__pretitle">Nuestros Servicios</span>
-          <h1 className="improved-services__title">Lo Que Hacemos por Tu Negocio</h1>
-          <p className="improved-services__subtitle">Sin tecnicismos raros. Solo soluciones que funcionan.</p>
+          <span className="improved-services__pretitle">{t.services.pretitle}</span>
+          <h1 className="improved-services__title">{t.services.title}</h1>
+          <p className="improved-services__subtitle">{t.services.subtitle}</p>
         </div>
 
         {/* ─── CATEGORY BUTTONS — desktop cards / mobile tabs ─── */}
@@ -401,7 +233,7 @@ export default function ImprovedServices() {
                 <div className="mobile-card__content">
                   <p className="mobile-card__tagline">{service.tagline}</p>
                   <h3 className="mobile-card__name">{service.name}</h3>
-                  <span className="mobile-card__cta">Ver detalles →</span>
+                  <span className="mobile-card__cta">{t.services.seeDetails} →</span>
                 </div>
               </div>
             ))}
@@ -426,7 +258,7 @@ export default function ImprovedServices() {
                   </div>
                   <div className="service-card__hint">
                     <span>+</span>
-                    <span>Ver detalles</span>
+                    <span>{t.services.seeDetails}</span>
                   </div>
                 </div>
               </div>
@@ -441,7 +273,7 @@ export default function ImprovedServices() {
             <div className="service-modal" role="dialog" aria-modal="true">
               {/* drag handle only on mobile */}
               {isMobile && <div className="service-modal__handle" />}
-              <button className="service-modal__close" onClick={closeExpanded} aria-label="Cerrar modal">
+              <button className="service-modal__close" onClick={closeExpanded} aria-label={t.services.modal.close}>
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
                   <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
                 </svg>
@@ -459,7 +291,7 @@ export default function ImprovedServices() {
                   <p>{expandedServiceData.description}</p>
                 </div>
                 <div className="service-modal__features">
-                  <h3 className="service-modal__features-title">¿Qué Incluye?</h3>
+                  <h3 className="service-modal__features-title">{t.services.modal.featuresTitle}</h3>
                   <div className="service-modal__features-grid">
                     {expandedServiceData.features.map((feature, index) => (
                       <div key={index} className="feature-card" style={{ animationDelay: `${0.15 + (index * 0.05)}s` }}>
@@ -476,7 +308,7 @@ export default function ImprovedServices() {
                 <div className="service-modal__cta-wrapper">
                   {/* ← CAMBIO CLAVE: button con onClick en lugar de <a href> */}
                   <a href="/contacto" className="service-modal__cta">
-                    <span>{expandedServiceData.id === 9 ? "Quiero Invertir" : "Hablemos de Tu Proyecto"}</span>
+                    <span>{expandedServiceData.id === 9 ? t.services.modal.ctaInversion : t.services.modal.cta}</span>
                     <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
                       <path d="M4 10H16M16 10L10 4M16 10L10 16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                     </svg>

@@ -1,81 +1,58 @@
 import { useState, useEffect, useRef } from 'react';
+import { useLanguage } from '../../hooks/useLanguage';
 
-const SERVICES = [
-  {
-    id: 'ia',
-    title: 'IA & Automatización',
-    description: 'Desarrollamos soluciones de inteligencia artificial y visión por computadora que transforman tu negocio',
-    link: '/servicios#ia',
-    buttonText: 'Explorar IA',
-    videoDesktop: '/assets/video/ia.mp4',
-    videoMobile: '/assets/video/ia-cel.mp4',
-    poster: '/assets/image/ia-poster.webp',
-    tag: 'Inteligencia Artificial',
-  },
-  {
-    id: 'web',
-    title: 'Desarrollo Web',
-    description: 'Creamos aplicaciones web modernas, rápidas y escalables con las mejores tecnologías del mercado',
-    link: '/servicios#web',
-    buttonText: 'Explorar Web',
-    videoDesktop: '/assets/video/web.mp4',
-    videoMobile: '/assets/video/web-movil.mp4',
-    poster: '/assets/image/web-poster.webp',
-    tag: 'Web & E-commerce',
-  },
-  {
-    id: 'mobile',
-    title: 'Desarrollo Móvil',
-    description: 'Apps móviles nativas y multiplataforma que tus usuarios amarán y usarán todos los días',
-    link: '/servicios#mobile',
-    buttonText: 'Explorar Móvil',
-    videoDesktop: '/assets/video/cel.mp4',
-    videoMobile: '/assets/video/cel.mp4',
-    poster: '/assets/image/cel-poster.webp',
-    tag: 'iOS & Android',
-  },
+const SERVICE_MEDIA = [
+  { id: 'ia',     link: '/servicios#ia',     videoDesktop: '/assets/video/ia.mp4',  videoMobile: '/assets/video/ia-cel.mp4',    poster: '/assets/image/ia-poster.webp' },
+  { id: 'web',    link: '/servicios#web',    videoDesktop: '/assets/video/web.mp4', videoMobile: '/assets/video/web-movil.mp4', poster: '/assets/image/web-poster.webp' },
+  { id: 'mobile', link: '/servicios#mobile', videoDesktop: '/assets/video/cel.mp4', videoMobile: '/assets/video/cel.mp4',       poster: '/assets/image/cel-poster.webp' },
 ];
 
 export default function SpecialtiesShowcase() {
+  const { t } = useLanguage();
+  const SERVICES = SERVICE_MEDIA.map((m, i) => ({ ...m, ...t.specialties.services[i] }));
   const [activeIndex, setActiveIndex] = useState(0);
-  const [transitionProgress, setTransitionProgress] = useState(1); // 0→1: fade in del activo
   const [isMobile, setIsMobile] = useState(false);
   const wrapperRef = useRef(null);
+  const contentRef = useRef(null);
   const prevIndexRef = useRef(0);
   const videoRefs = useRef([]);
 
-  /* ── Detectar mobile ── */
+  /* ── Detectar mobile (debounced) ── */
   useEffect(() => {
-    const check = () => setIsMobile(window.innerWidth <= 767);
+    let timer;
+    const check = () => {
+      clearTimeout(timer);
+      timer = setTimeout(() => setIsMobile(window.innerWidth <= 767), 150);
+    };
     check();
-    window.addEventListener('resize', check);
-    return () => window.removeEventListener('resize', check);
+    window.addEventListener('resize', check, { passive: true });
+    return () => { window.removeEventListener('resize', check); clearTimeout(timer); };
   }, []);
 
-  /* ── Scroll → índice activo ── */
+  /* ── Scroll → índice activo, DOM directo para fade ── */
   useEffect(() => {
     const handleScroll = () => {
       if (!wrapperRef.current) return;
 
       const { top, height } = wrapperRef.current.getBoundingClientRect();
-      // progress 0 cuando el wrapper entra al viewport, 1 cuando sale
       const scrolled = -top / (height - window.innerHeight);
       const clamped = Math.max(0, Math.min(1, scrolled));
 
       const phaseSize = 1 / SERVICES.length;
       const rawIndex = Math.floor(clamped / phaseSize);
       const newIndex = Math.min(rawIndex, SERVICES.length - 1);
-
-      // Progreso dentro de la fase actual (0→1)
       const phaseProgress = (clamped - newIndex * phaseSize) / phaseSize;
+      const progress = Math.min(1, phaseProgress * 3);
 
       if (newIndex !== prevIndexRef.current) {
         prevIndexRef.current = newIndex;
-        setActiveIndex(newIndex);
-        setTransitionProgress(0); // reinicia fade
-      } else {
-        // usa el progreso de fase para controlar el fade-in del texto
-        setTransitionProgress(Math.min(1, phaseProgress * 3)); // rápido al inicio
+        setActiveIndex(newIndex); // único setState en scroll
+      }
+
+      // Fade del contenido directo al DOM, sin setState
+      if (contentRef.current) {
+        contentRef.current.style.opacity = String(progress);
+        contentRef.current.style.transform = `translateY(${(1 - progress) * 24}px)`;
       }
     };
 
@@ -129,16 +106,14 @@ export default function SpecialtiesShowcase() {
 
           {/* ── Cabecera fija arriba ── */}
           <div className="sc-header">
-            <span className="sc-header__label">Nuestras Especialidades</span>
+            <span className="sc-header__label">{t.specialties.sectionLabel}</span>
           </div>
 
           {/* ── Contenido central del servicio activo ── */}
           <div
+            ref={contentRef}
             className="sc-content"
-            style={{
-              opacity: transitionProgress,
-              transform: `translateY(${(1 - transitionProgress) * 24}px)`,
-            }}
+            style={{ opacity: 0, transform: 'translateY(24px)' }}
           >
             <span className="sc-content__tag">{active.tag}</span>
             <h2 className="sc-content__title">{active.title}</h2>
@@ -268,7 +243,6 @@ export default function SpecialtiesShowcase() {
           left: 5rem;
           max-width: 600px;
           z-index: 10;
-          transition: opacity 0.35s ease, transform 0.35s ease;
           will-change: opacity, transform;
         }
 

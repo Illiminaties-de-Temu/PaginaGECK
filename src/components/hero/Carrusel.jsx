@@ -1,14 +1,17 @@
 import { useState, useEffect, useRef } from 'react';
+import { useLanguage } from '../../hooks/useLanguage';
 
-const CLIENTS = [
-  { id:1, name:'Gobierno Municipal de Parral', logo:'assets/image/parral.webp',          desc:'Plataforma para la creación de gafetes gubernamentales' },
-  { id:2, name:'Las Chikis Restaurante',       logo:'assets/image/laschikis.webp',        desc:'Sistema de análisis de datos en tiempo real' },
-  { id:3, name:'Capital Transport LLP',        logo:'assets/image/CapitalTransport.webp', desc:'App móvil para gestión de flotillas vehiculares' },
-  { id:4, name:'Instituto Tecnológico de Parral', logo:'assets/image/yec.webp',           desc:'Software para empresas 4.0' },
-  { id:5, name:'Coronado Gym',                 logo:'assets/image/gym.webp',              desc:'Plataforma web para control del gimnasio' },
+const CLIENTS_BASE = [
+  { id:1, name:'Gobierno Municipal de Parral',     logo:'assets/image/parral.webp' },
+  { id:2, name:'Las Chikis Restaurante',            logo:'assets/image/laschikis.webp' },
+  { id:3, name:'Capital Transport LLP',             logo:'assets/image/CapitalTransport.webp' },
+  { id:4, name:'Instituto Tecnológico de Parral',   logo:'assets/image/yec.webp' },
+  { id:5, name:'Coronado Gym',                      logo:'assets/image/gym.webp' },
 ];
 
 export default function ClientCarousel() {
+  const { t } = useLanguage();
+  const CLIENTS = CLIENTS_BASE.map(c => ({ ...c, desc: t.clients.descriptions[c.id] }));
   const [activeId,  setActiveId]  = useState(null);
   const [tooltip,   setTooltip]   = useState(null); // { client, top, left }
   const [paused,    setPaused]    = useState(false);
@@ -63,8 +66,8 @@ export default function ClientCarousel() {
 
         {/* Título */}
         <header className="cc-header">
-          <h2 className="cc-h2">Compañías, Organizaciones y Más</h2>
-          <p className="cc-lead">con las cuales hemos colaborado</p>
+          <h2 className="cc-h2">{t.clients.title}</h2>
+          <p className="cc-lead">{t.clients.subtitle}</p>
         </header>
 
         {/* Track — CSS animation, dirección IZQUIERDA A DERECHA */}

@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
+import { useLanguage } from '../../hooks/useLanguage';
 
 export default function AboutCTA() {
+  const { t } = useLanguage();
   const [isVisible, setIsVisible] = useState(false);
   const [counts, setCounts] = useState({
     projects: 0,
@@ -39,27 +41,21 @@ export default function AboutCTA() {
   }, []);
 
   const animateCounters = () => {
-    const duration = 2000; // 2 segundos
-    const steps = 60;
-    const interval = duration / steps;
+    const duration = 2000;
+    const startTime = performance.now();
 
-    let currentStep = 0;
-
-    const timer = setInterval(() => {
-      currentStep++;
-      const progress = currentStep / steps;
-
+    const frame = (now) => {
+      const progress = Math.min((now - startTime) / duration, 1);
       setCounts({
         projects: Math.floor(targets.projects * progress),
         clients: Math.floor(targets.clients * progress),
-        satisfaction: Math.floor(targets.satisfaction * progress)
+        satisfaction: Math.floor(targets.satisfaction * progress),
       });
+      if (progress < 1) requestAnimationFrame(frame);
+      else setCounts(targets);
+    };
 
-      if (currentStep >= steps) {
-        clearInterval(timer);
-        setCounts(targets);
-      }
-    }, interval);
+    requestAnimationFrame(frame);
   };
 
   return (
@@ -81,7 +77,7 @@ export default function AboutCTA() {
                 </svg>
               </div>
               <div className="stat-card__number">{counts.projects}+</div>
-              <div className="stat-card__label">Proyectos Completados</div>
+              <div className="stat-card__label">{t.fin.stats.projects}</div>
             </div>
 
             <div className="stat-card">
@@ -91,7 +87,7 @@ export default function AboutCTA() {
                 </svg>
               </div>
               <div className="stat-card__number">{counts.clients}+</div>
-              <div className="stat-card__label">Clientes Satisfechos</div>
+              <div className="stat-card__label">{t.fin.stats.clients}</div>
             </div>
 
             <div className="stat-card">
@@ -101,24 +97,23 @@ export default function AboutCTA() {
                 </svg>
               </div>
               <div className="stat-card__number">{counts.satisfaction}%</div>
-              <div className="stat-card__label">Tasa de Satisfacción</div>
+              <div className="stat-card__label">{t.fin.stats.satisfaction}</div>
             </div>
           </div>
 
           {/* CTA Content */}
           <div className={`about-cta__content ${isVisible ? 'about-cta__content--visible' : ''}`}>
             <h2 className="about-cta__title">
-              ¿Listo Para Transformar
-              <span className="about-cta__title-highlight"> Tu Idea en Realidad?</span>
+              {t.fin.title}
+              <span className="about-cta__title-highlight">{t.fin.highlight}</span>
             </h2>
             <p className="about-cta__description">
-              Cuéntanos sobre tu proyecto y descubre cómo podemos ayudarte a 
-              alcanzar tus objetivos digitales con soluciones innovadoras y personalizadas.
+              {t.fin.description}
             </p>
 
             <div className="about-cta__buttons">
               <button className="about-cta__button about-cta__button--primary">
-                <span>Iniciar Proyecto</span>
+                <span>{t.fin.btnPrimary}</span>
                 <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
                   <path d="M7 3L14 10L7 17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
@@ -127,30 +122,20 @@ export default function AboutCTA() {
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
                   <path d="M3 8L10.89 13.26C11.2187 13.4793 11.6049 13.5963 12 13.5963C12.3951 13.5963 12.7813 13.4793 13.11 13.26L21 8M5 19H19C19.5304 19 20.0391 18.7893 20.4142 18.4142C20.7893 18.0391 21 17.5304 21 17V7C21 6.46957 20.7893 5.96086 20.4142 5.58579C20.0391 5.21071 19.5304 5 19 5H5C4.46957 5 3.96086 5.21071 3.58579 5.58579C3.21071 5.96086 3 6.46957 3 7V17C3 17.5304 3.21071 18.0391 3.58579 18.4142C3.96086 18.7893 4.46957 19 5 19Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
-                <span>Enviar Email</span>
+                <span>{t.fin.btnSecondary}</span>
               </button>
             </div>
 
             {/* Características rápidas */}
             <div className="about-cta__features">
-              <div className="feature-item">
-                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                  <path d="M10 2L12.5 7L18 8L14 12L15 18L10 15L5 18L6 12L2 8L7.5 7L10 2Z" fill="currentColor"/>
-                </svg>
-                <span>Respuesta en 24 horas</span>
-              </div>
-              <div className="feature-item">
-                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                  <path d="M10 2L12.5 7L18 8L14 12L15 18L10 15L5 18L6 12L2 8L7.5 7L10 2Z" fill="currentColor"/>
-                </svg>
-                <span>Consultoría sin costo</span>
-              </div>
-              <div className="feature-item">
-                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                  <path d="M10 2L12.5 7L18 8L14 12L15 18L10 15L5 18L6 12L2 8L7.5 7L10 2Z" fill="currentColor"/>
-                </svg>
-                <span>Garantía de calidad</span>
-              </div>
+              {t.fin.features.map((f, i) => (
+                <div key={i} className="feature-item">
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                    <path d="M10 2L12.5 7L18 8L14 12L15 18L10 15L5 18L6 12L2 8L7.5 7L10 2Z" fill="currentColor"/>
+                  </svg>
+                  <span>{f}</span>
+                </div>
+              ))}
             </div>
           </div>
         </div>

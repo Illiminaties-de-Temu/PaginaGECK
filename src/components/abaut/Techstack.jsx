@@ -1,73 +1,14 @@
 import { useRef } from 'react';
 import { motion } from 'framer-motion';
+import { useLanguage } from '../../hooks/useLanguage';
 
-const categories = [
-  {
-    id: 'frontend',
-    label: 'Frontend',
-    techs: [
-      { name: 'React',      logo: 'https://cdn.simpleicons.org/react/61DAFB' },
-      { name: 'Next.js',    logo: 'https://cdn.simpleicons.org/nextdotjs/ffffff' },
-      { name: 'Astro',      logo: 'https://cdn.simpleicons.org/astro/FF5D01' },
-      { name: 'TypeScript', logo: 'https://cdn.simpleicons.org/typescript/3178C6' },
-      { name: 'JavaScript', logo: 'https://cdn.simpleicons.org/javascript/F7DF1E' },
-      { name: 'Tailwind',   logo: 'https://cdn.simpleicons.org/tailwindcss/06B6D4' },
-      { name: 'HTML',       logo: 'https://cdn.simpleicons.org/html5/E34F26' },
-      { name: 'CSS',        logo: 'https://cdn.simpleicons.org/css3/1572B6' },
-    ],
-  },
-  {
-    id: 'mobile',
-    label: 'Mobile',
-    techs: [
-      { name: 'Flutter', logo: 'https://cdn.simpleicons.org/flutter/02569B' },
-      { name: 'Swift',   logo: 'https://cdn.simpleicons.org/swift/F05138' },
-      { name: 'Kotlin',  logo: 'https://cdn.simpleicons.org/kotlin/7F52FF' },
-    ],
-  },
-  {
-    id: 'design',
-    label: 'Diseño',
-    techs: [
-      { name: 'Figma', logo: 'https://cdn.simpleicons.org/figma/F24E1E' },
-      { name: 'Vite',  logo: 'https://cdn.simpleicons.org/vite/646CFF' },
-    ],
-  },
-  {
-    id: 'cloud',
-    label: 'Cloud & DevOps',
-    techs: [
-      { name: 'AWS',    logo: 'https://cdn.simpleicons.org/amazonaws/FF9900' },
-      { name: 'Docker', logo: 'https://cdn.simpleicons.org/docker/2496ED' },
-      { name: 'Git',    logo: 'https://cdn.simpleicons.org/git/F05032' },
-      { name: 'GitHub', logo: 'https://cdn.simpleicons.org/github/ffffff' },
-      { name: 'Vercel', logo: 'https://cdn.simpleicons.org/vercel/ffffff' },
-    ],
-  },
-  {
-    id: 'backend',
-    label: 'Backend',
-    techs: [
-      { name: 'Node.js', logo: 'https://cdn.simpleicons.org/nodedotjs/339933' },
-      { name: 'Python',  logo: 'https://cdn.simpleicons.org/python/3776AB' },
-      { name: 'Django',  logo: 'https://cdn.simpleicons.org/django/ffffff' },
-      { name: 'FastAPI', logo: 'https://cdn.simpleicons.org/fastapi/009688' },
-      { name: 'PHP',     logo: 'https://cdn.simpleicons.org/php/777BB4' },
-      { name: 'GraphQL', logo: 'https://cdn.simpleicons.org/graphql/E10098' },
-    ],
-  },
-  {
-    id: 'databases',
-    label: 'Bases de datos',
-    techs: [
-      { name: 'PostgreSQL', logo: 'https://cdn.simpleicons.org/postgresql/4169E1' },
-      { name: 'MongoDB',    logo: 'https://cdn.simpleicons.org/mongodb/47A248' },
-      { name: 'Redis',      logo: 'https://cdn.simpleicons.org/redis/DC382D' },
-      { name: 'Supabase',   logo: 'https://cdn.simpleicons.org/supabase/3ECF8E' },
-      { name: 'Firebase',   logo: 'https://cdn.simpleicons.org/firebase/FFCA28' },
-      { name: 'Prisma',     logo: 'https://cdn.simpleicons.org/prisma/ffffff' },
-    ],
-  },
+const categoriesBase = [
+  { id: 'frontend',  techs: [ { name: 'React', logo: 'https://cdn.simpleicons.org/react/61DAFB' }, { name: 'Next.js', logo: 'https://cdn.simpleicons.org/nextdotjs/ffffff' }, { name: 'Astro', logo: 'https://cdn.simpleicons.org/astro/FF5D01' }, { name: 'TypeScript', logo: 'https://cdn.simpleicons.org/typescript/3178C6' }, { name: 'JavaScript', logo: 'https://cdn.simpleicons.org/javascript/F7DF1E' }, { name: 'Tailwind', logo: 'https://cdn.simpleicons.org/tailwindcss/06B6D4' }, { name: 'HTML', logo: 'https://cdn.simpleicons.org/html5/E34F26' }, { name: 'CSS', logo: 'https://cdn.simpleicons.org/css3/1572B6' } ] },
+  { id: 'mobile',    techs: [ { name: 'Flutter', logo: 'https://cdn.simpleicons.org/flutter/02569B' }, { name: 'Swift', logo: 'https://cdn.simpleicons.org/swift/F05138' }, { name: 'Kotlin', logo: 'https://cdn.simpleicons.org/kotlin/7F52FF' } ] },
+  { id: 'design',    techs: [ { name: 'Figma', logo: 'https://cdn.simpleicons.org/figma/F24E1E' }, { name: 'Vite', logo: 'https://cdn.simpleicons.org/vite/646CFF' } ] },
+  { id: 'cloud',     techs: [ { name: 'AWS', logo: 'https://cdn.simpleicons.org/amazonaws/FF9900' }, { name: 'Docker', logo: 'https://cdn.simpleicons.org/docker/2496ED' }, { name: 'Git', logo: 'https://cdn.simpleicons.org/git/F05032' }, { name: 'GitHub', logo: 'https://cdn.simpleicons.org/github/ffffff' }, { name: 'Vercel', logo: 'https://cdn.simpleicons.org/vercel/ffffff' } ] },
+  { id: 'backend',   techs: [ { name: 'Node.js', logo: 'https://cdn.simpleicons.org/nodedotjs/339933' }, { name: 'Python', logo: 'https://cdn.simpleicons.org/python/3776AB' }, { name: 'Django', logo: 'https://cdn.simpleicons.org/django/ffffff' }, { name: 'FastAPI', logo: 'https://cdn.simpleicons.org/fastapi/009688' }, { name: 'PHP', logo: 'https://cdn.simpleicons.org/php/777BB4' }, { name: 'GraphQL', logo: 'https://cdn.simpleicons.org/graphql/E10098' } ] },
+  { id: 'databases', techs: [ { name: 'PostgreSQL', logo: 'https://cdn.simpleicons.org/postgresql/4169E1' }, { name: 'MongoDB', logo: 'https://cdn.simpleicons.org/mongodb/47A248' }, { name: 'Redis', logo: 'https://cdn.simpleicons.org/redis/DC382D' }, { name: 'Supabase', logo: 'https://cdn.simpleicons.org/supabase/3ECF8E' }, { name: 'Firebase', logo: 'https://cdn.simpleicons.org/firebase/FFCA28' }, { name: 'Prisma', logo: 'https://cdn.simpleicons.org/prisma/ffffff' } ] },
 ];
 
 // Easing premium tipo expo-out
@@ -102,6 +43,8 @@ function BentoCard({ category, delay }) {
 }
 
 export default function TechStack() {
+  const { t } = useLanguage();
+  const categories = categoriesBase.map(c => ({ ...c, label: t.tech.catLabels[c.id] }));
   return (
     <section className="bt-section">
 
@@ -112,9 +55,9 @@ export default function TechStack() {
         viewport={{ once: true, margin: '-80px' }}
         transition={{ duration: 0.6, ease: easeExpo }}
       >
-        <p className="bt-eyebrow">Stack Tecnológico</p>
+        <p className="bt-eyebrow">{t.tech.eyebrow}</p>
         <h2 className="bt-title">
-          Las herramientas <span className="bt-gold">con las que construimos</span>
+          {t.tech.title} <span className="bt-gold">{t.tech.highlight}</span>
         </h2>
       </motion.div>
 

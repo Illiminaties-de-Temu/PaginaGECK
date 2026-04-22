@@ -1,7 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
 import { Send, User, Mail, MessageSquare, Instagram } from 'lucide-react';
+import { useLanguage } from '../../hooks/useLanguage';
 
 export default function Contact() {
+  const { t } = useLanguage();
   const [formData, setFormData] = useState({ name: '', email: '', message: '' });
   const [submitted, setSubmitted] = useState(false);
   const [loading,   setLoading]   = useState(false);
@@ -32,15 +34,13 @@ export default function Contact() {
   }, []);
 
   const handleWhatsApp = () => {
-    const msg = formData.name
-      ? `Hola! Soy ${formData.name}. Quiero hablar sobre mi proyecto.`
-      : 'Hola! Quiero hablar sobre un proyecto.';
+    const msg = t.contact.waMsg(formData.name);
     window.open(`https://wa.me/${contactConfig.whatsapp.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(msg)}`, '_blank');
   };
 
   const handleGmail = () => {
-    const body = `Nombre: ${formData.name}\nEmail: ${formData.email}\n\nMensaje:\n${formData.message}`;
-    window.open(`https://mail.google.com/mail/?view=cm&to=${contactConfig.email}&su=${encodeURIComponent('Nuevo contacto desde la web')}&body=${encodeURIComponent(body)}`, '_blank');
+    const body = `${t.contact.name}: ${formData.name}\nEmail: ${formData.email}\n\n${t.contact.msg}:\n${formData.message}`;
+    window.open(`https://mail.google.com/mail/?view=cm&to=${contactConfig.email}&su=${encodeURIComponent(t.contact.emailSubject)}&body=${encodeURIComponent(body)}`, '_blank');
   };
 
   const handleSubmit = async (e) => {
@@ -603,16 +603,16 @@ export default function Contact() {
               <svg width="13" height="13" viewBox="0 0 20 20" fill="currentColor">
                 <path d="M10 2L12.5 7L18 8L14 12L15 18L10 15L5 18L6 12L2 8L7.5 7L10 2Z"/>
               </svg>
-              Contacto
+              {t.contact.badge}
             </span>
 
             <h2 className="ct-h1">
-              Hablemos de tu{' '}
-              <span>proyecto</span>
+              {t.contact.title}{' '}
+              <span>{t.contact.titleSpan}</span>
             </h2>
 
             <p className="ct-desc">
-              Respuesta garantizada en menos de 24h · 100% confidencial
+              {t.contact.desc}
             </p>
           </div>
 
@@ -625,12 +625,14 @@ export default function Contact() {
 
             {/* LEFT */}
             <div className="ct-left">
-              <span className="ct-eyebrow">Escríbenos ahora</span>
+              <span className="ct-eyebrow">{t.contact.eyebrow}</span>
 
               <h3 className="ct-left-title">
-                Elige cómo<br />contactarnos
+                {t.contact.chooseTitle.split('\n').map((line, i) => (
+                  <span key={i}>{line}{i === 0 && <br />}</span>
+                ))}
               </h3>
-              <p className="ct-left-sub">Sin intermediarios · Sin formularios perdidos</p>
+              <p className="ct-left-sub">{t.contact.chooseSub}</p>
 
               <div className="ct-methods">
                 <button className="ct-method" onClick={handleWhatsApp}>
@@ -641,7 +643,7 @@ export default function Contact() {
                   </div>
                   <div>
                     <span className="ct-mlabel">WhatsApp</span>
-                    <span className="ct-msub">Respuesta inmediata</span>
+                    <span className="ct-msub">{t.contact.waSub}</span>
                   </div>
                   <span className="ct-marrow">→</span>
                 </button>
@@ -651,7 +653,7 @@ export default function Contact() {
                     <Mail width={18} height={18} color="#D4AF37" />
                   </div>
                   <div>
-                    <span className="ct-mlabel">Correo electrónico</span>
+                    <span className="ct-mlabel">{t.contact.emailLabel}</span>
                     <span className="ct-msub">{contactConfig.email}</span>
                   </div>
                   <span className="ct-marrow">→</span>
@@ -671,7 +673,7 @@ export default function Contact() {
 
               <div className="ct-avail">
                 <span className="ct-dot" />
-                Disponible ahora mismo
+                {t.contact.available}
               </div>
             </div>
 
@@ -680,15 +682,15 @@ export default function Contact() {
 
             {/* RIGHT */}
             <div className="ct-right">
-              <span className="ct-flabel">Cuéntanos todo</span>
+              <span className="ct-flabel">{t.contact.formLabel}</span>
 
               <form onSubmit={handleSubmit} style={{ display:'flex', flexDirection:'column', flex:1 }}>
                 <div className="ct-field">
-                  <label className="ct-field-label" htmlFor="ct-name">Nombre</label>
+                  <label className="ct-field-label" htmlFor="ct-name">{t.contact.name}</label>
                   <div className="ct-iw">
                     <User className="ct-ii" />
                     <input id="ct-name" type="text" name="name" value={formData.name}
-                      onChange={handleChange} placeholder="Tu nombre completo" required className="ct-input" />
+                      onChange={handleChange} placeholder={t.contact.namePh} required className="ct-input" />
                   </div>
                 </div>
 
@@ -697,16 +699,16 @@ export default function Contact() {
                   <div className="ct-iw">
                     <Mail className="ct-ii" />
                     <input id="ct-email" type="email" name="email" value={formData.email}
-                      onChange={handleChange} placeholder="tu@email.com" required className="ct-input" />
+                      onChange={handleChange} placeholder={t.contact.emailPh} required className="ct-input" />
                   </div>
                 </div>
 
                 <div className="ct-field" style={{ flex:1 }}>
-                  <label className="ct-field-label" htmlFor="ct-msg">Mensaje</label>
+                  <label className="ct-field-label" htmlFor="ct-msg">{t.contact.msg}</label>
                   <div className="ct-iw">
                     <MessageSquare className="ct-ii ct-txi" />
                     <textarea id="ct-msg" name="message" value={formData.message}
-                      onChange={handleChange} placeholder="Describe tu proyecto, idea o consulta…"
+                      onChange={handleChange} placeholder={t.contact.msgPh}
                       required className="ct-ta" />
                     <span className="ct-char">{formData.message.length}</span>
                   </div>
@@ -715,14 +717,14 @@ export default function Contact() {
                 <div className="ct-row">
                   <button type="submit" className="ct-btn" disabled={loading}>
                     {loading
-                      ? <><span className="ct-spinner" />Enviando...</>
-                      : <><Send width={14} height={14} />Enviar mensaje</>
+                      ? <><span className="ct-spinner" />{t.contact.sending}</>
+                      : <><Send width={14} height={14} />{t.contact.send}</>
                     }
                   </button>
-                  <p className="ct-hint">Sin spam.<br />Nunca.</p>
+                  <p className="ct-hint">{t.contact.noSpam.split('\n').map((line, i) => <span key={i}>{line}{i === 0 && <br />}</span>)}</p>
                 </div>
                 {error && (
-                  <p className="ct-error">No se pudo enviar. Escríbenos por WhatsApp.</p>
+                  <p className="ct-error">{t.contact.error}</p>
                 )}
               </form>
 
@@ -733,8 +735,8 @@ export default function Contact() {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 13l4 4L19 7" />
                     </svg>
                   </div>
-                  <h3 className="ct-stitle">¡Mensaje enviado!</h3>
-                  <p className="ct-ssub">Te responderemos pronto</p>
+                  <h3 className="ct-stitle">{t.contact.successTitle}</h3>
+                  <p className="ct-ssub">{t.contact.successSub}</p>
                 </div>
               )}
             </div>

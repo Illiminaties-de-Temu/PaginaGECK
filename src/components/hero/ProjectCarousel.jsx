@@ -1,19 +1,16 @@
 import { useState, useEffect, useRef } from 'react';
+import { useLanguage } from '../../hooks/useLanguage';
 
-/*
- * PROYECTOS — mismas imágenes que el portafolio.
- * Los que no tienen imagen usan su gradiente como fondo.
- */
 const PROJECTS = [
-  { id:1, title:'Chuchulucos',    tagline:'Botanas Artesanales',        cat:'landing',  image:'/assets/image/portafolio/chuchu.webp',          gradient:'linear-gradient(145deg,#3b0764,#6d28d9,#db2777)', link:'https://chuchulucos.geckcodex.com/' },
-  { id:2, title:'Agend-In',       tagline:'Citas Automáticas WhatsApp', cat:'landing',  image:'/assets/image/portafolio/agendin.webp',         gradient:'linear-gradient(145deg,#1e1b4b,#4f46e5,#0ea5e9)', link:'https://agend-in.geckcodex.com/' },
-  { id:3, title:'LandingKit',     tagline:'Plantilla Pro para Landings',cat:'landing',  image:'/assets/image/portafolio/landig.webp',          gradient:'linear-gradient(145deg,#2e1065,#7c3aed,#c026d3)', link:'https://landig-plantilla.geckcodex.com/' },
-  { id:4, title:'Chava Calderón', tagline:'Figura de Autoridad',        cat:'landing',  image:'/assets/image/portafolio/chava.webp',           gradient:'linear-gradient(145deg,#1a0636,#6d28d9,#9d174d)', link:'https://chavacalderon.mx/' },
-  { id:5, title:'Mando',          tagline:'Tu Negocio en WhatsApp',     cat:'landing',  image:'/assets/image/portafolio/mando.webp',           gradient:'linear-gradient(145deg,#0f172a,#1e3a8a,#312e81)' },
-  { id:6, title:'Mi Caja POS',    tagline:'POS para Negocios Locales',  cat:'landing',  image:'/assets/image/portafolio/micaja.webp',          gradient:'linear-gradient(145deg,#1c1917,#92400e,#d97706)', link:'https://mi-caja.geckcodex.com/' },
-  { id:7, title:'FleetTrack',     tagline:'Gestión de Flotilla',        cat:'mobile',   image:'/assets/image/portafolio/capital transpor.webp',gradient:'linear-gradient(145deg,#0c1a3d,#1d4ed8,#0ea5e9)' },
-  { id:8, title:'Coronado Gym',   tagline:'Gym & Membresías',           cat:'webapp',   image:'/assets/image/portafolio/coronado-gym.webp',    gradient:'linear-gradient(145deg,#0a2e1a,#15803d,#0d9488)' },
-  { id:9, title:'GeckCRM',        tagline:'CRM para Negocios',          cat:'software', image:'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=480&q=80&auto=format&fit=crop', gradient:'linear-gradient(145deg,#170d2e,#7c3aed,#2563eb)' },
+  { id:1, title:'Chuchulucos',    cat:'landing',  image:'/assets/image/portafolio/chuchu.webp',          gradient:'linear-gradient(145deg,#3b0764,#6d28d9,#db2777)', link:'https://chuchulucos.geckcodex.com/' },
+  { id:2, title:'Agend-In',       cat:'landing',  image:'/assets/image/portafolio/agendin.webp',         gradient:'linear-gradient(145deg,#1e1b4b,#4f46e5,#0ea5e9)', link:'https://agend-in.geckcodex.com/' },
+  { id:3, title:'LandingKit',     cat:'landing',  image:'/assets/image/portafolio/landig.webp',          gradient:'linear-gradient(145deg,#2e1065,#7c3aed,#c026d3)', link:'https://landig-plantilla.geckcodex.com/' },
+  { id:4, title:'Chava Calderón', cat:'landing',  image:'/assets/image/portafolio/chava.webp',           gradient:'linear-gradient(145deg,#1a0636,#6d28d9,#9d174d)', link:'https://chavacalderon.mx/' },
+  { id:5, title:'Mando',          cat:'landing',  image:'/assets/image/portafolio/mando.webp',           gradient:'linear-gradient(145deg,#0f172a,#1e3a8a,#312e81)' },
+  { id:6, title:'Mi Caja POS',    cat:'landing',  image:'/assets/image/portafolio/micaja.webp',          gradient:'linear-gradient(145deg,#1c1917,#92400e,#d97706)', link:'https://mi-caja.geckcodex.com/' },
+  { id:7, title:'FleetTrack',     cat:'mobile',   image:'/assets/image/portafolio/capital transpor.webp',gradient:'linear-gradient(145deg,#0c1a3d,#1d4ed8,#0ea5e9)' },
+  { id:8, title:'Coronado Gym',   cat:'webapp',   image:'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=480&q=80&auto=format&fit=crop', gradient:'linear-gradient(145deg,#0a2e1a,#15803d,#0d9488)' },
+  { id:9, title:'GeckCRM',        cat:'software', image:'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=480&q=80&auto=format&fit=crop', gradient:'linear-gradient(145deg,#170d2e,#7c3aed,#2563eb)' },
 ];
 
 const CAT_ACCENT = {
@@ -22,15 +19,9 @@ const CAT_ACCENT = {
   webapp:   '#34d399',
   software: '#a78bfa',
 };
-const CAT_LABEL = {
-  landing:  'Landing',
-  mobile:   'App Móvil',
-  webapp:   'Web',
-  software: 'Software & IA',
-};
 
 /* ─── CARD ──────────────────────────────────────────────────────────── */
-function Card({ project, onEnter, onLeave }) {
+function Card({ project, catLabels, onEnter, onLeave }) {
   const accent = CAT_ACCENT[project.cat];
   return (
     <div
@@ -58,7 +49,7 @@ function Card({ project, onEnter, onLeave }) {
             className="pc-card__cat"
             style={{ color: accent, borderColor: accent + '55', background: accent + '18' }}
           >
-            {CAT_LABEL[project.cat]}
+            {catLabels[project.cat]}
           </span>
           <p className="pc-card__name">{project.title}</p>
         </div>
@@ -69,6 +60,7 @@ function Card({ project, onEnter, onLeave }) {
 
 /* ─── MAIN ───────────────────────────────────────────────────────────── */
 export default function ProjectCarousel() {
+  const { t } = useLanguage();
   const [tooltip, setTooltip]   = useState(null);  // { project, top, left, align }
   const [paused,  setPaused]    = useState(false);
   const sectionRef              = useRef(null);
@@ -85,13 +77,19 @@ export default function ProjectCarousel() {
     return () => observer.disconnect();
   }, []);
 
-  /* Cerrar tooltip al hacer scroll */
+  /* Cerrar tooltip al hacer scroll o al perder foco de página */
   useEffect(() => {
     if (!tooltip) return;
     const close = () => { setTooltip(null); setPaused(false); };
     window.addEventListener('scroll', close, { passive: true, once: true });
     return () => window.removeEventListener('scroll', close);
   }, [tooltip]);
+
+  useEffect(() => {
+    const reset = () => { setTooltip(null); setPaused(false); };
+    document.addEventListener('visibilitychange', reset);
+    return () => document.removeEventListener('visibilitychange', reset);
+  }, []);
 
   const handleEnter = (project, e) => {
     const rect = e.currentTarget.getBoundingClientRect();
@@ -129,15 +127,15 @@ export default function ProjectCarousel() {
 
         {/* Título */}
         <header className="pc-header">
-          <h2 className="pc-h2">Proyectos Destacados</h2>
-          <p className="pc-lead">lo que hemos construido</p>
+          <h2 className="pc-h2">{t.projectCarousel.title}</h2>
+          <p className="pc-lead">{t.projectCarousel.subtitle}</p>
         </header>
 
         {/* Track — animación CSS pura, dirección DERECHA */}
         <div className="pc-viewport">
           <div className={`pc-track${paused ? ' is-paused' : ''}`}>
             {[...PROJECTS, ...PROJECTS].map((p, i) => (
-              <Card key={i} project={p} onEnter={handleEnter} onLeave={handleLeave} />
+              <Card key={i} project={p} catLabels={t.projectCarousel.catLabels} onEnter={handleEnter} onLeave={handleLeave} />
             ))}
           </div>
         </div>
@@ -145,7 +143,7 @@ export default function ProjectCarousel() {
         {/* CTA */}
         <div className="pc-cta">
           <a href="/portafolio" className="pc-cta__link">
-            Ver portafolio completo
+            {t.projectCarousel.cta}
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
               <path d="M5 12h14M12 5l7 7-7 7" />
             </svg>
@@ -163,16 +161,16 @@ export default function ProjectCarousel() {
           onMouseLeave={handleLeave}
         >
           <p className="pc-tooltip__name">{tooltip.project.title}</p>
-          <p className="pc-tooltip__sub">{tooltip.project.tagline}</p>
+          <p className="pc-tooltip__sub">{t.projectCarousel.projects[tooltip.project.id]?.tagline}</p>
           {tooltip.project.link && (
             <a
               href={tooltip.project.link}
               target="_blank"
               rel="noopener noreferrer"
               className="pc-tooltip__link"
-              onClick={e => e.stopPropagation()}
+              onClick={e => { e.stopPropagation(); handleLeave(); }}
             >
-              Ver en vivo ↗
+              {t.projectCarousel.liveCta}
             </a>
           )}
           <div
@@ -272,7 +270,6 @@ export default function ProjectCarousel() {
           border: 1px solid rgba(255,255,255,0.09);
           box-shadow: 0 4px 20px rgba(0,0,0,0.45);
           transition: border-color .28s ease, box-shadow .28s ease, transform .32s cubic-bezier(0.22,1,0.36,1);
-          will-change: transform;
         }
         .pc-card__frame:hover {
           border-color: rgba(212,175,55,0.45);

@@ -1,10 +1,11 @@
 import { useEffect, useRef } from 'react';
+import { useLanguage } from '../../hooks/useLanguage';
 
-const STATS = [
-  { value: 20,  suffix: '+', label: 'Proyectos entregados' },
-  { value: 5,   suffix: '',  label: 'Industrias atendidas' },
-  { value: 48,   suffix: ' hr', label: 'Respuesta garantizada en un máximo de'  },
-  { value: 100, suffix: '%', label: 'Clientes satisfechos' },
+const STATS_VALUES = [
+  { value: 20,  suffix: '+' },
+  { value: 5,   suffix: '' },
+  { value: 48,  suffix: ' hr' },
+  { value: 100, suffix: '%' },
 ];
 
 function easeOut(t) {
@@ -12,6 +13,8 @@ function easeOut(t) {
 }
 
 export default function StatsSection() {
+  const { t } = useLanguage();
+  const STATS = STATS_VALUES.map((s, i) => ({ ...s, label: t.stats.items[i].label }));
   const sectionRef  = useRef(null);
   const headerRef   = useRef(null);
   const numbersRef  = useRef([]);
@@ -94,7 +97,7 @@ export default function StatsSection() {
       <section ref={sectionRef} className="st-section">
 
         <div ref={headerRef} className="st-header">
-          <span className="st-header__tag">En números</span>
+          <span className="st-header__tag">{t.stats.tag}</span>
           <div ref={dividerRef} className="st-header__line" />
         </div>
 
@@ -116,7 +119,7 @@ export default function StatsSection() {
         {/* CTA */}
         <div className="st-cta">
           <a href="/contacto" className="st-cta__link">
-            ¿Hablamos?
+            {t.stats.cta}
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M5 12h14M12 5l7 7-7 7"/>
             </svg>

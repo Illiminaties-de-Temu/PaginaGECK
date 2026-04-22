@@ -1,7 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
+import { useLanguage } from '../../hooks/useLanguage';
 
 export default function AboutHero() {
+  const { t } = useLanguage();
   const [MapComponent, setMapComponent] = useState(null);
   const heroRef = useRef(null);
 
@@ -83,11 +85,11 @@ export default function AboutHero() {
             className="about-hero__text-content"
           >
             <h1 className="about-hero__title">
-              Jóvenes Mexicanos
-              <span className="about-hero__title-highlight">Revolucionando la Tecnología</span>
+              {t.about.title}
+              <span className="about-hero__title-highlight">{t.about.highlight}</span>
             </h1>
             <p className="about-hero__subtitle">
-              Ingeniería de vanguardia y diseño disruptivo desde el norte de México.
+              {t.about.subtitle}
             </p>
           </motion.div>
         </div>
@@ -105,7 +107,7 @@ export default function AboutHero() {
             {MapComponent ? (
               <MapComponent />
             ) : (
-              <div className="about-hero__map-loading"><span>Estableciendo conexión...</span></div>
+              <div className="about-hero__map-loading"><span>{t.about.mapLoading}</span></div>
             )}
           </motion.div>
         </div>

@@ -1,36 +1,12 @@
 import { motion } from 'framer-motion';
+import { useLanguage } from '../../hooks/useLanguage';
 
-const steps = [
-  {
-    number: '01',
-    title: 'Descubrimiento',
-    description: 'Analizamos tu negocio, objetivos y audiencia para crear una estrategia sólida.',
-  },
-  {
-    number: '02',
-    title: 'Diseño',
-    description: 'Wireframes y prototipos interactivos que visualizan la experiencia antes del desarrollo.',
-  },
-  {
-    number: '03',
-    title: 'Desarrollo',
-    description: 'Código limpio, escalable y siguiendo las mejores prácticas del sector.',
-  },
-  {
-    number: '04',
-    title: 'Testing & QA',
-    description: 'Pruebas exhaustivas de funcionalidad, rendimiento y seguridad.',
-  },
-  {
-    number: '05',
-    title: 'Lanzamiento',
-    description: 'Despliegue, soporte continuo y actualizaciones para asegurar el éxito.',
-  },
-];
-
+const STEP_NUMBERS = ['01', '02', '03', '04', '05'];
 const easeExpo = [0.16, 1, 0.3, 1];
 
 export default function ProcessTimeline() {
+  const { t } = useLanguage();
+  const steps = t.process.steps.map((s, i) => ({ number: STEP_NUMBERS[i], ...s }));
   return (
     <section className="pt-section">
 
@@ -42,9 +18,9 @@ export default function ProcessTimeline() {
         viewport={{ once: true, margin: '-80px' }}
         transition={{ duration: 0.6, ease: easeExpo }}
       >
-        <p className="pt-eyebrow">Nuestro Proceso</p>
+        <p className="pt-eyebrow">{t.process.eyebrow}</p>
         <h2 className="pt-title">
-          De idea <span className="pt-gold">a realidad</span>
+          {t.process.title} <span className="pt-gold">{t.process.accent}</span>
         </h2>
       </motion.div>
 
