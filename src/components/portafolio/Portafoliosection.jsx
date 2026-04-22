@@ -1,163 +1,32 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useLanguage } from '../../hooks/useLanguage';
 
-const CAT_META = {
-  landing:  { label: 'Landing Page',   accent: '#e879f9', border: 'rgba(232,121,249,0.35)' },
-  mobile:   { label: 'App Móvil',      accent: '#60a5fa', border: 'rgba(96,165,250,0.35)'  },
-  webapp:   { label: 'Plataforma Web', accent: '#34d399', border: 'rgba(52,211,153,0.35)'  },
-  software: { label: 'Software & IA',  accent: '#a78bfa', border: 'rgba(167,139,250,0.35)' },
+const CAT_COLORS = {
+  landing:  { accent: '#e879f9', border: 'rgba(232,121,249,0.35)' },
+  mobile:   { accent: '#60a5fa', border: 'rgba(96,165,250,0.35)'  },
+  webapp:   { accent: '#34d399', border: 'rgba(52,211,153,0.35)'  },
+  software: { accent: '#a78bfa', border: 'rgba(167,139,250,0.35)' },
 };
 
-const FILTERS = [
-  { id: 'all',      label: 'Todos' },
-  { id: 'landing',  label: 'Landing Pages' },
-  { id: 'mobile',   label: 'Apps Móviles' },
-  { id: 'webapp',   label: 'Plataformas Web' },
-  { id: 'software', label: 'Software & IA' },
-];
+const FILTER_IDS = ['all', 'landing', 'mobile', 'webapp', 'software'];
 
-const PROJECTS = [
-  {
-    id: 1, cat: 'landing',
-    title: 'Chuchulucos',
-    tagline: 'Botanas Artesanales Picosas',
-    desc: 'Landing de alta conversión para la marca Chuchulucos, especializada en botanas y alimentos picosos artesanales. Diseño vibrante, propuesta de valor clara y CTAs optimizados para incrementar pedidos.',
-    tech: ['Astro', 'Tailwind CSS', 'Framer Motion'],
-    link: 'https://chuchulucos.geckcodex.com/',
-    gradient: 'linear-gradient(145deg, #3b0764 0%, #6d28d9 40%, #db2777 100%)',
-    image: '/assets/image/portafolio/chuchu.webp',
-  },
-  {
-    id: 2, cat: 'landing',
-    title: 'Agend-In',
-    tagline: 'Citas Automáticas vía WhatsApp',
-    desc: 'Automatización completa de citas vía WhatsApp y Telegram. Gestión de clientes, historial de agendas y personalidad del asistente virtual completamente personalizable según tu marca.',
-    tech: ['Astro', 'React', 'Node.js', 'Tailwind CSS'],
-    link: 'https://agend-in.geckcodex.com/',
-    gradient: 'linear-gradient(145deg, #1e1b4b 0%, #4f46e5 45%, #0ea5e9 100%)',
-    image: '/assets/image/portafolio/agendin.webp',
-  },
-  {
-    id: 3, cat: 'landing',
-    title: 'LandingKit',
-    tagline: 'Plantilla Pro para Landings',
-    desc: 'Plantilla profesional para crear landings de alta conversión. Diseño moderno, rápido y completamente personalizable con secciones pre-construidas listas para usar.',
-    tech: ['Astro', 'React', 'Tailwind CSS'],
-    link: 'https://landig-plantilla.geckcodex.com/',
-    gradient: 'linear-gradient(145deg, #2e1065 0%, #7c3aed 45%, #c026d3 100%)',
-    image: '/assets/image/portafolio/landig.webp',
-  },
-  {
-    id: 4, cat: 'landing',
-    title: 'Chava Calderón',
-    tagline: 'Figura de Autoridad en Parral',
-    desc: 'Presencia digital para figura de autoridad en Hidalgo de Parral. Muestra el día a día, logros y propuestas ciudadanas, construyendo conexión genuina con la comunidad.',
-    tech: ['Astro', 'Tailwind CSS', 'Framer Motion'],
-    link: 'https://chavacalderon.mx/',
-    gradient: 'linear-gradient(145deg, #1a0636 0%, #6d28d9 45%, #9d174d 100%)',
-    image: '/assets/image/portafolio/chava.webp',
-  },
-  {
-    id: 5, cat: 'landing',
-    title: 'Mando',
-    tagline: 'Tu Negocio en WhatsApp',
-    desc: 'Landing para Mando: bot que conecta WhatsApp o Telegram con la base de datos del negocio para consultas en lenguaje natural sobre métricas, inventario, ventas y más.',
-    tech: ['Astro', 'React', 'Tailwind CSS'],
-    gradient: 'linear-gradient(145deg, #0f172a 0%, #1e3a8a 45%, #312e81 100%)',
-    image: '/assets/image/portafolio/mando.webp',
-  },
-  {
-    id: 6, cat: 'landing',
-    title: 'Mi Caja POS',
-    tagline: 'POS Bueno, Bonito y Barato',
-    desc: 'Landing para Mi Caja, punto de venta moderno y accesible diseñado para restaurantes, carnicerías, abarrotes y fondas. Demuestra cómo digitalizar ventas sin complicaciones ni costos excesivos.',
-    tech: ['Astro', 'React', 'Tailwind CSS'],
-    link: 'https://mi-caja.geckcodex.com/',
-    gradient: 'linear-gradient(145deg, #1c1917 0%, #92400e 45%, #d97706 100%)',
-    image: '/assets/image/portafolio/micaja.webp',
-  },
-  {
-    id: 7, cat: 'mobile',
-    title: 'capital Transport',
-    tagline: 'Gestión de Flotilla a la Medida',
-    desc: 'Aplicación móvil desarrollada a la medida para la gestión integral de flotillas vehiculares. Rastreo en tiempo real, control de documentos, estados de unidades y comunicación directa con operadores.',
-    tech: ['React Native', 'Node.js', 'Firebase', 'Google Maps API'],
-    gradient: 'linear-gradient(145deg, #0c1a3d 0%, #1d4ed8 45%, #0ea5e9 100%)',
-    image: '/assets/image/portafolio/capital transpor.webp',
-  },
-  {
-    id: 8, cat: 'mobile',
-    title: 'SpendWise',
-    tagline: 'Control de Gastos Personales',
-    desc: 'Aplicación en fase beta para el control detallado de gastos personales. Categoriza egresos, establece presupuestos, visualiza tendencias y recibe alertas cuando se acerca al límite mensual.',
-    tech: ['React Native', 'Expo', 'SQLite', 'Chart.js'],
-    gradient: 'linear-gradient(145deg, #0e2a5c 0%, #2563eb 45%, #06b6d4 100%)',
-    image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=640&q=80&auto=format&fit=crop',
-  },
-  {
-    id: 9, cat: 'webapp',
-    title: 'Coronado Gym',
-    tagline: 'Gestión Completa de Gimnasio',
-    desc: 'Plataforma web a la medida para la gestión completa de un gimnasio. Administración de usuarios, asignación de rutinas personalizadas, seguimiento de progreso y control de membresías.',
-    tech: ['React', 'Node.js', 'PostgreSQL', 'Tailwind CSS'],
-    gradient: 'linear-gradient(145deg, #0a2e1a 0%, #15803d 45%, #0d9488 100%)',
-    image: '/assets/image/portafolio/coronado-gym.webp',
-  },
-  
-  {
-    id: 11, cat: 'webapp',
-    title: 'Generador de Gafetes',
-    tagline: 'Gafetes Gubernamentales en Segundos',
-    desc: 'Aplicación web para la elaboración de gafetes gubernamentales. Reduce drásticamente el tiempo de producción de credenciales que antes se creaban a mano, con plantillas, base de datos de empleados y generación de PDF automatizada.',
-    tech: ['React', 'Node.js', 'PostgreSQL', 'PDF-lib', 'QR Generator'],
-    gradient: 'linear-gradient(145deg, #1c1917 0%, #064e3b 45%, #0f766e 100%)',
-    image: '/assets/image/portafolio/generador-gafetes.webp',
-  },
-  {
-    id: 12, cat: 'software',
-    title: 'SafePosture',
-    tagline: 'Seguridad Ergonómica Industrial',
-    desc: 'Sistema de visión artificial para monitoreo ergonómico en áreas de carga y manufactura en el sur de Chihuahua. Detecta posturas riesgosas en tiempo real, genera alertas preventivas y reduce accidentes laborales.',
-    tech: ['Python', 'OpenCV', 'MediaPipe', 'TensorFlow', 'React'],
-    gradient: 'linear-gradient(145deg, #1e0a3c 0%, #6d28d9 45%, #4338ca 100%)',
-    image: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=640&q=80&auto=format&fit=crop',
-  },
-  {
-    id: 13, cat: 'software',
-    title: 'El mezquite control',
-    tagline: 'Gestión Inteligente de Rancho',
-    desc: 'Plataforma web para el control integral de un rancho ganadero. Centraliza registro de animales, seguimiento de salud, alimentación y métricas productivas para aumentar la rentabilidad del rancho.',
-    tech: ['React', 'Node.js', 'PostgreSQL', 'Chart.js'],
-    gradient: 'linear-gradient(145deg, #0f172a 0%, #5b21b6 45%, #4f46e5 100%)',
-    image: 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=640&q=80&auto=format&fit=crop',
-  },
-  {
-    id: 14, cat: 'software',
-    title: 'velt',
-    tagline: 'Anti-Somnolencia para Camiones',
-    desc: 'Software de visión por computadora para flotilla de camiones. Monitorea al conductor en tiempo real y emite alertas sonoras y visuales ante señales de fatiga o microsueños al volante.',
-    tech: ['Python', 'OpenCV', 'MediaPipe', 'TensorFlow', 'WebSockets'],
-    gradient: 'linear-gradient(145deg, #1a0533 0%, #7c3aed 45%, #6d28d9 100%)',
-    image: 'https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=640&q=80&auto=format&fit=crop',
-  },
-  {
-    id: 15, cat: 'software',
-    title: 'EduAI',
-    tagline: 'Machine Learning para Escuelas',
-    desc: 'Suite de herramientas didácticas con Machine Learning para escuelas públicas. Adapta el contenido a las necesidades individuales de cada alumno y apoya a docentes con análisis de rendimiento.',
-    tech: ['Python', 'TensorFlow', 'React', 'FastAPI', 'PostgreSQL'],
-    gradient: 'linear-gradient(145deg, #09090b 0%, #5b21b6 45%, #4338ca 100%)',
-    image: 'https://images.unsplash.com/photo-1546410531-bb4caa6b424d?w=640&q=80&auto=format&fit=crop',
-  },
-  {
-    id: 16, cat: 'software',
-    title: 'GeckCRM',
-    tagline: 'CRM para Negocios Locales',
-    desc: 'Sistema de gestión de relaciones con clientes de Geck Codex. Pipeline de ventas, seguimiento de actividades, gestión de clientes y reportes personalizados para llevar el control total del negocio.',
-    tech: ['React', 'Node.js', 'PostgreSQL', 'Tailwind CSS'],
-    gradient: 'linear-gradient(145deg, #170d2e 0%, #7c3aed 45%, #2563eb 100%)',
-    image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=640&q=80&auto=format&fit=crop',
-  },
+const PROJECTS_STATIC = [
+  { id: 1,  cat: 'landing',  title: 'Chuchulucos',          tech: ['Astro', 'Tailwind CSS', 'Framer Motion'],                           link: 'https://chuchulucos.geckcodex.com/',        gradient: 'linear-gradient(145deg, #3b0764 0%, #6d28d9 40%, #db2777 100%)', image: '/assets/image/portafolio/chuchu.webp' },
+  { id: 2,  cat: 'landing',  title: 'Agend-In',              tech: ['Astro', 'React', 'Node.js', 'Tailwind CSS'],                        link: 'https://agend-in.geckcodex.com/',           gradient: 'linear-gradient(145deg, #1e1b4b 0%, #4f46e5 45%, #0ea5e9 100%)', image: '/assets/image/portafolio/agendin.webp' },
+  { id: 3,  cat: 'landing',  title: 'LandingKit',            tech: ['Astro', 'React', 'Tailwind CSS'],                                   link: 'https://landig-plantilla.geckcodex.com/',   gradient: 'linear-gradient(145deg, #2e1065 0%, #7c3aed 45%, #c026d3 100%)', image: '/assets/image/portafolio/landig.webp' },
+  { id: 4,  cat: 'landing',  title: 'Chava Calderón',        tech: ['Astro', 'Tailwind CSS', 'Framer Motion'],                           link: 'https://chavacalderon.mx/',                 gradient: 'linear-gradient(145deg, #1a0636 0%, #6d28d9 45%, #9d174d 100%)', image: '/assets/image/portafolio/chava.webp' },
+  { id: 5,  cat: 'landing',  title: 'Mando',                 tech: ['Astro', 'React', 'Tailwind CSS'],                                                                                      gradient: 'linear-gradient(145deg, #0f172a 0%, #1e3a8a 45%, #312e81 100%)', image: '/assets/image/portafolio/mando.webp' },
+  { id: 6,  cat: 'landing',  title: 'Mi Caja POS',           tech: ['Astro', 'React', 'Tailwind CSS'],                                   link: 'https://mi-caja.geckcodex.com/',            gradient: 'linear-gradient(145deg, #1c1917 0%, #92400e 45%, #d97706 100%)', image: '/assets/image/portafolio/micaja.webp' },
+  { id: 7,  cat: 'mobile',   title: 'capital Transport',     tech: ['React Native', 'Node.js', 'Firebase', 'Google Maps API'],                                                              gradient: 'linear-gradient(145deg, #0c1a3d 0%, #1d4ed8 45%, #0ea5e9 100%)', image: '/assets/image/portafolio/capital transpor.webp' },
+  { id: 8,  cat: 'mobile',   title: 'SpendWise',             tech: ['React Native', 'Expo', 'SQLite', 'Chart.js'],                                                                         gradient: 'linear-gradient(145deg, #0e2a5c 0%, #2563eb 45%, #06b6d4 100%)', image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=640&q=80&auto=format&fit=crop' },
+  { id: 9,  cat: 'webapp',   title: 'Coronado Gym',          tech: ['React', 'Node.js', 'PostgreSQL', 'Tailwind CSS'],                                                                     gradient: 'linear-gradient(145deg, #0a2e1a 0%, #15803d 45%, #0d9488 100%)', image: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=640&q=80&auto=format&fit=crop' },
+  { id: 11, cat: 'webapp',   title: 'Generador de Gafetes',  tech: ['React', 'Node.js', 'PostgreSQL', 'PDF-lib', 'QR Generator'],                                                         gradient: 'linear-gradient(145deg, #1c1917 0%, #064e3b 45%, #0f766e 100%)', image: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=640&q=80&auto=format&fit=crop' },
+  { id: 12, cat: 'software', title: 'SafePosture',           tech: ['Python', 'OpenCV', 'MediaPipe', 'TensorFlow', 'React'],                                                               gradient: 'linear-gradient(145deg, #1e0a3c 0%, #6d28d9 45%, #4338ca 100%)', image: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=640&q=80&auto=format&fit=crop' },
+  { id: 13, cat: 'software', title: 'El mezquite control',   tech: ['React', 'Node.js', 'PostgreSQL', 'Chart.js'],                                                                         gradient: 'linear-gradient(145deg, #0f172a 0%, #5b21b6 45%, #4f46e5 100%)', image: 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=640&q=80&auto=format&fit=crop' },
+  { id: 14, cat: 'software', title: 'velt',                  tech: ['Python', 'OpenCV', 'MediaPipe', 'TensorFlow', 'WebSockets'],                                                         gradient: 'linear-gradient(145deg, #1a0533 0%, #7c3aed 45%, #6d28d9 100%)', image: 'https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=640&q=80&auto=format&fit=crop' },
+  { id: 15, cat: 'software', title: 'EduAI',                 tech: ['Python', 'TensorFlow', 'React', 'FastAPI', 'PostgreSQL'],                                                            gradient: 'linear-gradient(145deg, #09090b 0%, #5b21b6 45%, #4338ca 100%)', image: 'https://images.unsplash.com/photo-1546410531-bb4caa6b424d?w=640&q=80&auto=format&fit=crop' },
+  { id: 16, cat: 'software', title: 'GeckCRM',               tech: ['React', 'Node.js', 'PostgreSQL', 'Tailwind CSS'],                                                                    gradient: 'linear-gradient(145deg, #170d2e 0%, #7c3aed 45%, #2563eb 100%)', image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=640&q=80&auto=format&fit=crop' },
 ];
 
 /* ─── DETAIL OVERLAY ── (igual que antes, sin cambios) ─────────────── */
@@ -172,8 +41,17 @@ const contentVariants = {
   exit:   { y: 14, opacity: 0, transition: { duration: 0.16 } },
 };
 
-function Detail({ project, onClose }) {
-  const meta = CAT_META[project.cat];
+function Detail({ project, onClose, catMeta, strings }) {
+  const meta = catMeta[project.cat];
+  const [imgFailed, setImgFailed] = useState(false);
+
+  useEffect(() => {
+    setImgFailed(false);
+    if (!project.image) return;
+    const img = new Image();
+    img.onerror = () => setImgFailed(true);
+    img.src = project.image;
+  }, [project.image]);
 
   useEffect(() => {
     document.body.style.overflow = 'hidden';
@@ -184,6 +62,10 @@ function Detail({ project, onClose }) {
       window.removeEventListener('keydown', onKey);
     };
   }, [onClose]);
+
+  const bgStyle = (project.image && !imgFailed)
+    ? { backgroundImage: `url("${project.image}")`, backgroundSize: 'cover', backgroundPosition: 'center top' }
+    : { background: project.gradient };
 
   return (
     <motion.div
@@ -197,13 +79,7 @@ function Detail({ project, onClose }) {
       aria-label={`Proyecto: ${project.title}`}
       onClick={onClose}
     >
-      <div
-        className="gc-detail__bg"
-        style={project.image
-          ? { backgroundImage: `url(${project.image})`, backgroundSize: 'cover', backgroundPosition: 'center top' }
-          : { background: project.gradient }
-        }
-      />
+      <div className="gc-detail__bg" style={bgStyle} />
       <div className="gc-detail__scrim" />
 
       <button className="gc-detail__x" onClick={onClose} aria-label="Cerrar">
@@ -233,11 +109,11 @@ function Detail({ project, onClose }) {
 
         <div className="gc-bento">
           <div className="gc-bento__cell gc-bento__cell--desc">
-            <span className="gc-bento__label">Descripción</span>
+            <span className="gc-bento__label">{strings.detail.desc}</span>
             <p className="gc-bento__body">{project.desc}</p>
           </div>
           <div className="gc-bento__cell gc-bento__cell--tech">
-            <span className="gc-bento__label">Stack técnico</span>
+            <span className="gc-bento__label">{strings.detail.stack}</span>
             <div className="gc-bento__chips">
               {project.tech.map((t, i) => (
                 <span
@@ -259,14 +135,14 @@ function Detail({ project, onClose }) {
             rel="noopener noreferrer"
             className="gc-detail__cta"
           >
-            Ver proyecto en vivo
+            {strings.viewLive}
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
               <path d="M7 17L17 7M7 7h10v10" />
             </svg>
           </a>
         ) : (
           <a href="/contacto" className="gc-detail__cta">
-            Hablemos de tu proyecto
+            {strings.contact}
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
               <path d="M4 10H16M16 10L10 4M16 10L10 16" />
             </svg>
@@ -278,8 +154,8 @@ function Detail({ project, onClose }) {
 }
 
 /* ─── CARD ──────────────────────────────────────────────────────────── */
-function Card({ project, index, onOpen }) {
-  const meta = CAT_META[project.cat];
+function Card({ project, index, onOpen, catMeta, viewMore }) {
+  const meta = catMeta[project.cat];
   return (
     <motion.article
       className="gc-card"
@@ -323,7 +199,7 @@ function Card({ project, index, onOpen }) {
           <h3 className="gc-card__name">{project.title}</h3>
           <p className="gc-card__sub">{project.tagline}</p>
           <span className="gc-card__cta" aria-hidden="true">
-            Ver más
+            {viewMore}
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round">
               <path d="M5 12h14M12 5l7 7-7 7" />
             </svg>
@@ -336,6 +212,16 @@ function Card({ project, index, onOpen }) {
 
 /* ─── MAIN ──────────────────────────────────────────────────────────── */
 export default function PortfolioSection() {
+  const { t } = useLanguage();
+  const catMeta = Object.fromEntries(
+    Object.entries(CAT_COLORS).map(([key, colors]) => [key, { ...colors, label: t.portfolio.catLabels[key] }])
+  );
+  const FILTERS = t.portfolio.filters;
+  const PROJECTS = PROJECTS_STATIC.map(p => ({
+    ...p,
+    ...(t.portfolio.projects[p.id] || {}),
+  }));
+
   const [filter, setFilter] = useState('all');
   const [selected, setSelected] = useState(null);
 
@@ -361,9 +247,9 @@ export default function PortfolioSection() {
           <div className="gc-wrap">
 
             <header className="gc-header">
-              <span className="gc-pretitle">Nuestro Portafolio</span>
-              <h1 className="gc-h1">Proyectos que Hablan<br />por Nosotros</h1>
-              <p className="gc-lead">Ideas convertidas en productos digitales reales.</p>
+              <span className="gc-pretitle">{t.portfolio.pretitle}</span>
+              <h1 className="gc-h1">{t.portfolio.title.split('\n').map((line, i) => <span key={i}>{line}{i === 0 && <br />}</span>)}</h1>
+              <p className="gc-lead">{t.portfolio.subtitle}</p>
             </header>
 
             {/* Filtros sticky — se pegan debajo del navbar al scrollear */}
@@ -393,7 +279,7 @@ export default function PortfolioSection() {
                 exit={{ opacity: 0, transition: { duration: 0.14 } }}
               >
                 {list.map((p, i) => (
-                  <Card key={p.id} project={p} index={i} onOpen={setSelected} />
+                  <Card key={p.id} project={p} index={i} onOpen={setSelected} catMeta={catMeta} viewMore={t.portfolio.viewMore} />
                 ))}
               </motion.div>
             </AnimatePresence>
@@ -404,7 +290,7 @@ export default function PortfolioSection() {
 
       <AnimatePresence>
         {selected && (
-          <Detail key={selected.id} project={selected} onClose={() => setSelected(null)} />
+          <Detail key={selected.id} project={selected} onClose={() => setSelected(null)} catMeta={catMeta} strings={t.portfolio} />
         )}
       </AnimatePresence>
 
@@ -607,8 +493,8 @@ export default function PortfolioSection() {
           background: linear-gradient(
             to bottom,
             rgba(0,0,0,0)    0%,
-            rgba(0,0,0,0.06) 40%,
-            rgba(0,0,0,0.80) 100%
+            rgba(0,0,0,0.15) 40%,
+            rgba(0,0,0,0.92) 100%
           );
           z-index: 1;
         }
@@ -660,20 +546,22 @@ export default function PortfolioSection() {
         .gc-card__name {
           font-size: clamp(0.95rem, 2vw, 1.25rem);
           font-weight: 800;
-          color: var(--gc-gl);
+          color: #fff;
           margin: 0 0 0.25rem;
           line-height: 1.15;
           transition: transform .28s var(--expo);
+          text-shadow: 0 1px 8px rgba(0,0,0,0.9), 0 2px 20px rgba(0,0,0,0.7);
         }
         .gc-card__frame:hover .gc-card__name {
           transform: translateY(-2px);
         }
         .gc-card__sub {
           font-size: 0.66rem;
-          color: rgba(244,228,188,0.42);
+          color: rgba(244,228,188,0.75);
           margin: 0 0 0.85rem;
           text-transform: uppercase;
           letter-spacing: 0.06em;
+          text-shadow: 0 1px 6px rgba(0,0,0,0.85);
         }
         .gc-card__cta {
           display: inline-flex;

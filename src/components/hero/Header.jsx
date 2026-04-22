@@ -1,6 +1,8 @@
 import { useEffect, useRef } from 'react';
+import { useLanguage } from '../../hooks/useLanguage';
 
 export default function Header() {
+  const { t } = useLanguage();
   const containerRef = useRef(null);
   const scrollRef    = useRef(null);
   const rafRef       = useRef(null);
@@ -55,20 +57,20 @@ export default function Header() {
     <>
       <div ref={containerRef} className="hdr">
 
-        <p className="hdr__eyebrow">Agencia de Desarrollo Tecnológico · Parral, Chihuahua</p>
+        <p className="hdr__eyebrow">{t.header.eyebrow}</p>
 
         <h1 className="hdr__title">
-          Sitios web, apps y software
-          <span className="hdr__title-accent"> que generan resultados</span>
+          {t.header.title}
+          <span className="hdr__title-accent"> {t.header.titleAccent}</span>
         </h1>
 
         <p className="hdr__phrase">
-          Construimos productos digitales a medida para empresas y emprendedores en México — con el mismo nivel que Silicon Valley.
+          {t.header.phrase}
         </p>
 
         <div className="hdr__ctas">
-          <a href="/portafolio" className="hdr__cta hdr__cta--solid">Ver nuestro trabajo</a>
-          <a href="/contacto"   className="hdr__cta hdr__cta--ghost">Cotiza tu proyecto</a>
+          <a href="/portafolio" className="hdr__cta hdr__cta--solid">{t.header.ctaSolid}</a>
+          <a href="/contacto"   className="hdr__cta hdr__cta--ghost">{t.header.ctaGhost}</a>
         </div>
 
       </div>
