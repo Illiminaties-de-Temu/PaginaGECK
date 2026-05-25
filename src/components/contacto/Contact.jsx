@@ -15,7 +15,7 @@ export default function Contact() {
 
   const contactConfig = {
     whatsapp: '+52 6271745436',
-    email: 'geckcodexoficial@gmail.com',
+    email: 'ventas@geckcodex.com',
     instagram: 'https://www.instagram.com/geckcodex/',
   };
 
