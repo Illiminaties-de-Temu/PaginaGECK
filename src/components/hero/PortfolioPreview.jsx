@@ -144,7 +144,7 @@ export default function PortfolioPreview() {
           font-weight: 600;
           letter-spacing: 0.22em;
           text-transform: uppercase;
-          color: #D4AF37;
+          color: var(--accent);
           margin-bottom: 1rem;
         }
 
@@ -169,7 +169,7 @@ export default function PortfolioPreview() {
           background: #2b2b29;
           border-radius: 16px;
           overflow: hidden;
-          border: 1px solid rgba(212, 175, 55, 0.1);
+          border: 1px solid rgba(195, 173, 133, 0.1);
           display: flex;
           flex-direction: column;
           opacity: 0;
@@ -178,7 +178,7 @@ export default function PortfolioPreview() {
         }
 
         .pp-card:hover {
-          border-color: rgba(212, 175, 55, 0.35);
+          border-color: rgba(195, 173, 133, 0.35);
           transform: translateY(-4px) !important;
         }
 
@@ -215,7 +215,7 @@ export default function PortfolioPreview() {
           font-weight: 700;
           letter-spacing: 0.18em;
           text-transform: uppercase;
-          color: #D4AF37;
+          color: var(--accent);
         }
 
         .pp-card__title {
@@ -234,7 +234,7 @@ export default function PortfolioPreview() {
 
         .pp-card__client {
           font-size: 0.75rem;
-          color: rgba(212, 175, 55, 0.55);
+          color: rgba(195, 173, 133, 0.55);
           font-weight: 500;
           margin-top: 0.5rem;
         }
@@ -253,15 +253,15 @@ export default function PortfolioPreview() {
           font-size: 0.875rem;
           font-weight: 700;
           letter-spacing: 0.05em;
-          color: #D4AF37;
+          color: var(--accent);
           text-decoration: none;
-          border-bottom: 1px solid rgba(212, 175, 55, 0.4);
+          border-bottom: 1px solid rgba(195, 173, 133, 0.4);
           padding-bottom: 2px;
           transition: border-color 0.2s ease, gap 0.2s ease;
         }
 
         .pp-cta:hover {
-          border-color: #D4AF37;
+          border-color: var(--accent);
           gap: 1rem;
         }
 

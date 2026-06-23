@@ -6,6 +6,8 @@ export const translations = {
     nav: {
       portfolio: 'Portafolio', about: 'Nosotros', blog: 'Blog',
       services: 'Servicios', contact: 'Contacto', language: 'Idioma',
+      menu: 'Menú', close: 'Cerrar',
+      theme: 'Tema', themeLight: 'Claro', themeDark: 'Oscuro',
     },
     header: {
       eyebrow: 'Agencia de Desarrollo Tecnológico · Parral, Chihuahua',
@@ -14,6 +16,11 @@ export const translations = {
       phrase: 'Construimos productos digitales a medida para empresas y emprendedores en México — con el mismo nivel que Silicon Valley.',
       ctaSolid: 'Ver nuestro trabajo',
       ctaGhost: 'Cotiza tu proyecto',
+    },
+    heroAscii: {
+      tagline: 'Software, apps e inteligencia artificial a la medida.',
+      location: 'Parral · Chihuahua, MX',
+      coords: '26.93°N 105.66°W',
     },
     projectCarousel: {
       title: 'Proyectos Destacados',
@@ -103,6 +110,7 @@ export const translations = {
       title: 'Lo Que Hacemos por Tu Negocio',
       subtitle: 'Sin tecnicismos raros. Solo soluciones que funcionan.',
       seeDetails: 'Ver detalles',
+      scrollHint: 'Desplázate para explorar',
       modal: { featuresTitle: '¿Qué Incluye?', cta: 'Hablemos de Tu Proyecto', ctaInversion: 'Quiero Invertir', close: 'Cerrar modal' },
       categories: [
         { name: 'Desarrollo', description: 'Construimos tu presencia digital' },
@@ -134,6 +142,7 @@ export const translations = {
       viewLive: 'Ver proyecto en vivo',
       contact: 'Hablemos de tu proyecto',
       viewMore: 'Ver más',
+      scrollHint: 'Desplázate para girar',
       detail: { desc: 'Descripción', stack: 'Stack técnico' },
       catLabels: { landing: 'Landing Page', mobile: 'App Móvil', webapp: 'Plataforma Web', software: 'Software & IA' },
       projects: {
@@ -186,6 +195,8 @@ export const translations = {
     nav: {
       portfolio: 'Portfolio', about: 'About Us', blog: 'Blog',
       services: 'Services', contact: 'Contact', language: 'Language',
+      menu: 'Menu', close: 'Close',
+      theme: 'Theme', themeLight: 'Light', themeDark: 'Dark',
     },
     header: {
       eyebrow: 'Tech Development Agency · Parral, Chihuahua',
@@ -194,6 +205,11 @@ export const translations = {
       phrase: 'We build custom digital products for businesses and entrepreneurs in Mexico — at Silicon Valley standards.',
       ctaSolid: 'See our work',
       ctaGhost: 'Get a quote',
+    },
+    heroAscii: {
+      tagline: 'Custom software, apps and artificial intelligence.',
+      location: 'Parral · Chihuahua, MX',
+      coords: '26.93°N 105.66°W',
     },
     projectCarousel: {
       title: 'Featured Projects',
@@ -283,6 +299,7 @@ export const translations = {
       title: 'What We Do for Your Business',
       subtitle: 'No tech jargon. Just solutions that work.',
       seeDetails: 'View details',
+      scrollHint: 'Scroll to explore',
       modal: { featuresTitle: 'What\'s Included?', cta: 'Let\'s Talk About Your Project', ctaInversion: 'I Want to Invest', close: 'Close modal' },
       categories: [
         { name: 'Development', description: 'We build your digital presence' },
@@ -314,6 +331,7 @@ export const translations = {
       viewLive: 'View live project',
       contact: 'Let\'s talk about your project',
       viewMore: 'See more',
+      scrollHint: 'Scroll to spin',
       detail: { desc: 'Description', stack: 'Tech stack' },
       catLabels: { landing: 'Landing Page', mobile: 'Mobile App', webapp: 'Web Platform', software: 'Software & AI' },
       projects: {
@@ -366,6 +384,8 @@ export const translations = {
     nav: {
       portfolio: 'Portfólio', about: 'Sobre Nós', blog: 'Blog',
       services: 'Serviços', contact: 'Contato', language: 'Idioma',
+      menu: 'Menu', close: 'Fechar',
+      theme: 'Tema', themeLight: 'Claro', themeDark: 'Escuro',
     },
     header: {
       eyebrow: 'Agência de Desenvolvimento Tecnológico · Parral, Chihuahua',
@@ -374,6 +394,11 @@ export const translations = {
       phrase: 'Construímos produtos digitais sob medida para empresas e empreendedores no México — com o mesmo nível do Silicon Valley.',
       ctaSolid: 'Ver nosso trabalho',
       ctaGhost: 'Cotar meu projeto',
+    },
+    heroAscii: {
+      tagline: 'Software, apps e inteligência artificial sob medida.',
+      location: 'Parral · Chihuahua, MX',
+      coords: '26.93°N 105.66°W',
     },
     projectCarousel: {
       title: 'Projetos em Destaque',
@@ -463,6 +488,7 @@ export const translations = {
       title: 'O Que Fazemos pelo Seu Negócio',
       subtitle: 'Sem jargões técnicos. Só soluções que funcionam.',
       seeDetails: 'Ver detalhes',
+      scrollHint: 'Role para explorar',
       modal: { featuresTitle: 'O Que Inclui?', cta: 'Vamos Falar do Seu Projeto', ctaInversion: 'Quero Investir', close: 'Fechar modal' },
       categories: [
         { name: 'Desenvolvimento', description: 'Construímos sua presença digital' },
@@ -494,6 +520,7 @@ export const translations = {
       viewLive: 'Ver projeto ao vivo',
       contact: 'Vamos falar do seu projeto',
       viewMore: 'Ver mais',
+      scrollHint: 'Role para girar',
       detail: { desc: 'Descrição', stack: 'Stack técnico' },
       catLabels: { landing: 'Landing Page', mobile: 'App Mobile', webapp: 'Plataforma Web', software: 'Software & IA' },
       projects: {

@@ -2,23 +2,9 @@
    AI SHOWCASE - STACK 3D CON MÁS SEPARACIÓN
    ============================================ */
 
-/* Variables CSS */
-:root {
-  --navy-dark: #0B1D33;
-  --navy: #0b1f49;
-  --navy-light: #0c1e3c;
-  --navy-medium: #2A3441;
-  --accent-blue: #1B365D;
-  --gold: #D4AF37;
-  --gold-light: #F4E4BC;
-  --gold-dark: #B8941F;
-  --gold-muted: #928250;
-  --black: #1E1E1E;
-  --carbon: #2B2B2B;
-  --white: #FFFFFF;
-  --white-soft: #F8F9FA;
-  --text-muted: #6B7280;
-}
+/* Variables CSS — provistas globalmente por global.css (token layer).
+   Esta sección es un showcase inmersivo dark (gradiente navy): se mantiene
+   oscuro en ambos temas. El oro/navy resuelven a los tokens de marca. */
 
 /* ============================================
    CONTENEDOR PRINCIPAL
@@ -238,8 +224,8 @@
   -webkit-backface-visibility: hidden;
   box-shadow: 
     0 20px 60px rgba(0, 0, 0, 0.4),
-    0 0 0 1px rgba(212, 175, 55, 0.1),
-    inset 0 0 100px rgba(212, 175, 55, 0.05);
+    0 0 0 1px rgba(195, 173, 133, 0.1),
+    inset 0 0 100px rgba(195, 173, 133, 0.05);
   transition: all 0.3s ease;
 }
 
@@ -247,9 +233,9 @@
 .ai-showcase__card-container:hover .ai-showcase__service-card {
   box-shadow: 
     0 40px 100px rgba(0, 0, 0, 0.6),
-    0 0 0 3px rgba(212, 175, 55, 0.8),
-    0 0 60px rgba(212, 175, 55, 0.5),
-    inset 0 0 150px rgba(212, 175, 55, 0.15);
+    0 0 0 3px rgba(195, 173, 133, 0.8),
+    0 0 60px rgba(195, 173, 133, 0.5),
+    inset 0 0 150px rgba(195, 173, 133, 0.15);
 }
 
 /* Card FRENTE */
@@ -309,7 +295,7 @@
 .ai-showcase__card-icon {
   font-size: 3rem;
   flex-shrink: 0;
-  filter: drop-shadow(0 4px 8px rgba(212, 175, 55, 0.3));
+  filter: drop-shadow(0 4px 8px rgba(195, 173, 133, 0.3));
 }
 
 .ai-showcase__card-icon--ai {
@@ -377,7 +363,7 @@
   font-weight: 700;
   background: linear-gradient(135deg, var(--gold-dark), var(--gold));
   color: var(--navy-dark);
-  box-shadow: 0 6px 20px rgba(212, 175, 55, 0.5);
+  box-shadow: 0 6px 20px rgba(195, 173, 133, 0.5);
 }
 
 /* ============================================
@@ -421,7 +407,7 @@
   background: rgba(27, 54, 93, 0.5);
   border-color: var(--gold-muted);
   transform: scale(1.08);
-  box-shadow: 0 8px 24px rgba(212, 175, 55, 0.2);
+  box-shadow: 0 8px 24px rgba(195, 173, 133, 0.2);
 }
 
 .ai-showcase__tech-icon-card {
@@ -528,7 +514,7 @@
   background: linear-gradient(
     45deg,
     transparent 30%,
-    rgba(212, 175, 55, 0.1) 50%,
+    rgba(195, 173, 133, 0.1) 50%,
     transparent 70%
   );
   transform: translateX(-100%);
@@ -578,7 +564,7 @@
 
 .ai-showcase__more-button:hover .ai-showcase__more-button-text {
   color: var(--gold);
-  text-shadow: 0 0 20px rgba(212, 175, 55, 0.4);
+  text-shadow: 0 0 20px rgba(195, 173, 133, 0.4);
 }
 
 .ai-showcase__more-button-icon {
@@ -599,8 +585,8 @@
   transform: translateY(-6px);
   box-shadow: 
     0 20px 60px rgba(0, 0, 0, 0.4),
-    0 0 80px rgba(212, 175, 55, 0.2),
-    inset 0 0 100px rgba(212, 175, 55, 0.1);
+    0 0 80px rgba(195, 173, 133, 0.2),
+    inset 0 0 100px rgba(195, 173, 133, 0.1);
 }
 
 .ai-showcase__more-button:active {
@@ -635,13 +621,13 @@
 .ai-showcase__cta-button--primary {
   background: linear-gradient(135deg, var(--gold-dark), var(--gold));
   color: var(--navy-dark);
-  box-shadow: 0 8px 24px rgba(212, 175, 55, 0.4);
+  box-shadow: 0 8px 24px rgba(195, 173, 133, 0.4);
   border: 2px solid var(--gold);
 }
 
 .ai-showcase__cta-button--primary:hover {
   transform: translateY(-2px) scale(1.03);
-  box-shadow: 0 12px 32px rgba(212, 175, 55, 0.6);
+  box-shadow: 0 12px 32px rgba(195, 173, 133, 0.6);
 }
 
 .ai-showcase__cta-button--secondary {
@@ -654,8 +640,8 @@
 .ai-showcase__cta-button--secondary:hover {
   transform: translateY(-2px) scale(1.03);
   border-color: var(--gold);
-  box-shadow: 0 8px 24px rgba(212, 175, 55, 0.3);
-  background: rgba(212, 175, 55, 0.08);
+  box-shadow: 0 8px 24px rgba(195, 173, 133, 0.3);
+  background: rgba(195, 173, 133, 0.08);
 }
 
 /* ============================================

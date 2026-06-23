@@ -1,88 +1,176 @@
-import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, forwardRef } from 'react';
 import { useLanguage } from '../../hooks/useLanguage';
 
-
-/* ─── CATEGORY ICON COMPONENTS ─────────────────────────────── */
-const CategoryIconDesarrollo = () => (
-  <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <rect x="4" y="8" width="40" height="26" rx="3" stroke="currentColor" strokeWidth="2.2" fill="none"/>
-    <line x1="16" y1="40" x2="32" y2="40" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"/>
-    <line x1="24" y1="34" x2="24" y2="40" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"/>
-    <polyline points="13,19 9,23 13,27" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/>
-    <polyline points="35,19 39,23 35,27" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/>
-    <line x1="21" y1="16" x2="27" y2="30" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-  </svg>
-);
-
-const CategoryIconMarketing = () => (
-  <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M8 18H16L32 10V38L16 30H8V18Z" stroke="currentColor" strokeWidth="2.2" strokeLinejoin="round" fill="none"/>
-    <path d="M16 30L19 42" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"/>
-    <path d="M36 16C38.5 18 38.5 30 36 32" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" fill="none"/>
-    <path d="M40 12C44 16 44 32 40 36" stroke="currentColor" strokeWidth="2" strokeLinecap="round" fill="none" strokeDasharray="3 2"/>
-    <circle cx="38" cy="8" r="3" stroke="currentColor" strokeWidth="2" fill="none"/>
-    <line x1="38" y1="6" x2="38" y2="5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-    <line x1="38" y1="11" x2="38" y2="12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-    <line x1="36" y1="8" x2="35" y2="8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-    <line x1="41" y1="8" x2="40" y2="8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-  </svg>
-);
-
-const CategoryIconInversion = () => (
-  <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <polyline points="6,38 16,26 24,30 36,14 42,18" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-    <polyline points="36,8 42,8 42,14" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/>
-    <line x1="6" y1="38" x2="6" y2="8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" opacity="0.45"/>
-    <line x1="6" y1="38" x2="44" y2="38" stroke="currentColor" strokeWidth="2" strokeLinecap="round" opacity="0.45"/>
-    <circle cx="13" cy="10" r="5" stroke="currentColor" strokeWidth="2" fill="none"/>
-    <line x1="13" y1="7.5" x2="13" y2="8.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/>
-    <line x1="13" y1="11.5" x2="13" y2="12.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/>
-    <path d="M11 9.5C11 9.5 11.5 8.5 13 8.5C14.5 8.5 15 9.2 15 10C15 10.8 14 11 13 11.5C12 12 11 12.5 11 13.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" fill="none"/>
-  </svg>
-);
-
-/* ─── CATEGORIES DATA ────────────────────────────────────────── */
-const categoriesBase = [
-  { id: 0, IconComponent: CategoryIconDesarrollo, gradient: "linear-gradient(135deg, #030C1D 0%, #0A1D35 60%, #0d2845 100%)", accentColor: "#D4AF37", glowColor: "rgba(212, 175, 55, 0.2)", borderActive: "rgba(88, 74, 28, 0.6)" },
-  { id: 1, IconComponent: CategoryIconMarketing,  gradient: "linear-gradient(135deg, #030C1D 0%, #0A1D35 60%, #0d2845 100%)", accentColor: "#D4AF37", glowColor: "rgba(212, 175, 55, 0.2)", borderActive: "rgba(88, 74, 28, 0.6)" },
-  { id: 2, IconComponent: CategoryIconInversion,  gradient: "linear-gradient(135deg, #030C1D 0%, #0A1D35 60%, #0d2845 100%)", accentColor: "#D4AF37", glowColor: "rgba(212, 175, 55, 0.2)", borderActive: "rgba(88, 74, 28, 0.6)" },
+/* ─── SERVICIOS (lista plana, una sola hélice) ──────────────────────────
+ * cat = índice de categoría (0 Desarrollo · 1 Marketing · 2 Inversión)
+ * El badge de categoría se resuelve desde t.services.categories[cat].name */
+const SERVICES_STATIC = [
+  { id: 0, slug: 'web',            cat: 0, image: '/assets/image/servicios/webser.webp'     },
+  { id: 1, slug: 'mobile',         cat: 0, image: '/assets/image/servicios/celser.webp'     },
+  { id: 2, slug: 'ia',             cat: 0, image: '/assets/image/servicios/iaser.webp'      },
+  { id: 3, slug: 'ecommerce',      cat: 0, image: '/assets/image/servicios/ecomersser.webp' },
+  { id: 4, slug: 'saas',           cat: 0, image: '/assets/image/servicios/saasser.webp'    },
+  { id: 5, slug: 'automatizacion', cat: 0, image: '/assets/image/servicios/autoserv.webp'   },
+  { id: 6, slug: 'custom',         cat: 0, image: '/assets/image/servicios/medidaser.webp'  },
+  { id: 7, slug: 'diseno',         cat: 1, image: '/assets/image/servicios/ui-ux.webp'      },
+  { id: 8, slug: 'redes-sociales', cat: 1, image: '/assets/image/servicios/social.webp'     },
+  { id: 9, slug: 'inversion',      cat: 2, image: '/assets/image/servicios/inversion.webp'  },
 ];
 
-/* ─── SERVICES STATIC DATA (no text) ────────────────────────── */
-const servicesStatic = {
-  0: [
-    { id: 0, slug: 'web',            image: '/assets/image/servicios/webser.webp',     size: 'large'    },
-    { id: 1, slug: 'mobile',         image: '/assets/image/servicios/celser.webp',     size: 'large'    },
-    { id: 2, slug: 'ia',             image: '/assets/image/servicios/iaser.webp',      size: 'large'    },
-    { id: 3, slug: 'ecommerce',      image: '/assets/image/servicios/ecomersser.webp', size: 'medium'   },
-    { id: 4, slug: 'saas',           image: '/assets/image/servicios/saasser.webp',    size: 'medium'   },
-    { id: 5, slug: 'automatizacion', image: '/assets/image/servicios/autoserv.webp',   size: 'small'    },
-    { id: 6, slug: 'custom',         image: '/assets/image/servicios/medidaser.webp',  size: 'small'    },
-  ],
-  1: [
-    { id: 7, slug: 'diseno',         image: '/assets/image/servicios/ui-ux.webp',      size: 'large'    },
-    { id: 8, slug: 'redes-sociales', image: '/assets/image/servicios/social.webp',     size: 'large'    },
-  ],
-  2: [
-    { id: 9, slug: 'inversion',      image: '/assets/image/servicios/inversion.webp',  size: 'featured' },
-  ],
+/* ─── CONFIG DEL CARRUSEL CURVO (cover-flow horizontal) ──────────────────
+ * Las tarjetas se colocan sobre un arco y avanzan de IZQUIERDA a DERECHA
+ * conforme se hace scroll. La del centro queda al frente; las laterales
+ * se inclinan (rotateY) y retroceden (z), creando la curva.
+ * spacing = separación horizontal en px entre tarjeta y tarjeta (muy espaciado)
+ * angle   = inclinación en grados por tarjeta de distancia al centro
+ * radius  = profundidad del arco en px (qué tanto retroceden las laterales)
+ * window  = cuántas tarjetas a cada lado del foco se dibujan
+ * minScale= escala de la tarjeta más alejada
+ * blur    = desenfoque por unidad de distancia (0 = sin blur)
+ * focus   = radio (en nº de tarjetas) de la zona nítida alrededor del centro */
+const CONF = {
+  desktop: { angle: 34, spacing: 380, radius: 560, window: 2.8, minScale: 0.6,  blur: 6, focus: 0.6 },
+  mobile:  { angle: 30, spacing: 210, radius: 320, window: 2.2, minScale: 0.7,  blur: 0, focus: 0.55 },
 };
-/* ─── MAIN COMPONENT ─────────────────────────────────────────── */
+const SCROLL_PER_CARD = 44; // vh de scroll que avanza el carrusel por servicio
+
+const clamp = (v, lo, hi) => (v < lo ? lo : v > hi ? hi : v);
+
+/* ─── CARD (tarjeta de la hélice / fallback) ────────────────────────────
+ * forwardRef: el contenedor padre muta su transform en cada frame de scroll. */
+const Card = forwardRef(function Card({ service, onOpen, seeDetails, variant }, ref) {
+  return (
+    <article
+      ref={ref}
+      className={`svc-card svc-card--${variant}`}
+      onClick={() => onOpen(service)}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onOpen(service); } }}
+    >
+      <div className="svc-card__media">
+        <img
+          src={service.image}
+          alt={service.name}
+          className="svc-card__img"
+          loading="lazy"
+          decoding="async"
+          draggable="false"
+        />
+        <div className="svc-card__veil" />
+
+        <div className="svc-card__top">
+          <span className="svc-card__tag">{service.catLabel}</span>
+        </div>
+
+        <div className="svc-card__cap">
+          <h3 className="svc-card__name">{service.name}</h3>
+          <p className="svc-card__desc">{service.tagline}</p>
+          <span className="svc-card__cta" aria-hidden="true">
+            {seeDetails}
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round">
+              <path d="M5 12h14M12 5l7 7-7 7" />
+            </svg>
+          </span>
+        </div>
+      </div>
+    </article>
+  );
+});
+
+/* ─── HÉLICE: hook imperativo (sin re-render por frame) ──────────────────
+ * Un solo listener de scroll + rAF posiciona las N tarjetas en el cilindro.
+ * Se muta el DOM directamente (transform/opacity/zIndex) para no re-renderizar
+ * React en cada frame. Cumple el patrón de parallax barato del proyecto.     */
+function useScrew({ enabled, count, refs, trackRef, railRef, hudNum, hudTitle, hudCat, services }) {
+  useEffect(() => {
+    if (!enabled || typeof window === 'undefined') return;
+    let raf = 0;
+    let activeIdx = -1;
+
+    const update = () => {
+      raf = 0;
+      const track = trackRef.current;
+      if (!track) return;
+      const vh = window.innerHeight;
+      const rect = track.getBoundingClientRect();
+      const total = rect.height - vh;
+      const p = total > 0 ? clamp(-rect.top / total, 0, 1) : 0;
+      const head = p * (count - 1);
+      const conf = window.innerWidth < 768 ? CONF.mobile : CONF.desktop;
+
+      for (let i = 0; i < count; i++) {
+        const el = refs.current[i];
+        if (!el) continue;
+        const d = i - head;
+        if (Math.abs(d) > conf.window + 0.6) {
+          if (el.style.visibility !== 'hidden') {
+            el.style.visibility = 'hidden';
+            el.style.opacity = '0';
+            el.style.pointerEvents = 'none';
+          }
+          continue;
+        }
+        const deg = clamp(d * conf.angle, -82, 82);
+        const rad = (deg * Math.PI) / 180;
+        const x = d * conf.spacing;                 // avance horizontal (izq → der)
+        const z = (Math.cos(rad) - 1) * conf.radius; // arco: centro 0, laterales atrás
+        const depth = Math.cos(rad);                 // 1 al frente · →0 a los lados
+        const scale = conf.minScale + (1 - conf.minScale) * depth;
+        const edge = clamp(1 - (Math.abs(d) - (conf.window - 1)), 0, 1);
+        const opacity = clamp(0.12 + 0.88 * depth, 0, 1) * edge;
+
+        el.style.visibility = 'visible';
+        el.style.transform =
+          `translate3d(${x.toFixed(1)}px, 0px, ${z.toFixed(1)}px) rotateY(${deg.toFixed(1)}deg) scale(${scale.toFixed(3)})`;
+        el.style.opacity = opacity.toFixed(3);
+        el.style.zIndex = String(Math.round(200 - Math.abs(d) * 10));
+        // profundidad de campo: zona nítida de ±focus alrededor del centro,
+        // luego el blur entra (y sale) de forma gradual al alejarse
+        const dof = Math.min(Math.max(Math.abs(d) - conf.focus, 0) * conf.blur, 11);
+        el.style.filter = conf.blur ? `blur(${dof.toFixed(1)}px)` : 'none';
+        el.style.pointerEvents = depth > 0.25 ? 'auto' : 'none';
+        el.classList.toggle('is-active', Math.abs(d) < 0.5);
+      }
+
+      if (railRef.current) railRef.current.style.transform = `scaleX(${p.toFixed(4)})`;
+
+      const active = clamp(Math.round(head), 0, count - 1);
+      if (active !== activeIdx) {
+        activeIdx = active;
+        const svc = services[active];
+        if (hudNum.current) hudNum.current.textContent = String(active + 1).padStart(2, '0');
+        if (hudTitle.current) hudTitle.current.textContent = svc.name;
+        if (hudCat.current) hudCat.current.textContent = svc.catLabel;
+      }
+    };
+
+    const onScroll = () => { if (!raf) raf = requestAnimationFrame(update); };
+    update();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll, { passive: true });
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onScroll);
+      if (raf) cancelAnimationFrame(raf);
+    };
+  }, [enabled, count, refs, trackRef, railRef, hudNum, hudTitle, hudCat, services]);
+}
+
+/* ─── MAIN COMPONENT ─────────────────────────────────────────────────── */
 export default function ImprovedServices() {
   const { t } = useLanguage();
-  const categories = categoriesBase.map((c, i) => ({ ...c, ...t.services.categories[i] }));
-  const services = Object.fromEntries(
-    Object.entries(servicesStatic).map(([catId, items]) => [
-      catId,
-      items.map(s => ({ ...s, ...t.services.items[s.slug] })),
-    ])
-  );
+  const services = SERVICES_STATIC.map((s) => ({
+    ...s,
+    ...t.services.items[s.slug],
+    catLabel: t.services.categories[s.cat].name,
+  }));
+  const N = services.length;
 
-  const [activeCategory, setActiveCategory] = useState(0);
   const [expandedServiceId, setExpandedServiceId] = useState(null);
   const [isClosing, setIsClosing] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-  const carouselRef = useRef(null);
+  const [reduced, setReduced] = useState(false); // reduced-motion → fallback grid
 
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth <= 768);
@@ -91,9 +179,33 @@ export default function ImprovedServices() {
     return () => window.removeEventListener('resize', check);
   }, []);
 
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    setReduced(window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  }, []);
+
+  const trackRef = useRef(null);
+  const railRef = useRef(null);
+  const cardRefs = useRef([]);
+  const hudNum = useRef(null);
+  const hudTitle = useRef(null);
+  const hudCat = useRef(null);
+
+  useScrew({
+    enabled: !reduced,
+    count: N,
+    refs: cardRefs,
+    trackRef,
+    railRef,
+    hudNum,
+    hudTitle,
+    hudCat,
+    services,
+  });
+
   const expandedServiceData = expandedServiceId === null
     ? null
-    : Object.values(services).flat().find(s => s.id === expandedServiceId);
+    : services.find((s) => s.id === expandedServiceId);
 
   const closeExpanded = useCallback(() => {
     setIsClosing(true);
@@ -121,13 +233,8 @@ export default function ImprovedServices() {
     const handleHashChange = () => {
       const hash = window.location.hash.replace('#', '');
       if (hash) {
-        let foundService = null;
-        let foundCategory = 0;
-        for (const catId in services) {
-          const service = services[catId].find(s => s.slug === hash);
-          if (service) { foundService = service; foundCategory = parseInt(catId); break; }
-        }
-        if (foundService) { setActiveCategory(foundCategory); setExpandedServiceId(foundService.id); }
+        const svc = SERVICES_STATIC.find((s) => s.slug === hash);
+        if (svc) setExpandedServiceId(svc.id);
       }
     };
     handleHashChange();
@@ -140,129 +247,90 @@ export default function ImprovedServices() {
     window.history.pushState(null, '', `#${service.slug}`);
   };
 
-
-
-
-  const getGridClass = (size) => {
-    const sizes = { large: 'service-card--large', medium: 'service-card--medium', small: 'service-card--small', featured: 'service-card--featured' };
-    return sizes[size] || 'service-card--medium';
-  };
+  const first = services[0];
 
   return (
     <>
-      <section className="improved-services">
-        <div className="improved-services__hero">
-          <span className="improved-services__pretitle">{t.services.pretitle}</span>
-          <h1 className="improved-services__title">{t.services.title}</h1>
-          <p className="improved-services__subtitle">{t.services.subtitle}</p>
+      <section className="svc-helix">
+        {/* Fondo sticky compartido — gradientes baratos */}
+        <div className="svc-helix__bg" aria-hidden="true">
+          <div className="svc-helix__orb svc-helix__orb--a" />
+          <div className="svc-helix__orb svc-helix__orb--b" />
         </div>
 
-        {/* ─── CATEGORY BUTTONS — desktop cards / mobile tabs ─── */}
-        {isMobile ? (
-          <div className="mobile-tabs">
-            {categories.map((category) => {
-              const { IconComponent, accentColor } = category;
-              const isActive = activeCategory === category.id;
-              return (
-                <button
-                  key={category.id}
-                  onClick={() => { setActiveCategory(category.id); setExpandedServiceId(null); window.history.pushState(null, '', window.location.pathname); }}
-                  className={`mobile-tab ${isActive ? 'active' : ''}`}
-                >
-                  <span className="mobile-tab__icon" style={{ color: isActive ? accentColor : 'rgba(244,228,188,0.45)' }}>
-                    <IconComponent />
-                  </span>
-                  <span className="mobile-tab__label" style={{ color: isActive ? accentColor : 'rgba(244,228,188,0.6)' }}>
-                    {category.name}
-                  </span>
-                  {isActive && <span className="mobile-tab__bar" />}
-                </button>
-              );
-            })}
-          </div>
-        ) : (
-          <div className="improved-services__categories">
-            {categories.map((category) => {
-              const { IconComponent, gradient, accentColor, glowColor, borderActive } = category;
-              const isActive = activeCategory === category.id;
-              return (
-                <button
-                  key={category.id}
-                  onClick={() => { setActiveCategory(category.id); setExpandedServiceId(null); window.history.pushState(null, '', window.location.pathname); }}
-                  className={`category-card ${isActive ? 'active' : ''}`}
-                  aria-pressed={isActive}
-                  style={{
-                    '--cat-accent': accentColor,
-                    '--cat-glow': glowColor,
-                    '--cat-border-active': borderActive,
-                    '--cat-gradient': gradient,
-                  }}
-                >
-                  <div className="category-card__bg" style={{ background: gradient }} />
-                  {isActive && <div className="category-card__glow-blob" style={{ background: glowColor }} />}
-                  <div className="category-card__icon-wrap" style={{ color: isActive ? accentColor : 'rgba(244,228,188,0.55)' }}>
-                    <IconComponent />
-                  </div>
-                  <div className="category-card__content">
-                    <h3 className="category-card__name" style={{ color: isActive ? accentColor : 'var(--gold-light)' }}>
-                      {category.name}
-                    </h3>
-                    <p className="category-card__description">{category.description}</p>
-                  </div>
-                  <div className="category-card__line" style={{ background: isActive ? accentColor : 'var(--gold-border)' }} />
-                </button>
-              );
-            })}
-          </div>
-        )}
+        {/* Intro — scrollea y desaparece antes del tornillo */}
+        <header className="svc-helix__intro">
+          <span className="svc-helix__pretitle">{t.services.pretitle}</span>
+          <h1 className="svc-helix__h1">{t.services.title}</h1>
+          <p className="svc-helix__lead">{t.services.subtitle}</p>
+          {!reduced && (
+            <span className="svc-helix__hint">
+              {t.services.scrollHint}
+              <svg width="14" height="22" viewBox="0 0 14 22" fill="none" stroke="currentColor" strokeWidth="1.6">
+                <rect x="1" y="1" width="12" height="20" rx="6" />
+                <circle className="svc-helix__hint-dot" cx="7" cy="6" r="1.6" fill="currentColor" stroke="none" />
+              </svg>
+            </span>
+          )}
+        </header>
 
-        {/* ─── SERVICE GRID — desktop grid / mobile carousel ─── */}
-        {isMobile ? (
-          <div className="mobile-carousel" ref={carouselRef} key={activeCategory}>
-            {services[activeCategory].map((service, index) => (
-              <div
-                key={service.id}
-                className="mobile-card"
-                onClick={() => handleCardClick(service)}
-                style={{ animationDelay: `${index * 0.05}s` }}
-              >
-                <div className="mobile-card__bg">
-                  <img src={service.image} alt="" className="mobile-card__image" loading="lazy" />
-                  <div className="mobile-card__overlay" />
-                </div>
-                <div className="mobile-card__content">
-                  <p className="mobile-card__tagline">{service.tagline}</p>
-                  <h3 className="mobile-card__name">{service.name}</h3>
-                  <span className="mobile-card__cta">{t.services.seeDetails} →</span>
-                </div>
-              </div>
+        {reduced ? (
+          /* ── FALLBACK estático: grid accesible, sin movimiento ── */
+          <div className="svc-helix__grid">
+            {services.map((s) => (
+              <Card
+                key={s.id}
+                service={s}
+                onOpen={handleCardClick}
+                seeDetails={t.services.seeDetails}
+                variant="static"
+              />
             ))}
           </div>
         ) : (
-          <div className="improved-services__grid" key={activeCategory}>
-            {services[activeCategory].map((service, index) => (
-              <div
-                key={service.id}
-                className={`service-card ${getGridClass(service.size)} ${expandedServiceId !== null && expandedServiceId !== service.id ? 'dimmed' : ''}`}
-                onClick={() => handleCardClick(service)}
-                style={{ animationDelay: `${index * 0.05}s` }}
-              >
-                <div className="service-card__bg">
-                  <img src={service.image} alt="" className="service-card__image" loading="lazy" />
-                  <div className="service-card__overlay"></div>
+          /* ── TORNILLO: track alto + stage sticky con perspectiva ── */
+          <div
+            className="svc-helix__track"
+            ref={trackRef}
+            style={{ height: `${(N - 1) * SCROLL_PER_CARD + 110}vh` }}
+          >
+            <div className="svc-helix__stage">
+              {/* eje / rosca central */}
+              <div className="svc-helix__axis" aria-hidden="true" />
+
+              {/* halo de foco — resalta la tarjeta del centro */}
+              <div className="svc-helix__focus" aria-hidden="true" />
+
+              {/* HUD: número de servicio + categoría + título */}
+              <div className="svc-helix__hud" aria-hidden="true">
+                <div className="svc-helix__count">
+                  <span className="svc-helix__count-num" ref={hudNum}>01</span>
+                  <span className="svc-helix__count-sep">/</span>
+                  <span className="svc-helix__count-tot">{String(N).padStart(2, '0')}</span>
                 </div>
-                <div className="service-card__content">
-                  <div className="service-card__header">
-                    <h3 className="service-card__name">{service.name}</h3>
-                    <p className="service-card__tagline">{service.tagline}</p>
-                  </div>
-                  <div className="service-card__hint">
-                    <span>+</span>
-                    <span>{t.services.seeDetails}</span>
-                  </div>
-                </div>
+                <span className="svc-helix__hud-cat" ref={hudCat}>{first.catLabel}</span>
+                <span className="svc-helix__hud-title" ref={hudTitle}>{first.name}</span>
               </div>
-            ))}
+
+              {/* riel de progreso */}
+              <div className="svc-helix__rail" aria-hidden="true">
+                <div className="svc-helix__rail-fill" ref={railRef} />
+              </div>
+
+              {/* tarjetas de la hélice */}
+              <div className="svc-helix__cyl">
+                {services.map((s, i) => (
+                  <Card
+                    key={s.id}
+                    ref={(el) => { cardRefs.current[i] = el; }}
+                    service={s}
+                    onOpen={handleCardClick}
+                    seeDetails={t.services.seeDetails}
+                    variant="helix"
+                  />
+                ))}
+              </div>
+            </div>
           </div>
         )}
 
@@ -306,7 +374,6 @@ export default function ImprovedServices() {
                   </div>
                 </div>
                 <div className="service-modal__cta-wrapper">
-                  {/* ← CAMBIO CLAVE: button con onClick en lugar de <a href> */}
                   <a href="/contacto" className="service-modal__cta">
                     <span>{expandedServiceData.id === 9 ? t.services.modal.ctaInversion : t.services.modal.cta}</span>
                     <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
@@ -320,18 +387,15 @@ export default function ImprovedServices() {
         )}
       </section>
 
-      <style jsx>{`
+      <style>{`
         /* ─── VARIABLES ──────────────────────────────────────── */
         :root {
           --carbon:      #222220;
           --carbon-dark: #1a1a18;
           --navy:        #030C1D;
-          --navy-mid:    rgba(3, 12, 29, 0.6);
-          --navy-soft:   rgba(3, 12, 29, 0.35);
           --gold-deep:   #584A1C;
-          --gold:        #D4AF37;
+          --gold:        var(--accent);
           --gold-light:  #F4E4BC;
-          --gold-glow:   rgba(212, 175, 55, 0.15);
           --gold-border: rgba(88, 74, 28, 0.35);
 
           --dur-fast:    160ms;
@@ -340,284 +404,279 @@ export default function ImprovedServices() {
           --dur-close:   220ms;
           --ease-out:    cubic-bezier(0.2, 0, 0, 1);
           --ease-spring: cubic-bezier(0.34, 1.3, 0.64, 1);
+          --svc-expo:    cubic-bezier(0.22, 1, 0.36, 1);
         }
 
         /* ─── SECCIÓN ────────────────────────────────────────── */
-        .improved-services {
-          background: var(--carbon);
-          min-height: 100vh;
-          padding: 4rem 2rem 6rem;
-          color: white;
-          font-family: 'Inter', -apple-system, sans-serif;
+        .svc-helix {
           position: relative;
+          background: var(--background);
+          color: var(--text);
+          font-family: var(--font-body);
         }
 
-        .improved-services::before {
-          content: '';
-          position: fixed;
-          inset: 0;
-          background:
-            radial-gradient(ellipse 80% 50% at 50% 0%, rgba(3, 12, 29, 0.5) 0%, transparent 70%),
-            radial-gradient(ellipse 50% 40% at 100% 100%, rgba(3, 12, 29, 0.3) 0%, transparent 60%);
+        /* ── FONDO STICKY ──────────────────────────────────────────────── */
+        .svc-helix__bg {
+          position: sticky;
+          top: 0;
+          height: 100vh;
+          width: 100%;
+          z-index: 0;
+          overflow: hidden;
           pointer-events: none;
+          margin-bottom: -100vh;
+        }
+        .svc-helix__orb { position: absolute; border-radius: 50%; }
+        .svc-helix__orb--a {
+          width: 80vw; height: 60vw; top: -15%; left: 50%; transform: translateX(-50%);
+          background: radial-gradient(ellipse at center, rgba(195,173,133,0.06) 0%, transparent 60%);
+        }
+        .svc-helix__orb--b {
+          width: 55vw; height: 55vw; bottom: 5%; right: -15%;
+          background: radial-gradient(circle at center, rgba(195,173,133,0.035) 0%, transparent 65%);
+        }
+
+        /* ── INTRO ─────────────────────────────────────────────────────── */
+        .svc-helix__intro {
+          position: relative;
+          z-index: 1;
+          text-align: center;
+          max-width: 1040px;
+          margin: 0 auto;
+          padding: 7rem 1.4rem 2rem;
+        }
+        .svc-helix__pretitle {
+          display: inline-block;
+          font-size: 0.68rem; font-weight: 700; letter-spacing: 0.3em;
+          text-transform: uppercase; color: var(--accent-text);
+          padding: 0.35rem 1.2rem; border: 1px solid var(--gold-border);
+          border-radius: 100px; margin-bottom: 1.5rem; background: rgba(88,74,28,0.08);
+        }
+        .svc-helix__h1 {
+          font-size: clamp(2rem, 5vw, 3.4rem); font-weight: 900; line-height: 1.06;
+          color: var(--text);
+          margin: 0 0 1rem;
+        }
+        .svc-helix__lead { font-size: 1rem; color: var(--text-muted); margin: 0; }
+        .svc-helix__hint {
+          display: inline-flex; align-items: center; gap: 0.55rem;
+          margin-top: 2.2rem; font-size: 0.7rem; font-weight: 600;
+          letter-spacing: 0.18em; text-transform: uppercase;
+          color: var(--text-muted);
+        }
+        .svc-helix__hint svg { color: var(--gold); }
+        .svc-helix__hint-dot { animation: svc-scroll 1.8s var(--svc-expo) infinite; }
+        @keyframes svc-scroll {
+          0% { opacity: 0; transform: translateY(0); }
+          30% { opacity: 1; }
+          70% { opacity: 1; transform: translateY(7px); }
+          100% { opacity: 0; transform: translateY(7px); }
+        }
+
+        /* ── TRACK + STAGE STICKY ──────────────────────────────────────── */
+        .svc-helix__track {
+          position: relative;
+          z-index: 1;
+        }
+        .svc-helix__stage {
+          position: sticky;
+          top: 0;
+          height: 100vh;
+          width: 100%;
+          overflow: hidden;
+          perspective: 1200px;
+          perspective-origin: 50% 50%;
+        }
+
+        /* eje central del arco (línea horizontal) */
+        .svc-helix__axis {
+          position: absolute;
+          left: 0; right: 0; top: 50%;
+          height: 1px;
+          transform: translateY(-50%);
+          background: linear-gradient(
+            to right,
+            transparent 0%,
+            rgba(195,173,133,0.18) 22%,
+            rgba(195,173,133,0.18) 78%,
+            transparent 100%
+          );
           z-index: 0;
         }
 
-        .improved-services > * { position: relative; z-index: 1; }
-
-        /* ─── HERO ───────────────────────────────────────────── */
-        .improved-services__hero {
-          text-align: center; max-width: 900px; margin: 0 auto 5rem;
-        }
-        .improved-services__pretitle {
-          display: inline-block; font-size: 0.8rem; font-weight: 600;
-          letter-spacing: 0.3em; text-transform: uppercase;
-          color: var(--gold);
-          padding: 0.45rem 1.4rem;
-          border: 1px solid var(--gold-border);
-          border-radius: 50px;
-          background: rgba(88, 74, 28, 0.1);
-          margin-bottom: 1.5rem;
-          animation: badgePulse 3s ease-in-out infinite;
-        }
-
-        @keyframes badgePulse {
-          0%, 100% { box-shadow: 0 0 0 0 rgba(88, 74, 28, 0.4); }
-          50% { box-shadow: 0 0 0 8px rgba(88, 74, 28, 0); }
+        /* halo de foco difuminado en el centro (donde está la rosca) */
+        .svc-helix__focus {
+          position: absolute;
+          top: 50%; left: 50%;
+          width: clamp(360px, 36vw, 560px);
+          height: clamp(440px, 60vh, 640px);
+          transform: translate(-50%, -50%);
+          z-index: 0;
+          pointer-events: none;
+          background: radial-gradient(
+            ellipse at center,
+            rgba(195,173,133,0.22) 0%,
+            rgba(195,173,133,0.1) 38%,
+            transparent 72%
+          );
+          filter: blur(38px);
         }
 
-        .improved-services__title {
-          font-size: clamp(2.5rem, 5vw, 3.5rem); font-weight: 900; line-height: 1.1;
-          background: linear-gradient(135deg, var(--gold-light) 0%, var(--gold) 50%, var(--gold-deep) 100%);
-          -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-          margin-bottom: 1.5rem;
-        }
-        .improved-services__subtitle {
-          font-size: 1.2rem; color: rgba(244, 228, 188, 0.6);
-        }
-
-        /* ─── CATEGORÍAS ─────────────────────────────────────── */
-        .improved-services__categories {
-          max-width: 1200px; margin: 0 auto 4rem;
-          display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem;
-        }
-
-        /* ─── CATEGORY CARD ──────────────────────────────────── */
-        .category-card {
-          position: relative;
-          padding: 2rem 2rem 2.5rem;
-          border-radius: 20px;
-          cursor: pointer;
-          overflow: hidden;
-          transition:
-            transform var(--dur-normal) var(--ease-out),
-            border-color var(--dur-normal) ease,
-            box-shadow var(--dur-normal) ease;
-          display: flex;
-          flex-direction: column;
-          gap: 0.75rem;
-          text-align: left;
-          color: inherit;
-          border: 1px solid rgba(255,255,255,0.06);
-          background: var(--carbon-dark);
-          min-height: 180px;
-        }
-
-        .category-card__bg {
+        /* cilindro = capa con conservación 3D */
+        .svc-helix__cyl {
           position: absolute;
           inset: 0;
-          opacity: 0;
-          transition: opacity var(--dur-normal) ease;
-          border-radius: 20px;
+          transform-style: preserve-3d;
+          z-index: 1;
         }
 
-        .category-card:hover .category-card__bg,
-        .category-card.active .category-card__bg {
-          opacity: 1;
-        }
-
-        .category-card__glow-blob {
+        /* ── TARJETA (modo hélice) ─────────────────────────────────────── */
+        .svc-card--helix {
+          --cw: 300px;
+          --ch: 384px;
           position: absolute;
-          width: 200px;
-          height: 200px;
-          border-radius: 50%;
-          top: -60px;
-          right: -60px;
-          filter: blur(60px);
-          opacity: 0.4;
-          pointer-events: none;
-          animation: blobPulse 3s ease-in-out infinite;
-        }
-
-        @keyframes blobPulse {
-          0%, 100% { transform: scale(1); opacity: 0.4; }
-          50% { transform: scale(1.15); opacity: 0.55; }
-        }
-
-        .category-card__icon-wrap {
-          position: relative;
-          z-index: 2;
-          transition: transform var(--dur-normal) var(--ease-spring), color var(--dur-normal) ease, filter var(--dur-normal) ease;
-          width: 56px;
-          height: 56px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        }
-
-        .category-card:hover .category-card__icon-wrap {
-          transform: scale(1.15) translateY(-4px);
-        }
-
-        .category-card.active .category-card__icon-wrap {
-          transform: scale(1.1) translateY(-2px);
-          filter: drop-shadow(0 0 12px var(--cat-glow, rgba(255,255,255,0.2)));
-        }
-
-        .category-card__line {
-          position: absolute;
-          bottom: 0;
-          left: 0;
-          height: 3px;
-          width: 0%;
-          transition: width var(--dur-normal) var(--ease-out), background var(--dur-fast) ease;
-          border-radius: 0 0 20px 20px;
-        }
-
-        .category-card:hover .category-card__line,
-        .category-card.active .category-card__line {
-          width: 100%;
-        }
-
-        .category-card__content {
-          position: relative;
-          z-index: 2;
-        }
-
-        .category-card:hover {
-          transform: translateY(-8px) scale(1.01);
-          border-color: rgba(255,255,255,0.12);
-          box-shadow:
-            0 20px 50px rgba(0, 0, 0, 0.5),
-            0 0 30px var(--cat-glow, rgba(255,255,255,0.1));
-        }
-
-        .category-card.active {
-          transform: translateY(-5px);
-          border-color: var(--cat-border-active, rgba(212,175,55,0.5));
-          box-shadow:
-            0 12px 40px rgba(0, 0, 0, 0.5),
-            0 0 0 1px var(--cat-border-active, rgba(212,175,55,0.3)),
-            0 0 40px var(--cat-glow, rgba(212,175,55,0.1));
-        }
-
-        .category-card__name {
-          font-size: 1.2rem;
-          font-weight: 700;
-          margin: 0;
-          transition: color var(--dur-fast) ease;
-        }
-
-        .category-card__description {
-          font-size: 0.875rem;
-          color: rgba(244, 228, 188, 0.5);
-          margin: 0;
-          line-height: 1.5;
-        }
-
-        .category-card:focus-visible {
-          outline: 2px solid var(--gold);
-          outline-offset: 4px;
-        }
-
-        /* ─── GRID SERVICIOS ─────────────────────────────────── */
-        .improved-services__grid {
-          max-width: 1200px; margin: 0 auto;
-          display: grid; grid-template-columns: repeat(12, 1fr);
-          gap: 1.5rem; grid-auto-rows: 280px;
-        }
-
-        .service-card {
-          position: relative; border-radius: 24px; overflow: hidden;
+          top: 50%;
+          left: 50%;
+          width: var(--cw);
+          height: var(--ch);
+          margin-left: calc(var(--cw) / -2);
+          margin-top: calc(var(--ch) / -2);
+          transform-style: preserve-3d;
+          backface-visibility: hidden;
+          will-change: transform, opacity;
+          visibility: hidden;
           cursor: pointer;
-          border: 1px solid rgba(3, 12, 29, 0.8);
-          background: var(--navy);
-          transition:
-            transform var(--dur-normal) var(--ease-out),
-            border-color var(--dur-normal) ease,
-            box-shadow var(--dur-normal) ease,
-            opacity var(--dur-normal) ease,
-            filter var(--dur-normal) ease;
-          animation: cardFadeIn 0.35s var(--ease-out) backwards;
         }
-
-        @keyframes cardFadeIn {
-          from { opacity: 0; transform: translateY(20px) scale(0.97); }
-          to   { opacity: 1; transform: translateY(0)   scale(1); }
+        .svc-card--helix .svc-card__media {
+          transition: box-shadow .35s var(--svc-expo);
+          box-shadow: 0 18px 50px rgba(0,0,0,0.5);
         }
+        .svc-card--helix.is-active .svc-card__media {
+          box-shadow: 0 34px 80px rgba(0,0,0,0.62), 0 0 60px rgba(195,173,133,0.2);
+        }
+        .svc-card--helix .svc-card__cap { opacity: 0; transition: opacity .35s var(--svc-expo); }
+        .svc-card--helix.is-active .svc-card__cap { opacity: 1; }
 
-        .service-card--large    { grid-column: span 6; grid-row: span 2; }
-        .service-card--medium   { grid-column: span 4; grid-row: span 1; }
-        .service-card--small    { grid-column: span 4; grid-row: span 1; }
-        .service-card--featured { grid-column: span 12; grid-row: span 2; }
-        .service-card.dimmed    { opacity: 0.35; filter: blur(2px); transform: scale(0.98); }
-
-        .service-card::after {
-          content: '';
+        /* ── TARJETA (visual común) ────────────────────────────────────── */
+        .svc-card__media {
+          position: relative;
+          width: 100%;
+          height: 100%;
+          overflow: hidden;
+          border-radius: 18px;
+          background: #1b1a17;
+          border: 1px solid rgba(255,255,255,0.07);
+        }
+        .svc-card__img {
           position: absolute; inset: 0;
-          border: 2px solid var(--gold);
-          border-radius: 24px;
-          opacity: 0;
-          transition: opacity var(--dur-normal) ease;
+          width: 100%; height: 100%;
+          object-fit: cover; object-position: center;
+          display: block;
+        }
+        .svc-card__veil {
+          position: absolute; inset: 0;
+          background: linear-gradient(to top, rgba(8,7,5,0.92) 0%, rgba(8,7,5,0.35) 42%, rgba(8,7,5,0) 70%);
+          z-index: 1;
+        }
+        .svc-card__top {
+          position: absolute; top: 0.9rem; left: 0.9rem; right: 0.9rem;
+          display: flex; align-items: center; justify-content: space-between;
+          z-index: 2;
+        }
+        .svc-card__tag {
+          display: inline-flex; align-items: center;
+          padding: 0.22rem 0.6rem; border-radius: 7px;
+          border: 1px solid rgba(195,173,133,0.4); background: rgba(8,7,5,0.55);
+          color: var(--gold);
+          font-size: 0.56rem; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase;
+        }
+        .svc-card__cap {
+          position: absolute; left: 0; right: 0; bottom: 0;
+          padding: 1.1rem 1.15rem 1.15rem;
+          z-index: 2;
+        }
+        .svc-card__name {
+          font-size: 1.18rem; font-weight: 800; color: #fff;
+          margin: 0 0 0.32rem; line-height: 1.18;
+        }
+        .svc-card__desc {
+          font-size: 0.78rem; line-height: 1.5; color: rgba(244,228,188,0.62);
+          margin: 0 0 0.7rem;
+          display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+        }
+        .svc-card__cta {
+          display: inline-flex; align-items: center; gap: 0.36rem;
+          color: var(--gold); font-size: 0.72rem; font-weight: 700;
+        }
+
+        /* ── HUD ───────────────────────────────────────────────────────── */
+        .svc-helix__hud {
+          position: absolute;
+          top: 50%; left: clamp(1.2rem, 5vw, 4.5rem);
+          transform: translateY(-50%);
+          z-index: 5;
+          max-width: 240px;
           pointer-events: none;
         }
-
-        .service-card:hover {
-          border-color: var(--gold-deep);
-          box-shadow: 0 16px 48px rgba(3, 12, 29, 0.7), 0 0 0 1px var(--gold-border);
-          transform: translateY(-4px);
+        .svc-helix__count {
+          display: flex; align-items: baseline; gap: 0.3rem;
+          font-weight: 900; line-height: 1; margin-bottom: 0.9rem;
+        }
+        .svc-helix__count-num {
+          font-size: clamp(2.6rem, 6vw, 4.2rem);
+          color: var(--accent-text);
+        }
+        .svc-helix__count-sep { font-size: 1.4rem; color: var(--text-muted); }
+        .svc-helix__count-tot { font-size: 1.4rem; color: var(--text-muted); }
+        .svc-helix__hud-cat {
+          display: inline-flex; align-items: center;
+          padding: 0.2rem 0.6rem; border-radius: 7px; border: 1px solid rgba(195,173,133,0.4);
+          color: var(--gold);
+          font-size: 0.56rem; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase;
+          margin-bottom: 0.7rem;
+        }
+        .svc-helix__hud-title {
+          display: block;
+          font-size: clamp(1.2rem, 2vw, 1.6rem); font-weight: 800;
+          color: var(--text); line-height: 1.15;
         }
 
-        .service-card:hover::after { opacity: 1; }
-
-        .service-card__bg { position: absolute; inset: 0; }
-        .service-card__image {
-          width: 100%; height: 100%; object-fit: cover;
-          transition: transform 0.5s var(--ease-out);
+        /* ── RIEL DE PROGRESO (horizontal, abajo) ──────────────────────── */
+        .svc-helix__rail {
+          position: absolute;
+          left: 50%; bottom: clamp(1.6rem, 5vh, 3rem);
+          transform: translateX(-50%);
+          height: 3px; width: clamp(180px, 32vw, 420px); border-radius: 3px;
+          background: var(--border-strong);
+          overflow: hidden; z-index: 5;
         }
-        .service-card:hover .service-card__image { transform: scale(1.06); }
-
-        .service-card__overlay {
-          position: absolute; inset: 0;
-          background: linear-gradient(to bottom, rgba(3,12,29,0.25) 0%, rgba(3,12,29,0.75) 55%, rgba(3,12,29,0.97) 100%);
-        }
-
-        .service-card__content {
-          position: relative; padding: 2rem; height: 100%;
-          display: flex; flex-direction: column; justify-content: flex-end; z-index: 2;
+        .svc-helix__rail-fill {
+          position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+          transform-origin: left; transform: scaleX(0);
+          background: linear-gradient(to right, var(--gold-light), var(--gold));
+          border-radius: 3px;
         }
 
-        .service-card__name {
-          font-size: 1.45rem; font-weight: 700; color: var(--gold-light); margin: 0;
-          transition: transform var(--dur-normal) var(--ease-out);
+        /* ── FALLBACK GRID (reduced-motion) ────────────────────────────── */
+        .svc-helix__grid {
+          position: relative; z-index: 1;
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+          gap: 1.4rem;
+          max-width: 1240px;
+          margin: 0 auto;
+          padding: 2rem 1.4rem 7rem;
         }
-
-        .service-card:hover .service-card__name { transform: translateX(-4px); }
-
-        .service-card__tagline {
-          font-size: 0.75rem; color: var(--gold);
-          text-transform: uppercase; letter-spacing: 0.08em; margin-top: 0.4rem;
+        .svc-card--static { cursor: pointer; }
+        .svc-card--static .svc-card__media {
+          aspect-ratio: 4 / 5; height: auto;
+          transition: transform .3s var(--svc-expo), box-shadow .3s var(--svc-expo);
         }
-
-        .service-card__hint {
-          display: flex; align-items: center; gap: 0.5rem;
-          margin-top: 1rem; font-size: 0.85rem;
-          color: var(--gold-light); opacity: 0;
-          transform: translateY(10px);
-          transition: opacity var(--dur-normal) ease, transform var(--dur-normal) var(--ease-spring);
+        .svc-card--static .svc-card__cap { opacity: 1; }
+        .svc-card--static:hover .svc-card__media {
+          transform: translateY(-5px);
+          box-shadow: 0 22px 48px rgba(0,0,0,0.5), 0 0 0 1px rgba(195,173,133,0.35);
         }
-
-        .service-card:hover .service-card__hint { opacity: 1; transform: translateY(0); }
 
         /* ─── MODAL ──────────────────────────────────────────── */
         .modal-container {
@@ -652,7 +711,7 @@ export default function ImprovedServices() {
           background: var(--navy); border-radius: 28px; z-index: 2001;
           border: 1px solid var(--gold-border);
           max-height: 90vh; overflow-y: auto; scroll-behavior: smooth;
-          box-shadow: 0 30px 60px rgba(0,0,0,0.6), 0 0 0 1px rgba(88,74,28,0.2), inset 0 1px 0 rgba(212,175,55,0.08);
+          box-shadow: 0 30px 60px rgba(0,0,0,0.6), 0 0 0 1px rgba(88,74,28,0.2), inset 0 1px 0 rgba(195,173,133,0.08);
           animation: modalIn var(--dur-modal) var(--ease-spring) both;
           will-change: transform, opacity;
         }
@@ -785,7 +844,7 @@ export default function ImprovedServices() {
         .feature-card:hover {
           background: rgba(34,34,32,0.8); border-color: var(--gold-deep);
           transform: translateX(6px);
-          box-shadow: -4px 0 12px rgba(212,175,55,0.15);
+          box-shadow: -4px 0 12px rgba(195,173,133,0.15);
         }
 
         .feature-card__icon { color: var(--gold); flex-shrink: 0; }
@@ -810,7 +869,6 @@ export default function ImprovedServices() {
           animation: fadeOut var(--dur-close) ease both;
         }
 
-        /* ← ESTILOS ACTUALIZADOS PARA BUTTON (antes era <a>) */
         .service-modal__cta {
           display: flex; align-items: center; justify-content: center; gap: 0.75rem;
           background: linear-gradient(135deg, var(--gold-deep) 0%, var(--gold) 100%);
@@ -832,7 +890,7 @@ export default function ImprovedServices() {
         .service-modal__cta:hover::after { left: 100%; }
         .service-modal__cta:hover {
           transform: scale(1.02);
-          box-shadow: 0 8px 30px rgba(212,175,55,0.35);
+          box-shadow: 0 8px 30px rgba(195,173,133,0.35);
           background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
         }
 
@@ -841,139 +899,7 @@ export default function ImprovedServices() {
         }
         .service-modal__cta:hover svg { transform: translateX(4px); }
 
-        /* ─── RESPONSIVE ─────────────────────────────────────── */
-        @media (max-width: 900px) {
-          .service-card--large, .service-card--medium, .service-card--small { grid-column: span 12; grid-row: span 1; }
-          .improved-services__title { font-size: 2.5rem; }
-          .service-modal__hero { height: 200px; }
-          .service-modal__hero-content h2 { font-size: 1.8rem; }
-          .category-card__icon-wrap svg { width: 40px; height: 40px; }
-        }
-
-        /* ─── MOBILE — tabs ──────────────────────────────────── */
-        .mobile-tabs {
-          display: flex;
-          align-items: stretch;
-          gap: 0;
-          margin: 0 -2rem 2rem;
-          padding: 0 1rem;
-          border-bottom: 1px solid rgba(255,255,255,0.07);
-          overflow-x: auto;
-          -webkit-overflow-scrolling: touch;
-          scrollbar-width: none;
-        }
-        .mobile-tabs::-webkit-scrollbar { display: none; }
-
-        .mobile-tab {
-          flex: 1;
-          min-width: 100px;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          gap: 0.4rem;
-          padding: 0.9rem 0.5rem 1rem;
-          background: none;
-          border: none;
-          cursor: pointer;
-          position: relative;
-          transition: opacity var(--dur-fast) ease;
-        }
-
-        .mobile-tab__icon { display: flex; align-items: center; justify-content: center; }
-        .mobile-tab__icon svg { width: 28px; height: 28px; }
-
-        .mobile-tab__label {
-          font-size: 0.72rem;
-          font-weight: 600;
-          letter-spacing: 0.03em;
-          text-align: center;
-          line-height: 1.2;
-          transition: color var(--dur-fast) ease;
-        }
-
-        .mobile-tab__bar {
-          position: absolute;
-          bottom: -1px;
-          left: 10%;
-          width: 80%;
-          height: 2px;
-          background: var(--gold);
-          border-radius: 2px 2px 0 0;
-          animation: tabBarIn 0.2s var(--ease-out) both;
-        }
-
-        @keyframes tabBarIn {
-          from { width: 0; left: 50%; }
-          to   { width: 80%; left: 10%; }
-        }
-
-        /* ─── MOBILE — carousel ──────────────────────────────── */
-        .mobile-carousel {
-          display: flex;
-          gap: 1rem;
-          overflow-x: auto;
-          scroll-snap-type: x mandatory;
-          -webkit-overflow-scrolling: touch;
-          scrollbar-width: none;
-          padding: 0.5rem 2rem 2rem;
-          margin: 0 -2rem;
-        }
-        .mobile-carousel::-webkit-scrollbar { display: none; }
-
-        .mobile-card {
-          flex: 0 0 78vw;
-          max-width: 320px;
-          height: 240px;
-          border-radius: 20px;
-          overflow: hidden;
-          position: relative;
-          scroll-snap-align: start;
-          cursor: pointer;
-          border: 1px solid rgba(3,12,29,0.8);
-          animation: cardFadeIn 0.35s var(--ease-out) backwards;
-          transition: transform var(--dur-fast) ease, box-shadow var(--dur-fast) ease;
-        }
-
-        .mobile-card:active { transform: scale(0.97); }
-
-        .mobile-card__bg { position: absolute; inset: 0; }
-        .mobile-card__image { width: 100%; height: 100%; object-fit: cover; }
-        .mobile-card__overlay {
-          position: absolute; inset: 0;
-          background: linear-gradient(to top, rgba(3,12,29,0.97) 0%, rgba(3,12,29,0.5) 50%, transparent 100%);
-        }
-
-        .mobile-card__content {
-          position: absolute; inset: 0;
-          padding: 1.5rem;
-          display: flex; flex-direction: column; justify-content: flex-end;
-          z-index: 2;
-        }
-
-        .mobile-card__tagline {
-          font-size: 0.65rem;
-          color: var(--gold);
-          text-transform: uppercase;
-          letter-spacing: 0.1em;
-          margin: 0 0 0.35rem;
-        }
-
-        .mobile-card__name {
-          font-size: 1.25rem;
-          font-weight: 700;
-          color: var(--gold-light);
-          margin: 0 0 0.75rem;
-          line-height: 1.2;
-        }
-
-        .mobile-card__cta {
-          font-size: 0.8rem;
-          font-weight: 600;
-          color: var(--gold);
-          letter-spacing: 0.05em;
-        }
-
-        /* ─── MOBILE — bottom sheet modal ────────────────────── */
+        /* ── MOBILE — bottom sheet modal ────────────────────── */
         .modal-container.is-mobile {
           align-items: flex-end;
           padding: 0;
@@ -1023,24 +949,28 @@ export default function ImprovedServices() {
         .modal-container.is-mobile .service-modal__cta { font-size: 0.9rem; padding: 1rem 1.5rem; }
         .modal-container.is-mobile .service-modal__close { top: 1rem; right: 1rem; }
 
-        /* hero section mobile */
+        /* ─── RESPONSIVE ─────────────────────────────────────── */
+        @media (max-width: 1024px) {
+          .svc-helix__hud { max-width: 180px; left: clamp(0.8rem, 3vw, 2rem); }
+        }
+        @media (max-width: 900px) {
+          .service-modal__hero { height: 200px; }
+          .service-modal__hero-content h2 { font-size: 1.8rem; }
+        }
         @media (max-width: 768px) {
-          .improved-services {
-            padding: 3rem 1.5rem 4rem;
+          .svc-helix__intro { padding: 5rem 1rem 1.5rem; }
+          .svc-card--helix { --cw: 210px; --ch: 270px; }
+          .svc-card--helix .svc-card__cap { opacity: 1; }
+          .svc-card__name { font-size: 1rem; }
+          .svc-helix__hud {
+            top: auto; bottom: 1.4rem; left: 50%;
+            transform: translateX(-50%); text-align: center; max-width: 86vw;
           }
-          .improved-services__hero {
-            margin-bottom: 0;
-          }
-          .improved-services__title {
-            font-size: clamp(1.8rem, 8vw, 2.4rem);
-          }
-          .improved-services__subtitle {
-            font-size: 1rem;
-          }
-          .improved-services__pretitle {
-            font-size: 0.7rem;
-            letter-spacing: 0.2em;
-          }
+          .svc-helix__count { justify-content: center; margin-bottom: 0.5rem; }
+          .svc-helix__count-num { font-size: 2.4rem; }
+          .svc-helix__hud-title { font-size: 1.1rem; }
+          .svc-helix__hud-cat { margin-left: auto; margin-right: auto; }
+          .svc-helix__rail { width: 60vw; bottom: 7rem; }
         }
 
         @media (prefers-reduced-motion: reduce) {

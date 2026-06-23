@@ -115,11 +115,11 @@ export default function ClientCarousel() {
       <style>{`
         /* ── SECTION ─────────────────────────────────────── */
         .cc-section {
-          background: #222220;
+          background: var(--background);
           padding: 5rem 0 4.5rem;
           position: relative;
           overflow: hidden;
-          border-top: 1px solid rgba(212,175,55,0.06);
+          border-top: 1px solid var(--border);
           /* Entrada */
           opacity: 0;
           transform: translateY(28px);
@@ -134,8 +134,8 @@ export default function ClientCarousel() {
           z-index: 10;
           pointer-events: none;
         }
-        .cc-fade--l { left: 0;  background: linear-gradient(to right, #222220, transparent); }
-        .cc-fade--r { right: 0; background: linear-gradient(to left,  #222220, transparent); }
+        .cc-fade--l { left: 0;  background: linear-gradient(to right, var(--background), transparent); }
+        .cc-fade--r { right: 0; background: linear-gradient(to left,  var(--background), transparent); }
 
         /* ── HEADER ──────────────────────────────────────── */
         .cc-header {
@@ -146,13 +146,13 @@ export default function ClientCarousel() {
         .cc-h2 {
           font-size: clamp(1.6rem, 4vw, 2.6rem);
           font-weight: 900;
-          color: #D4AF37;
+          color: var(--text);
           margin: 0 0 .5rem;
           line-height: 1.1;
         }
         .cc-lead {
           font-size: .9rem;
-          color: rgba(244,228,188,0.42);
+          color: var(--text-muted);
           margin: 0;
           letter-spacing: .04em;
         }
@@ -209,8 +209,8 @@ export default function ClientCarousel() {
         .cc-logo:hover,
         .cc-logo.is-active {
           transform: scale(1.12);
-          border-color: #D4AF37;
-          box-shadow: 0 20px 50px rgba(0,0,0,0.55), 0 0 0 1px rgba(212,175,55,0.25);
+          border-color: var(--accent);
+          box-shadow: 0 20px 50px rgba(0,0,0,0.55), 0 0 0 1px rgba(195,173,133,0.25);
         }
         .cc-logo.is-dim {
           opacity: .22;
@@ -235,7 +235,7 @@ export default function ClientCarousel() {
           background: #fff;
           border-radius: 14px;
           padding: 1rem 1.1rem;
-          box-shadow: 0 20px 60px rgba(0,0,0,0.2), 0 0 0 1.5px rgba(212,175,55,0.28);
+          box-shadow: 0 20px 60px rgba(0,0,0,0.2), 0 0 0 1.5px rgba(195,173,133,0.28);
           animation: cc-tip-in .28s cubic-bezier(0.34,1.56,0.64,1);
         }
         @keyframes cc-tip-in {
@@ -257,7 +257,7 @@ export default function ClientCarousel() {
         .cc-tooltip__bar {
           height: 3px;
           width: 44px;
-          background: linear-gradient(90deg, #D4AF37, #B8941F);
+          background: linear-gradient(90deg, var(--accent), var(--brand-bronze));
           border-radius: 100px;
         }
 

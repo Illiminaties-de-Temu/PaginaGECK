@@ -1,5 +1,5 @@
-﻿import { useState, useEffect, useLayoutEffect, useRef } from "react";
-import { Menu, X, Briefcase, Info, BookOpen, Globe, Mail, Layers } from "lucide-react";
+import { useState, useEffect, useLayoutEffect, useRef } from "react";
+import { Menu, X, Briefcase, Info, BookOpen, Mail, Layers, ArrowUpRight, Sun, Moon } from "lucide-react";
 import { translations as allTranslations } from "../i18n/translations";
 
 const navTranslations = {
@@ -14,190 +14,6 @@ const languageOptions = [
   { code: "pt", label: "Português", flag: "🇧🇷" },
 ];
 
-function DisperseText({ text, isHovered }) {
-  const letters = text.split("");
-  const offsetsRef = useRef(null);
-  if (!offsetsRef.current) {
-    offsetsRef.current = letters.map(() => ({
-      x: (Math.random() - 0.5) * 20,
-      y: (Math.random() - 0.5) * 20,
-      r: (Math.random() - 0.5) * 45,
-    }));
-  }
-  const offsets = offsetsRef.current;
-  return (
-    <span style={{ display: "inline-block", position: "relative" }}>
-      {letters.map((letter, index) => (
-        <span
-          key={index}
-          style={{
-            display: "inline-block",
-            transition: "all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55)",
-            transform: isHovered
-              ? `translate(${offsets[index].x}px, ${offsets[index].y}px) rotate(${offsets[index].r}deg) scale(0.8)`
-              : "translate(0, 0) rotate(0deg) scale(1)",
-            opacity: isHovered ? 0.3 : 1,
-          }}
-        >
-          {letter === " " ? " " : letter}
-        </span>
-      ))}
-    </span>
-  );
-}
-
-function MagneticLink({ href, icon: Icon, text }) {
-  const [hover, setHover] = useState(false);
-  const [disperseHover, setDisperseHover] = useState(false);
-  const linkRef = useRef(null);
-
-  const handleMouseMove = (e) => {
-    if (!linkRef.current) return;
-    const rect = linkRef.current.getBoundingClientRect();
-    const x = (e.clientX - rect.left - rect.width / 2) * 0.3;
-    const y = (e.clientY - rect.top - rect.height / 2) * 0.3;
-    linkRef.current.style.transform = `translate(${x}px, ${y}px)`;
-  };
-
-  const handleMouseLeave = () => {
-    if (linkRef.current) linkRef.current.style.transform = "translate(0, 0)";
-    setHover(false);
-    setTimeout(() => setDisperseHover(false), 100);
-  };
-
-  return (
-    <a
-      ref={linkRef}
-      href={href}
-      onMouseMove={handleMouseMove}
-      onMouseEnter={() => { setHover(true); setTimeout(() => setDisperseHover(true), 50); }}
-      onMouseLeave={handleMouseLeave}
-      style={{
-        display: "flex", alignItems: "center", gap: "0.5rem",
-        color: "var(--white-soft)", fontSize: "1.25rem",
-        transition: "color 0.3s ease", padding: "0.5rem 0",
-        textDecoration: "none", cursor: "pointer",
-        willChange: "transform",
-      }}
-    >
-      <Icon size={18} style={{ transition: "all 0.3s ease", color: hover ? "var(--gold)" : "inherit" }} />
-      <DisperseText text={text} isHovered={disperseHover} />
-    </a>
-  );
-}
-
-function AnimatedLogo({ text }) {
-  const [isHovered, setIsHovered] = useState(false);
-  const [disperseActive, setDisperseActive] = useState(false);
-  const letters = text.split("");
-  const offsetsRef = useRef(null);
-  if (!offsetsRef.current) {
-    offsetsRef.current = letters.map(() => ({
-      x: (Math.random() - 0.5) * 25,
-      y: (Math.random() - 0.5) * 25,
-      r: (Math.random() - 0.5) * 50,
-    }));
-  }
-  const offsets = offsetsRef.current;
-
-  return (
-    <span
-      onMouseEnter={() => { setIsHovered(true); setTimeout(() => setDisperseActive(true), 50); }}
-      onMouseLeave={() => { setDisperseActive(false); setTimeout(() => setIsHovered(false), 100); }}
-      style={{ display: "inline-block", position: "relative", cursor: "pointer" }}
-    >
-      {letters.map((letter, index) => (
-        <span
-          key={index}
-          style={{
-            display: "inline-block",
-            transition: "all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55)",
-            transitionDelay: `${index * 0.03}s`,
-            transform: disperseActive
-              ? `translate(${offsets[index].x}px, ${offsets[index].y}px) rotate(${offsets[index].r}deg) scale(0.7)`
-              : "translate(0, 0) rotate(0deg) scale(1)",
-            opacity: disperseActive ? 0.4 : 1,
-            background: "linear-gradient(135deg, var(--white), var(--gold))",
-            backgroundClip: "text", WebkitBackgroundClip: "text",
-            WebkitTextFillColor: "transparent", color: "transparent",
-          }}
-        >
-          {letter === " " ? " " : letter}
-        </span>
-      ))}
-    </span>
-  );
-}
-
-function AnimatedWaves() {
-  const canvasRef = useRef(null);
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    const setCanvasSize = () => { canvas.width = window.innerWidth; canvas.height = 70; };
-    setCanvasSize();
-
-    class Wave {
-      constructor(y, amplitude, frequency, speed, color) {
-        this.y = y; this.amplitude = amplitude; this.frequency = frequency;
-        this.speed = speed; this.color = color; this.phase = Math.random() * Math.PI * 2;
-      }
-      draw(time) {
-        ctx.beginPath(); ctx.moveTo(0, canvas.height);
-        for (let x = 0; x <= canvas.width; x += 5) {
-          const y = this.y + Math.sin((x * this.frequency) + (time * this.speed) + this.phase) * this.amplitude;
-          ctx.lineTo(x, y);
-        }
-        ctx.lineTo(canvas.width, canvas.height); ctx.lineTo(0, canvas.height);
-        ctx.fillStyle = this.color; ctx.fill();
-      }
-    }
-
-    class Particle {
-      constructor() { this.reset(); }
-      reset() {
-        this.x = Math.random() * canvas.width; this.y = canvas.height + 20;
-        this.size = Math.random() * 2 + 1; this.speedY = Math.random() * 0.3 + 0.1;
-        this.speedX = (Math.random() - 0.5) * 0.2; this.opacity = Math.random() * 0.4 + 0.2;
-      }
-      update() { this.y -= this.speedY; this.x += this.speedX; if (this.y < -20) this.reset(); }
-      draw() {
-        ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(212, 175, 55, ${this.opacity})`;
-        ctx.shadowBlur = 10; ctx.shadowColor = `rgba(212, 175, 55, ${this.opacity})`;
-        ctx.fill(); ctx.shadowBlur = 0;
-      }
-    }
-
-    const waves = [
-      new Wave(50, 8, 0.01, 0.0005, 'rgba(2, 6, 20, 0.3)'),
-      new Wave(55, 6, 0.015, 0.0008, 'rgba(2, 6, 20, 0.25)'),
-      new Wave(60, 5, 0.02, 0.001, 'rgba(2, 6, 20, 0.2)')
-    ];
-    const particles = Array.from({ length: 30 }, () => new Particle());
-    let animationTime = 0; let animationId;
-
-    function animate() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      waves.forEach(wave => wave.draw(animationTime));
-      particles.forEach(p => { p.update(); p.draw(); });
-      animationTime += 0.016;
-      animationId = requestAnimationFrame(animate);
-    }
-    animate();
-    window.addEventListener('resize', setCanvasSize);
-    return () => { window.removeEventListener('resize', setCanvasSize); if (animationId) cancelAnimationFrame(animationId); };
-  }, []);
-
-  return (
-    <canvas ref={canvasRef} style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', opacity: 0.5, pointerEvents: 'none', zIndex: 1 }} />
-  );
-}
-
 export default function GeckNavbar() {
   const [language, setLanguage] = useState('es');
 
@@ -205,19 +21,36 @@ export default function GeckNavbar() {
     const stored = localStorage.getItem('geck-language') || 'es';
     if (stored !== 'es') setLanguage(stored);
   }, []);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [mobileMenuClosing, setMobileMenuClosing] = useState(false);
-  const [langMenuOpen, setLangMenuOpen] = useState(false);
+
+  // ── Tema (light/dark). El valor inicial ya lo fijó el script no-flash
+  //    del <head> sobre <html data-theme>; aquí solo lo leemos. ──
+  const [theme, setTheme] = useState('dark');
+
+  useLayoutEffect(() => {
+    const current = document.documentElement.getAttribute('data-theme') || 'dark';
+    setTheme(current);
+  }, []);
+
+  const toggleTheme = () => {
+    const next = theme === 'dark' ? 'light' : 'dark';
+    setTheme(next);
+    document.documentElement.setAttribute('data-theme', next);
+    localStorage.setItem('geck-theme', next);
+  };
+
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [menuClosing, setMenuClosing] = useState(false);
   const [navVisible, setNavVisible] = useState(true);
+  const [atTop, setAtTop] = useState(true);
   const lastScrollYRef = useRef(0);
-  const langMenuRef = useRef(null);
-  const navRef = useRef(null);
 
   const t = navTranslations[language];
+  const isMenuShown = menuOpen && !menuClosing;
 
   useEffect(() => {
     const handleScroll = () => {
       const current = window.scrollY;
+      setAtTop(current < 10);
       if (current < 10) setNavVisible(true);
       else if (current > lastScrollYRef.current && current > 100) setNavVisible(false);
       else if (current < lastScrollYRef.current) setNavVisible(true);
@@ -228,33 +61,24 @@ export default function GeckNavbar() {
   }, []);
 
   useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (langMenuRef.current && !langMenuRef.current.contains(event.target)) setLangMenuOpen(false);
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  useEffect(() => {
-    document.body.style.overflow = mobileMenuOpen ? "hidden" : "unset";
+    document.body.style.overflow = menuOpen ? "hidden" : "unset";
     return () => { document.body.style.overflow = "unset"; };
-  }, [mobileMenuOpen]);
+  }, [menuOpen]);
+
+  const closeMenu = () => {
+    setMenuClosing(true);
+    setTimeout(() => { setMenuOpen(false); setMenuClosing(false); }, 380);
+  };
+
+  const toggleMenu = () => { if (menuOpen) closeMenu(); else setMenuOpen(true); };
 
   const handleLanguageChange = (code) => {
     setLanguage(code);
     localStorage.setItem('geck-language', code);
     window.dispatchEvent(new CustomEvent('geck-language-change', { detail: { lang: code } }));
-    setLangMenuOpen(false);
-    if (mobileMenuOpen) closeMobileMenu();
   };
 
-  const closeMobileMenu = () => {
-    setMobileMenuClosing(true);
-    setTimeout(() => { setMobileMenuOpen(false); setMobileMenuClosing(false); }, 400);
-  };
-
-  const handleNavLinkClick = () => { if (mobileMenuOpen) closeMobileMenu(); };
-  const toggleMobileMenu = () => { if (mobileMenuOpen) closeMobileMenu(); else setMobileMenuOpen(true); };
+  const handleNavLinkClick = () => { if (menuOpen) closeMenu(); };
 
   const navLinks = [
     { key: "portfolio", icon: Briefcase, href: "/portafolio" },
@@ -266,156 +90,311 @@ export default function GeckNavbar() {
   return (
     <>
       <style>{`
-        :root { --gold: #D4AF37; --navy-dark: #0A1D35; --white: #FFFFFF; --white-soft: #F8FAFC; }
+        :root { --navy-deep: #061327; }
         * { box-sizing: border-box; }
-        .nav-desktop { display: flex; }
-        .mobile-menu-btn { display: none; }
-        @media (max-width: 1100px) and (min-width: 769px) {
-          .nav-links-center { gap: 2rem !important; }
-          .nav-links-center a { font-size: 1rem !important; }
+
+        /* ── Pills (Contacto / Menú) ── */
+        /* ── Logo en texto: Geck Codex ── */
+        .nav-logo-text {
+          display: flex; align-items: baseline; gap: 0.5rem;
+          font-family: var(--font-display);
+          font-weight: 700; font-size: 2.4rem; line-height: 1;
+          letter-spacing: -0.02em;
         }
-        @media (max-width: 900px) and (min-width: 769px) {
-          .nav-links-center { gap: 1.4rem !important; }
-          .nav-links-center a { font-size: 0.9rem !important; }
-          .contact-button { padding: 0.6rem 1rem !important; font-size: 0.85rem !important; }
-          .nav-logo-img { width: 56px !important; height: 56px !important; }
-          .nav-logo-text { font-size: 1.6rem !important; }
+        .nav-logo-geck { color: var(--accent-text); }
+        .nav-logo-codex { color: var(--accent-text); }
+        .nav-logo-link { transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1); }
+        .nav-logo-link:hover { transform: translateY(-2px); }
+
+        .nav-pill {
+          display: flex; align-items: center; gap: 1rem;
+          padding: 0.5rem 0.6rem 0.5rem 1.9rem;
+          border-radius: 999px;
+          backdrop-filter: blur(24px) saturate(160%);
+          -webkit-backdrop-filter: blur(24px) saturate(160%);
+          font-weight: 700; font-size: 1.5rem;
+          text-decoration: none; cursor: pointer;
+          transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.45s cubic-bezier(0.22, 1, 0.36, 1), background 0.45s ease;
+          white-space: nowrap;
         }
+
+        .nav-pill-contact {
+          color: var(--gold);
+          background: var(--navy-dark);
+          border: 1px solid var(--border);
+        }
+        .nav-pill-contact:hover {
+          transform: translateY(-3px);
+        }
+
+        .nav-pill-menu {
+          color: var(--on-accent);
+          background: var(--accent);
+          border: 1px solid var(--border);
+        }
+        .nav-pill-menu:hover {
+          transform: translateY(-3px);
+        }
+
+        /* ── Círculo que encierra el icono de cada píldora ── */
+        .nav-pill-icon {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          width: 3.1rem;
+          height: 3.1rem;
+          border-radius: 50%;
+          flex-shrink: 0;
+        }
+        /* Contacto (navy): círculo dorado tenue */
+        .nav-pill-contact .nav-pill-icon {
+          background: rgba(195, 173, 133, 0.14);
+          border: 1px solid rgba(195, 173, 133, 0.4);
+          color: var(--gold);
+        }
+        /* Menú (dorado): círculo navy con icono dorado */
+        .nav-pill-menu .nav-pill-icon {
+          background: var(--navy-dark);
+          color: var(--accent);
+        }
+
+        /* ── Carrusel vertical del texto del botón Menú ── */
+        .menu-toggle-text {
+          display: inline-block; overflow: hidden;
+          height: 1.25em; line-height: 1.25em;
+        }
+        .menu-toggle-track {
+          display: flex; flex-direction: column;
+          transition: transform 0.6s cubic-bezier(0.34, 1.4, 0.5, 1);
+        }
+        .menu-toggle-track > span {
+          height: 1.25em; line-height: 1.25em;
+          display: block; text-align: center;
+        }
+        .menu-toggle-track[data-open="true"] { transform: translateY(-50%); }
+
+        /* ── Diálogo lateral del menú ── */
+        .menu-overlay {
+          position: fixed; inset: 0; z-index: 58;
+          background: rgba(2,6,20,0.35);
+          backdrop-filter: blur(2px);
+          animation: overlayIn 0.5s ease forwards;
+        }
+        .menu-overlay.closing { animation: overlayOut 0.5s ease forwards; }
+        @keyframes overlayIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes overlayOut { from { opacity: 1; } to { opacity: 0; } }
+
+        .menu-dialog {
+          position: fixed;
+          top: 120px; right: 2rem;
+          width: min(490px, calc(100vw - 3rem));
+          max-height: calc(100vh - 150px);
+          overflow-y: auto;
+          z-index: 59;
+          padding: 2.25rem;
+          border-radius: 36px;
+          background: var(--navy-dark);
+          border: none;
+          transform-origin: top right;
+          animation: dialogIn 0.85s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        }
+        .menu-dialog.closing { animation: dialogOut 0.5s cubic-bezier(0.55, 0, 0.55, 0.2) forwards; }
+        @keyframes dialogIn {
+          0%   { opacity: 0; transform: translateX(calc(100% + 2rem)) scale(0.94, 1); }
+          60%  { opacity: 1; transform: translateX(-10px) scale(1.035, 0.96); }
+          80%  { transform: translateX(4px) scale(0.99, 1.02); }
+          100% { opacity: 1; transform: translateX(0) scale(1, 1); }
+        }
+        @keyframes dialogOut {
+          0%   { opacity: 1; transform: translateX(0) scale(1, 1); }
+          100% { opacity: 0; transform: translateX(calc(100% + 2rem)) scale(0.94, 1); }
+        }
+
+        .menu-label {
+          color: rgba(255,255,255,0.45);
+          font-size: 1.05rem; letter-spacing: 0.18em; text-transform: uppercase;
+          margin: 0 0 1.25rem 0.35rem; font-weight: 600;
+        }
+
+        .menu-link {
+          display: flex; align-items: center; gap: 1.35rem;
+          padding: 1.25rem 1.5rem; border-radius: 24px;
+          color: var(--white-soft); text-decoration: none;
+          font-size: 1.55rem; font-weight: 600;
+          border: none;
+          transition: background 0.4s cubic-bezier(0.22, 1, 0.36, 1), transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .menu-link svg { color: var(--gold); flex-shrink: 0; transition: transform 0.4s ease; }
+        .menu-link .menu-link-arrow { margin-left: auto; opacity: 0; transform: translateX(-8px); transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.22, 1, 0.36, 1); }
+        .menu-link:hover {
+          background: var(--navy-light);
+          transform: translateX(6px);
+        }
+        .menu-link:hover .menu-link-arrow { opacity: 1; transform: translateX(0); }
+
+        .menu-divider { height: 1px; background: rgba(255,255,255,0.08); margin: 1.85rem 0; }
+
+        /* ── Selector de idioma: control segmentado navy ── */
+        .menu-lang-group {
+          display: flex; gap: 0.6rem;
+          padding: 0.5rem;
+          border-radius: 24px;
+          background: var(--navy-deep);
+        }
+        .menu-lang-btn {
+          flex: 1;
+          display: flex; flex-direction: column; align-items: center; gap: 0.4rem;
+          padding: 1.05rem 0.6rem; border-radius: 18px;
+          background: transparent;
+          border: none;
+          color: rgba(255,255,255,0.6); cursor: pointer;
+          font-size: 1.2rem; font-weight: 600; letter-spacing: 0.05em;
+          transition: background 0.4s cubic-bezier(0.22, 1, 0.36, 1), color 0.4s ease, transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .menu-lang-btn .menu-lang-flag { font-size: 2rem; line-height: 1; }
+        .menu-lang-btn:hover { color: var(--white-soft); transform: translateY(-2px); }
+        .menu-lang-btn.active {
+          background: var(--navy-light);
+          color: var(--gold);
+        }
+
+        /* ── Responsive ── */
         @media (max-width: 768px) {
-          .nav-desktop { display: none !important; }
-          .mobile-menu-btn { display: flex !important; align-items: center; justify-content: center; }
-          .logo-text-mobile { display: block !important; position: absolute !important; left: 50% !important; transform: translateX(-50%) !important; white-space: nowrap !important; }
-          .logo-text-desktop { display: none !important; }
-          .nav-container { padding: 0 1rem !important; position: relative !important; }
+          .nav-logo-text { font-size: 1.85rem; }
+          .nav-pill { padding: 0.4rem 0.5rem 0.4rem 1.5rem; font-size: 1.2rem; }
+          .nav-pill-icon { width: 2.7rem; height: 2.7rem; }
         }
-        .mobile-menu { position: fixed; top: 76px; left: 0; right: 0; bottom: 0; background: linear-gradient(180deg, rgba(2,6,20,0.45) 0%, rgba(2,6,20,0.3) 100%); backdrop-filter: blur(60px) saturate(200%); z-index: 55; animation: slideDownFade 0.5s cubic-bezier(0.34,1.56,0.64,1); }
-        @keyframes slideDownFade { 0% { opacity: 0; transform: translateY(-50px); } 100% { opacity: 1; transform: translateY(0); } }
-        .mobile-menu-closing { animation: slideUpFade 0.4s forwards; }
-        @keyframes slideUpFade { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-50px); } }
-        .nav-pulse-line { position: absolute; bottom: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent, var(--gold) 20%, #041934 50%, var(--gold) 80%, transparent); animation: pulseLine 4s infinite; z-index: 3; }
-        @keyframes pulseLine { 0%, 100% { opacity: 0.4; } 50% { opacity: 1; } }
-        .contact-button { position: relative; overflow: hidden; backdrop-filter: blur(25px); background: linear-gradient(135deg, rgba(212,175,55,0.18), rgba(212,175,55,0.08)); border: 2px solid var(--gold); animation: contactPulse 2s infinite; text-decoration: none; }
-        @keyframes contactPulse { 0%, 100% { box-shadow: 0 0 20px rgba(212,175,55,0.4); } 50% { box-shadow: 0 0 35px rgba(212,175,55,0.6); } }
-        .blur-button-navy { backdrop-filter: blur(25px); background: rgba(2,6,20,0.2); border: 1px solid rgba(212,175,55,0.25); transition: all 0.3s; }
-        .mobile-nav-link { backdrop-filter: blur(20px); background: rgba(255,255,255,0.02); border: 1px solid rgba(212,175,55,0.15); transition: all 0.3s; }
-        .mobile-lang-btn.active { background: rgba(212,175,55,0.25) !important; border: 1px solid var(--gold) !important; }
-        .mobile-contact-link { display: flex; align-items: center; justify-content: center; gap: 1rem; padding: 1.25rem; border-radius: 15px; background: linear-gradient(135deg, rgba(212,175,55,0.2), rgba(212,175,55,0.08)); border: 2px solid var(--gold); color: var(--gold); font-size: 1.5rem; font-weight: bold; text-decoration: none; }
+        @media (max-width: 480px) {
+          .nav-row { padding: 0.8rem 1rem !important; }
+          .nav-pill-contact .nav-pill-text { display: none; }
+          .nav-pill-contact { padding: 0.4rem; }
+          .menu-dialog { top: 104px; right: 1rem; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          .menu-overlay, .menu-overlay.closing,
+          .menu-dialog, .menu-dialog.closing { animation: none !important; }
+          .nav-pill, .menu-link { transition: none !important; }
+        }
       `}</style>
 
+      {/* ── Barra transparente: solo secciones flotantes, sin contenedor de barra ── */}
       <nav
-        ref={navRef}
         style={{
-          background: "linear-gradient(135deg, rgba(2,6,20,0.40) 0%, rgba(2,6,20,0.40) 100%)",
-          backdropFilter: "blur(40px) saturate(180%)",
-          borderBottom: "1px solid rgba(212, 175, 55, 0.3)",
-          position: "sticky", top: 0, zIndex: 50, height: "76px",
-          transform: navVisible ? "translateY(0)" : "translateY(-100%)",
-          transition: "transform 0.4s",
+          position: "fixed", top: 0, left: 0, right: 0, zIndex: 60,
+          pointerEvents: "none",
+          transform: navVisible ? "translateY(0)" : "translateY(-130%)",
+          transition: "transform 0.4s ease",
         }}
       >
-        <AnimatedWaves />
-        <div className="nav-pulse-line" />
-
-        <div className="nav-container" style={{ padding: "0 2rem", height: "100%", display: "flex", alignItems: "center", justifyContent: "space-between", position: "relative", zIndex: 2, maxWidth: "2200px", margin: "0 auto" }}>
-
-          <a href="/" className="logo-container" style={{ display: "flex", alignItems: "center", gap: "0.75rem", textDecoration: "none", zIndex: 3 }}>
-            <img src="/assets/image/logo.webp" alt="Geck Codex" className="nav-logo-img" style={{ width: "72px", height: "72px", objectFit: "contain" }} />
-            <span className="logo-text logo-text-desktop nav-logo-text" style={{ fontSize: "2rem", fontWeight: "bold" }}>
-              <AnimatedLogo text="Geck Codex" />
+        <div
+          className="nav-row"
+          style={{
+            padding: "1.4rem 2.5rem",
+            display: "flex", alignItems: "center", justifyContent: "space-between",
+            maxWidth: "2200px", margin: "0 auto",
+          }}
+        >
+          {/* Sección Geck Codex — sin contenedor, parte de la página */}
+          <a
+            href="/"
+            aria-label="Geck Codex"
+            className="nav-logo-link"
+            style={{
+              display: "flex", alignItems: "center", textDecoration: "none",
+              pointerEvents: "auto",
+            }}
+          >
+            <span className="nav-logo-text">
+              <span className="nav-logo-geck">Geck</span>
+              <span className="nav-logo-codex">Codex</span>
             </span>
           </a>
 
-          <span className="logo-text logo-text-mobile" style={{ fontSize: "2rem", fontWeight: "bold", display: "none" }}>
-            <AnimatedLogo text="Geck Codex" />
-          </span>
-
-          <div className="nav-desktop nav-links-center" style={{ gap: "3.5rem", position: "absolute", left: "50%", transform: "translateX(-50%)", display: "flex", alignItems: "center" }}>
-            {navLinks.map(({ key, icon, href }) => (
-              <MagneticLink key={key} href={href} icon={icon} text={t[key]} />
-            ))}
-          </div>
-
-          <div className="nav-desktop" style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
-            {/* ← LINK en lugar de button con openDrawer */}
-            <a href="/contacto" className="contact-button" style={{ display: "flex", alignItems: "center", gap: "0.5rem", color: "var(--gold)", padding: "0.75rem 1.5rem", borderRadius: "10px", fontWeight: 700, cursor: "pointer", transition: "0.3s" }}>
-              <Mail size={18} /> {t.contact}
+          {/* Secciones Contacto + Menú — con contenedor visible y bordes redondeados */}
+          <div style={{ display: "flex", alignItems: "center", gap: "1.25rem", pointerEvents: "auto" }}>
+            <a href="/contacto" className="nav-pill nav-pill-contact">
+              <span className="nav-pill-text">{t.contact}</span>
+              <span className="nav-pill-icon"><Mail size={20} /></span>
             </a>
 
-            <div ref={langMenuRef} style={{ position: "relative" }}>
-              <button
-                onClick={() => setLangMenuOpen(!langMenuOpen)}
-                className="blur-button-navy"
-                style={{ display: "flex", alignItems: "center", gap: "0.5rem", color: "white", padding: "0.75rem 1rem", borderRadius: "10px", cursor: "pointer" }}
-              >
-                <Globe size={18} style={{ color: "var(--gold)" }} />
-                <span>{languageOptions.find(l => l.code === language).flag}</span>
-              </button>
-
-              {langMenuOpen && (
-                <div style={{ position: "absolute", top: "120%", right: 0, background: "rgba(10,29,53,0.95)", backdropFilter: "blur(20px)", borderRadius: "12px", padding: "0.5rem", border: "1px solid rgba(212,175,55,0.3)", display: "flex", flexDirection: "column", gap: "4px", minWidth: "140px", zIndex: 100 }}>
-                  {languageOptions.map((opt) => (
-                    <button
-                      key={opt.code}
-                      onClick={() => handleLanguageChange(opt.code)}
-                      style={{ display: "flex", alignItems: "center", gap: "10px", padding: "0.75rem 1rem", background: language === opt.code ? "rgba(212,175,55,0.2)" : "transparent", border: "none", color: "white", borderRadius: "8px", cursor: "pointer", transition: "0.2s" }}
-                    >
-                      <span>{opt.flag}</span> {opt.label}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
+            <button
+              type="button"
+              onClick={toggleMenu}
+              aria-label={isMenuShown ? t.close : t.menu}
+              aria-expanded={menuOpen}
+              className="nav-pill nav-pill-menu"
+            >
+              <span className="menu-toggle-text">
+                <span className="menu-toggle-track" data-open={isMenuShown}>
+                  <span>{t.menu}</span>
+                  <span>{t.close}</span>
+                </span>
+              </span>
+              <span className="nav-pill-icon">{isMenuShown ? <X size={22} /> : <Menu size={22} />}</span>
+            </button>
           </div>
-
-          <button className="mobile-menu-btn" onClick={toggleMobileMenu} style={{ background: "none", border: "none", color: "white", cursor: "pointer", zIndex: 60 }}>
-            {mobileMenuOpen ? <X size={32} /> : <Menu size={32} />}
-          </button>
         </div>
       </nav>
 
-      {mobileMenuOpen && (
-        <div className={`mobile-menu ${mobileMenuClosing ? "mobile-menu-closing" : ""}`}
-          style={{ overflowY: "auto" }}
-        >
-          <div style={{ padding: "2rem", display: "flex", flexDirection: "column", gap: "1.5rem", marginTop: "2rem", paddingBottom: "3rem" }}>
-            {navLinks.map(({ key, icon: Icon, href }) => (
-              <a key={key} href={href} onClick={handleNavLinkClick} className="mobile-nav-link" style={{ display: "flex", alignItems: "center", gap: "1rem", padding: "1.25rem", borderRadius: "15px", color: "white", textDecoration: "none", fontSize: "1.5rem", fontWeight: "600" }}>
-                <Icon size={24} style={{ color: "var(--gold)" }} /> {t[key]}
-              </a>
-            ))}
-            <a href="/contacto" className="mobile-contact-link">
-              <Mail size={24} /> {t.contact}
-            </a>
-            <div>
-              <p style={{ color: "rgba(255,255,255,0.5)", marginBottom: "1rem", fontSize: "0.8rem", letterSpacing: "0.15em", textTransform: "uppercase" }}>{t.language}</p>
-              <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-                {languageOptions.map((opt) => (
-                  <button
-                    key={opt.code}
-                    onClick={() => handleLanguageChange(opt.code)}
-                    className={`mobile-lang-btn ${language === opt.code ? "active" : ""}`}
-                    style={{
-                      display: "flex", alignItems: "center", gap: "0.75rem",
-                      padding: "0.9rem 1.25rem", borderRadius: "12px",
-                      background: language === opt.code ? "rgba(212,175,55,0.18)" : "rgba(2,6,20,0.4)",
-                      border: language === opt.code ? "1px solid var(--gold)" : "1px solid rgba(212,175,55,0.2)",
-                      color: "white", cursor: "pointer", fontSize: "1rem", fontWeight: language === opt.code ? "700" : "400",
-                      width: "100%", textAlign: "left",
-                    }}
-                  >
-                    <span style={{ fontSize: "1.4rem" }}>{opt.flag}</span>
-                    <span>{opt.label}</span>
-                    {language === opt.code && (
-                      <svg style={{ marginLeft: "auto", color: "var(--gold)" }} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M5 13l4 4L19 7" />
-                      </svg>
-                    )}
-                  </button>
-                ))}
-              </div>
+      {/* ── Diálogo del menú (lado izquierdo) ── */}
+      {menuOpen && (
+        <>
+          <div className={`menu-overlay ${menuClosing ? "closing" : ""}`} onClick={closeMenu} />
+          <div className={`menu-dialog ${menuClosing ? "closing" : ""}`} role="dialog" aria-label={t.menu}>
+            <p className="menu-label">{t.menu}</p>
+            <nav style={{ display: "flex", flexDirection: "column", gap: "0.35rem" }}>
+              {navLinks.map(({ key, icon: Icon, href }) => (
+                <a key={key} href={href} onClick={handleNavLinkClick} className="menu-link">
+                  <Icon size={28} />
+                  <span>{t[key]}</span>
+                  <ArrowUpRight size={22} className="menu-link-arrow" />
+                </a>
+              ))}
+            </nav>
+
+            <div className="menu-divider" />
+
+            <p className="menu-label">{t.language}</p>
+            <div className="menu-lang-group">
+              {languageOptions.map((opt) => (
+                <button
+                  key={opt.code}
+                  onClick={() => handleLanguageChange(opt.code)}
+                  className={`menu-lang-btn ${language === opt.code ? "active" : ""}`}
+                  aria-label={opt.label}
+                >
+                  <span className="menu-lang-flag">{opt.flag}</span>
+                  <span>{opt.code.toUpperCase()}</span>
+                </button>
+              ))}
+            </div>
+
+            <div className="menu-divider" />
+
+            <p className="menu-label">{t.theme}</p>
+            <div className="menu-lang-group">
+              <button
+                onClick={() => theme !== 'light' && toggleTheme()}
+                className={`menu-lang-btn ${theme === 'light' ? "active" : ""}`}
+                aria-label={t.themeLight}
+                aria-pressed={theme === 'light'}
+              >
+                <Sun size={26} />
+                <span>{t.themeLight}</span>
+              </button>
+              <button
+                onClick={() => theme !== 'dark' && toggleTheme()}
+                className={`menu-lang-btn ${theme === 'dark' ? "active" : ""}`}
+                aria-label={t.themeDark}
+                aria-pressed={theme === 'dark'}
+              >
+                <Moon size={26} />
+                <span>{t.themeDark}</span>
+              </button>
             </div>
           </div>
-        </div>
+        </>
       )}
     </>
   );

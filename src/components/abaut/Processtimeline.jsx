@@ -81,7 +81,7 @@ export default function ProcessTimeline() {
         .pt-section {
           width: 100%;
           padding: 120px 60px 140px;
-          font-family: 'Outfit', sans-serif;
+          font-family: var(--font-body);
           background: transparent;
           box-sizing: border-box;
         }
@@ -95,19 +95,19 @@ export default function ProcessTimeline() {
           font-size: 0.72rem;
           letter-spacing: 0.3em;
           text-transform: uppercase;
-          color: #D4AF37;
+          color: var(--text-muted);
           margin: 0 0 16px;
           opacity: 0.9;
         }
         .pt-title {
           font-size: clamp(2rem, 5vw, 3.5rem);
           font-weight: 700;
-          color: #fff;
+          color: var(--text);
           margin: 0;
           line-height: 1.15;
         }
         .pt-gold {
-          color: #D4AF37;
+          color: var(--accent-text);
           font-weight: 300;
         }
 
@@ -130,8 +130,8 @@ export default function ProcessTimeline() {
           background: linear-gradient(
             to right,
             transparent,
-            rgba(212, 175, 55, 0.4) 10%,
-            rgba(212, 175, 55, 0.4) 90%,
+            rgba(195, 173, 133, 0.4) 10%,
+            rgba(195, 173, 133, 0.4) 90%,
             transparent
           );
           pointer-events: none;
@@ -152,8 +152,8 @@ export default function ProcessTimeline() {
           width: 72px;
           height: 72px;
           border-radius: 50%;
-          border: 1px solid rgba(212, 175, 55, 0.4);
-          background: #0B1D33;
+          border: 1px solid rgba(195, 173, 133, 0.4);
+          background: var(--brand-navy);
           display: flex;
           align-items: center;
           justify-content: center;
@@ -164,15 +164,15 @@ export default function ProcessTimeline() {
           cursor: default;
         }
         .pt-step:hover .pt-circle {
-          border-color: rgba(212, 175, 55, 0.85);
-          background: rgba(212, 175, 55, 0.07);
-          box-shadow: 0 0 24px rgba(212, 175, 55, 0.18);
+          border-color: rgba(195, 173, 133, 0.85);
+          background: rgba(195, 173, 133, 0.07);
+          box-shadow: 0 0 24px rgba(195, 173, 133, 0.18);
         }
         .pt-number {
           font-size: 0.8rem;
           font-weight: 600;
           letter-spacing: 0.08em;
-          color: #D4AF37;
+          color: var(--accent);
         }
 
         /* ── Contenido ── */
@@ -183,18 +183,18 @@ export default function ProcessTimeline() {
         .pt-step-title {
           font-size: 1.05rem;
           font-weight: 600;
-          color: #fff;
+          color: var(--text);
           margin: 0 0 10px;
           transition: color 0.25s ease;
           line-height: 1.3;
         }
         .pt-step:hover .pt-step-title {
-          color: #D4AF37;
+          color: var(--accent-text);
         }
         .pt-step-desc {
           font-size: 0.82rem;
           line-height: 1.7;
-          color: rgba(255, 255, 255, 0.42);
+          color: var(--text-muted);
           margin: 0;
         }
 
@@ -218,8 +218,8 @@ export default function ProcessTimeline() {
             background: linear-gradient(
               to bottom,
               transparent,
-              rgba(212, 175, 55, 0.4) 10%,
-              rgba(212, 175, 55, 0.4) 90%,
+              rgba(195, 173, 133, 0.4) 10%,
+              rgba(195, 173, 133, 0.4) 90%,
               transparent
             );
             /* override scaleX → use scaleY */

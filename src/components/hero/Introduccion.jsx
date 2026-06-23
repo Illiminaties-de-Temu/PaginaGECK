@@ -24,7 +24,7 @@ export default function AboutHero() {
               <circle cx="25" cy="25" r="10" fill="#fff"/>
               <defs>
                 <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" style="stop-color:#d4af37;stop-opacity:1" />
+                  <stop offset="0%" style="stop-color:var(--accent);stop-opacity:1" />
                   <stop offset="100%" style="stop-color:#f4d03f;stop-opacity:1" />
                 </linearGradient>
               </defs>
@@ -97,9 +97,9 @@ export default function AboutHero() {
                 center={parralCoords}
                 radius={80000}
                 pathOptions={{
-                  fillColor: '#d4af37',
+                  fillColor: 'var(--accent)',
                   fillOpacity: 0.1,
-                  color: '#d4af37',
+                  color: 'var(--accent)',
                   weight: 2,
                   opacity: 0.5,
                 }}
@@ -108,7 +108,7 @@ export default function AboutHero() {
               <Marker position={parralCoords} icon={customIcon}>
                 <Popup>
                   <div style={{ textAlign: 'center', padding: '0.5rem' }}>
-                    <strong style={{ color: '#d4af37', fontSize: '1.1rem' }}>
+                    <strong style={{ color: 'var(--accent)', fontSize: '1.1rem' }}>
                       Parral, Chihuahua 🇲🇽
                     </strong>
                     <br />
@@ -151,8 +151,8 @@ export default function AboutHero() {
             ) : (
               <div className="about-hero__map-loading">
                 <svg width="60" height="60" viewBox="0 0 24 24" fill="none">
-                  <circle cx="12" cy="12" r="10" stroke="#d4af37" strokeWidth="3" strokeDasharray="60" strokeLinecap="round" opacity="0.3"/>
-                  <circle cx="12" cy="12" r="10" stroke="#d4af37" strokeWidth="3" strokeDasharray="15 45" strokeLinecap="round" style={{ animation: 'spin 1s linear infinite' }}/>
+                  <circle cx="12" cy="12" r="10" stroke="var(--accent)" strokeWidth="3" strokeDasharray="60" strokeLinecap="round" opacity="0.3"/>
+                  <circle cx="12" cy="12" r="10" stroke="var(--accent)" strokeWidth="3" strokeDasharray="15 45" strokeLinecap="round" style={{ animation: 'spin 1s linear infinite' }}/>
                 </svg>
                 <span>Cargando mapa...</span>
               </div>
@@ -206,7 +206,7 @@ export default function AboutHero() {
         }
 
         .about-hero__title-highlight {
-          background: linear-gradient(135deg, #d4af37 0%, #f4d03f 100%);
+          background: linear-gradient(135deg, var(--accent) 0%, #f4d03f 100%);
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
           background-clip: text;
@@ -236,7 +236,7 @@ export default function AboutHero() {
           overflow: hidden;
           box-shadow: 
             0 20px 60px rgba(0, 0, 0, 0.5),
-            0 0 0 1px rgba(212, 175, 55, 0.2);
+            0 0 0 1px rgba(195, 173, 133, 0.2);
         }
 
         .about-hero__map-loading {
@@ -247,7 +247,7 @@ export default function AboutHero() {
           justify-content: center;
           gap: 1.5rem;
           background: rgba(6, 22, 58, 0.5);
-          color: #d4af37;
+          color: var(--accent);
           font-size: 1.3rem;
           font-weight: 600;
         }
@@ -257,14 +257,14 @@ export default function AboutHero() {
           border: none !important;
           background: rgba(6, 22, 58, 0.9) !important;
           backdrop-filter: blur(10px);
-          border: 1px solid rgba(212, 175, 55, 0.3) !important;
+          border: 1px solid rgba(195, 173, 133, 0.3) !important;
           border-radius: 12px !important;
           overflow: hidden;
         }
 
         .about-hero__map-wrapper :global(.leaflet-control-zoom a) {
           background: rgba(27, 54, 93, 0.8) !important;
-          color: #d4af37 !important;
+          color: var(--accent) !important;
           border: none !important;
           font-size: 1.2rem !important;
           width: 36px !important;
@@ -273,14 +273,14 @@ export default function AboutHero() {
         }
 
         .about-hero__map-wrapper :global(.leaflet-control-zoom a:hover) {
-          background: rgba(212, 175, 55, 0.2) !important;
+          background: rgba(195, 173, 133, 0.2) !important;
         }
 
         /* Popup personalizado */
         .about-hero__map-wrapper :global(.leaflet-popup-content-wrapper) {
           background: rgba(6, 22, 58, 0.95) !important;
           backdrop-filter: blur(10px);
-          border: 1px solid rgba(212, 175, 55, 0.3);
+          border: 1px solid rgba(195, 173, 133, 0.3);
           border-radius: 12px !important;
         }
 

@@ -130,9 +130,9 @@ export default function StatsSection() {
 
       <style>{`
         .st-section {
-          background: #21211F;
+          background: var(--background);
           padding: 5rem 2rem;
-          border-top: 1px solid rgba(212, 175, 55, 0.08);
+          border-top: 1px solid var(--border);
         }
 
         /* ── Header ── */
@@ -149,14 +149,14 @@ export default function StatsSection() {
           font-weight: 600;
           letter-spacing: 0.22em;
           text-transform: uppercase;
-          color: #D4AF37;
+          color: var(--text-muted);
           margin-bottom: 1.25rem;
         }
 
         .st-header__line {
           width: 60px;
           height: 2px;
-          background: linear-gradient(90deg, transparent, #D4AF37, transparent);
+          background: linear-gradient(90deg, transparent, var(--accent), transparent);
           margin: 0 auto;
           transform: scaleX(0);
           transform-origin: center;
@@ -181,7 +181,7 @@ export default function StatsSection() {
           padding: 2rem 1rem;
           opacity: 0;
           will-change: opacity, transform;
-          border-right: 1px solid rgba(212, 175, 55, 0.1);
+          border-right: 1px solid rgba(195, 173, 133, 0.1);
         }
 
         .st-item:last-child {
@@ -192,7 +192,7 @@ export default function StatsSection() {
           font-size: clamp(2.5rem, 5vw, 3.75rem);
           font-weight: 900;
           line-height: 1;
-          color: #D4AF37;
+          color: var(--accent-text);
           letter-spacing: -0.02em;
         }
 
@@ -200,7 +200,7 @@ export default function StatsSection() {
           font-size: 0.8rem;
           font-weight: 400;
           letter-spacing: 0.05em;
-          color: rgba(244, 228, 188, 0.55);
+          color: var(--text-muted);
           text-align: center;
         }
 
@@ -216,7 +216,7 @@ export default function StatsSection() {
 
           .st-item:nth-child(1),
           .st-item:nth-child(2) {
-            border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+            border-bottom: 1px solid rgba(195, 173, 133, 0.1);
           }
         }
 
@@ -233,15 +233,15 @@ export default function StatsSection() {
           font-size: 1rem;
           font-weight: 700;
           letter-spacing: 0.06em;
-          color: #D4AF37;
+          color: var(--accent-text);
           text-decoration: none;
-          border-bottom: 1px solid rgba(212, 175, 55, 0.35);
+          border-bottom: 1px solid var(--accent);
           padding-bottom: 2px;
           transition: border-color 0.2s ease, gap 0.2s ease;
         }
 
         .st-cta__link:hover {
-          border-color: #D4AF37;
+          border-color: var(--accent);
           gap: 0.85rem;
         }
 

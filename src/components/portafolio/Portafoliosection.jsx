@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useRef, forwardRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage } from '../../hooks/useLanguage';
 
@@ -8,8 +8,6 @@ const CAT_COLORS = {
   webapp:   { accent: '#34d399', border: 'rgba(52,211,153,0.35)'  },
   software: { accent: '#a78bfa', border: 'rgba(167,139,250,0.35)' },
 };
-
-const FILTER_IDS = ['all', 'landing', 'mobile', 'webapp', 'software'];
 
 const PROJECTS_STATIC = [
   { id: 1,  cat: 'landing',  title: 'Chuchulucos',          tech: ['Astro', 'Tailwind CSS', 'Framer Motion'],                           link: 'https://chuchulucos.geckcodex.com/',        gradient: 'linear-gradient(145deg, #3b0764 0%, #6d28d9 40%, #db2777 100%)', image: '/assets/image/portafolio/chuchu.webp' },
@@ -29,7 +27,24 @@ const PROJECTS_STATIC = [
   { id: 16, cat: 'software', title: 'GeckCRM',               tech: ['React', 'Node.js', 'PostgreSQL', 'Tailwind CSS'],                                                                    gradient: 'linear-gradient(145deg, #170d2e 0%, #7c3aed 45%, #2563eb 100%)', image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=640&q=80&auto=format&fit=crop' },
 ];
 
-/* ─── DETAIL OVERLAY ── (igual que antes, sin cambios) ─────────────── */
+/* ─── CONFIG DE LA HÉLICE (el "tornillo") ───────────────────────────────
+ * angle   = grados de giro entre tarjeta y tarjeta (paso angular de la rosca)
+ * radius  = radio del cilindro en px (qué tanto se abren las tarjetas a los lados)
+ * pitch   = avance vertical en px entre tarjeta y tarjeta (paso de la rosca)
+ * window  = cuántas tarjetas a cada lado del foco se dibujan
+ * minScale= escala de la tarjeta más al fondo
+ * blur    = desenfoque por unidad de distancia al centro (0 = sin blur)
+ * focus   = radio (en nº de tarjetas) de la zona nítida alrededor del centro:
+ *           dentro de ±focus la tarjeta NO se difumina (más fácil de observar) */
+const CONF = {
+  desktop: { angle: 46, radius: 430, pitch: 268, window: 2.6, minScale: 0.5,  blur: 7, focus: 0.62 },
+  mobile:  { angle: 38, radius: 170, pitch: 212, window: 2.2, minScale: 0.62, blur: 0, focus: 0.55 },
+};
+const SCROLL_PER_CARD = 44; // vh de scroll que avanza el tornillo por proyecto
+
+const clamp = (v, lo, hi) => (v < lo ? lo : v > hi ? hi : v);
+
+/* ─── DETAIL OVERLAY ── (sin cambios respecto a la versión anterior) ──── */
 const detailVariants = {
   hidden: { opacity: 0 },
   show:   { opacity: 1, transition: { duration: 0.28, ease: 'easeOut' } },
@@ -115,13 +130,13 @@ function Detail({ project, onClose, catMeta, strings }) {
           <div className="gc-bento__cell gc-bento__cell--tech">
             <span className="gc-bento__label">{strings.detail.stack}</span>
             <div className="gc-bento__chips">
-              {project.tech.map((t, i) => (
+              {project.tech.map((tch, i) => (
                 <span
                   key={i}
                   className="gc-bento__chip"
                   style={{ color: meta.accent, borderColor: meta.accent + '55', background: meta.accent + '14' }}
                 >
-                  {t}
+                  {tch}
                 </span>
               ))}
             </div>
@@ -129,12 +144,7 @@ function Detail({ project, onClose, catMeta, strings }) {
         </div>
 
         {project.link ? (
-          <a
-            href={project.link}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="gc-detail__cta"
-          >
+          <a href={project.link} target="_blank" rel="noopener noreferrer" className="gc-detail__cta">
             {strings.viewLive}
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
               <path d="M7 17L17 7M7 7h10v10" />
@@ -153,139 +163,272 @@ function Detail({ project, onClose, catMeta, strings }) {
   );
 }
 
-/* ─── CARD ──────────────────────────────────────────────────────────── */
-function Card({ project, index, onOpen, catMeta, viewMore }) {
-  const meta = catMeta[project.cat];
+/* ─── CARD (tarjeta de la hélice / fallback) ────────────────────────────
+ * forwardRef: el contenedor padre muta su transform en cada frame de scroll. */
+const Card = forwardRef(function Card({ project, meta, onOpen, viewMore, variant }, ref) {
   return (
-    <motion.article
-      className="gc-card"
-      initial={{ opacity: 0, y: 36 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, amount: 0.1, margin: '0px 0px -48px 0px' }}
-      transition={{
-        duration: 0.58,
-        ease: [0.22, 1, 0.36, 1],
-        delay: (index % 2) * 0.07,
-      }}
+    <article
+      ref={ref}
+      className={`scard scard--${variant}`}
       onClick={() => onOpen(project)}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onOpen(project); } }}
     >
       <div
-        className="gc-card__frame"
+        className="scard__media"
         style={project.image ? undefined : { background: project.gradient }}
       >
         {project.image && (
           <img
             src={project.image}
             alt={project.title}
-            className="gc-card__img"
+            className="scard__img"
             loading="lazy"
             decoding="async"
             draggable="false"
           />
         )}
-        <div className="gc-card__veil" />
+        <div className="scard__veil" />
 
-        <div className="gc-card__top">
-          <span
-            className="gc-card__tag"
-            style={{ color: meta.accent, background: meta.accent + '1a', borderColor: meta.accent + '50' }}
-          >
+        <div className="scard__top">
+          <span className="scard__tag" style={{ color: meta.accent, borderColor: meta.accent + '66' }}>
             {meta.label}
           </span>
-          {project.link && <span className="gc-card__live" aria-hidden="true" />}
+          {project.link && <span className="scard__live" aria-hidden="true" />}
         </div>
 
-        <div className="gc-card__info">
-          <h3 className="gc-card__name">{project.title}</h3>
-          <p className="gc-card__sub">{project.tagline}</p>
-          <span className="gc-card__cta" aria-hidden="true">
+        <div className="scard__cap">
+          <h3 className="scard__name">{project.title}</h3>
+          <p className="scard__desc">{project.tagline || project.desc}</p>
+          <span className="scard__cta" aria-hidden="true">
             {viewMore}
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round">
               <path d="M5 12h14M12 5l7 7-7 7" />
             </svg>
           </span>
         </div>
       </div>
-    </motion.article>
+    </article>
   );
+});
+
+/* ─── HÉLICE: hook imperativo (sin re-render por frame) ──────────────────
+ * Un solo listener de scroll + rAF posiciona las N tarjetas en el cilindro.
+ * Se muta el DOM directamente (transform/opacity/zIndex) para no re-renderizar
+ * React en cada frame. Cumple el patrón de parallax barato del proyecto.     */
+function useScrew({ enabled, count, refs, trackRef, railRef, hudNum, hudTitle, hudCat, projects, catMeta }) {
+  useEffect(() => {
+    if (!enabled || typeof window === 'undefined') return;
+    let raf = 0;
+    let activeIdx = -1;
+
+    const update = () => {
+      raf = 0;
+      const track = trackRef.current;
+      if (!track) return;
+      const vh = window.innerHeight;
+      const rect = track.getBoundingClientRect();
+      const total = rect.height - vh;
+      const p = total > 0 ? clamp(-rect.top / total, 0, 1) : 0;
+      const head = p * (count - 1);
+      const conf = window.innerWidth < 768 ? CONF.mobile : CONF.desktop;
+
+      for (let i = 0; i < count; i++) {
+        const el = refs.current[i];
+        if (!el) continue;
+        const d = i - head;
+        if (Math.abs(d) > conf.window + 0.6) {
+          if (el.style.visibility !== 'hidden') {
+            el.style.visibility = 'hidden';
+            el.style.opacity = '0';
+            el.style.pointerEvents = 'none';
+          }
+          continue;
+        }
+        const deg = d * conf.angle;
+        const rad = (deg * Math.PI) / 180;
+        const x = conf.radius * Math.sin(rad);
+        const y = d * conf.pitch;
+        const depth = Math.cos(rad);            // 1 al frente · -1 al fondo
+        const dn = (depth + 1) / 2;             // 0..1
+        const scale = conf.minScale + (1 - conf.minScale) * dn;
+        const edge = clamp(1 - (Math.abs(d) - (conf.window - 1)), 0, 1);
+        const opacity = clamp(0.12 + 0.88 * dn, 0, 1) * edge;
+
+        el.style.visibility = 'visible';
+        el.style.transform =
+          `translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, 0) rotateY(${deg.toFixed(1)}deg) scale(${scale.toFixed(3)})`;
+        el.style.opacity = opacity.toFixed(3);
+        el.style.zIndex = String(Math.round(100 + depth * 100));
+        // profundidad de campo: zona nítida de ±focus alrededor del centro,
+        // luego el blur entra (y sale) de forma gradual al alejarse
+        const dof = Math.min(Math.max(Math.abs(d) - conf.focus, 0) * conf.blur, 11);
+        el.style.filter = conf.blur ? `blur(${dof.toFixed(1)}px)` : 'none';
+        el.style.pointerEvents = depth > 0.25 ? 'auto' : 'none';
+        el.classList.toggle('is-active', Math.abs(d) < 0.5);
+      }
+
+      if (railRef.current) railRef.current.style.transform = `scaleY(${p.toFixed(4)})`;
+
+      const active = clamp(Math.round(head), 0, count - 1);
+      if (active !== activeIdx) {
+        activeIdx = active;
+        const proj = projects[active];
+        if (hudNum.current) hudNum.current.textContent = String(active + 1).padStart(2, '0');
+        if (hudTitle.current) hudTitle.current.textContent = proj.title;
+        if (hudCat.current) {
+          const m = catMeta[proj.cat];
+          hudCat.current.textContent = m.label;
+          hudCat.current.style.color = m.accent;
+          hudCat.current.style.borderColor = m.accent + '55';
+        }
+      }
+    };
+
+    const onScroll = () => { if (!raf) raf = requestAnimationFrame(update); };
+    update();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll, { passive: true });
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onScroll);
+      if (raf) cancelAnimationFrame(raf);
+    };
+  }, [enabled, count, refs, trackRef, railRef, hudNum, hudTitle, hudCat, projects, catMeta]);
 }
 
-/* ─── MAIN ──────────────────────────────────────────────────────────── */
+/* ─── MAIN ──────────────────────────────────────────────────────────────── */
 export default function PortfolioSection() {
   const { t } = useLanguage();
   const catMeta = Object.fromEntries(
     Object.entries(CAT_COLORS).map(([key, colors]) => [key, { ...colors, label: t.portfolio.catLabels[key] }])
   );
-  const FILTERS = t.portfolio.filters;
-  const PROJECTS = PROJECTS_STATIC.map(p => ({
-    ...p,
-    ...(t.portfolio.projects[p.id] || {}),
-  }));
+  const PROJECTS = PROJECTS_STATIC.map((p) => ({ ...p, ...(t.portfolio.projects[p.id] || {}) }));
+  const N = PROJECTS.length;
 
-  const [filter, setFilter] = useState('all');
   const [selected, setSelected] = useState(null);
+  const [reduced, setReduced] = useState(false); // reduced-motion → fallback grid
 
-  const list = filter === 'all' ? PROJECTS : PROJECTS.filter(p => p.cat === filter);
-
-  const onFilter = useCallback((id) => {
-    setFilter(id);
-    setSelected(null);
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    setReduced(window.matchMedia('(prefers-reduced-motion: reduce)').matches);
   }, []);
+
+  const trackRef = useRef(null);
+  const railRef = useRef(null);
+  const cardRefs = useRef([]);
+  const hudNum = useRef(null);
+  const hudTitle = useRef(null);
+  const hudCat = useRef(null);
+
+  useScrew({
+    enabled: !reduced,
+    count: N,
+    refs: cardRefs,
+    trackRef,
+    railRef,
+    hudNum,
+    hudTitle,
+    hudCat,
+    projects: PROJECTS,
+    catMeta,
+  });
+
+  const first = PROJECTS[0];
 
   return (
     <>
-      <section className="gc-section">
-
-        {/* ── FONDO STICKY — se queda fijo mientras el contenido scrollea ── */}
-        <div className="gc-bg" aria-hidden="true">
-          <div className="gc-bg__orb gc-bg__orb--a" />
-          <div className="gc-bg__orb gc-bg__orb--b" />
+      <section className="screw">
+        {/* Fondo sticky compartido — gradientes baratos */}
+        <div className="screw__bg" aria-hidden="true">
+          <div className="screw__orb screw__orb--a" />
+          <div className="screw__orb screw__orb--b" />
         </div>
 
-        {/* ── CONTENIDO — scrollea sobre el fondo ── */}
-        <div className="gc-content">
-          <div className="gc-wrap">
+        {/* Intro — scrollea y desaparece antes del tornillo */}
+        <header className="screw__intro">
+          <span className="screw__pretitle">{t.portfolio.pretitle}</span>
+          <h1 className="screw__h1">
+            {t.portfolio.title.split('\n').map((line, i) => (
+              <span key={i}>{line}{i === 0 && <br />}</span>
+            ))}
+          </h1>
+          <p className="screw__lead">{t.portfolio.subtitle}</p>
+          {!reduced && (
+            <span className="screw__hint">
+              {t.portfolio.scrollHint}
+              <svg width="14" height="22" viewBox="0 0 14 22" fill="none" stroke="currentColor" strokeWidth="1.6">
+                <rect x="1" y="1" width="12" height="20" rx="6" />
+                <circle className="screw__hint-dot" cx="7" cy="6" r="1.6" fill="currentColor" stroke="none" />
+              </svg>
+            </span>
+          )}
+        </header>
 
-            <header className="gc-header">
-              <span className="gc-pretitle">{t.portfolio.pretitle}</span>
-              <h1 className="gc-h1">{t.portfolio.title.split('\n').map((line, i) => <span key={i}>{line}{i === 0 && <br />}</span>)}</h1>
-              <p className="gc-lead">{t.portfolio.subtitle}</p>
-            </header>
-
-            {/* Filtros sticky — se pegan debajo del navbar al scrollear */}
-            <div className="gc-filters-bar">
-              <nav className="gc-filters" role="tablist" aria-label="Filtros de portafolio">
-                {FILTERS.map(f => (
-                  <button
-                    key={f.id}
-                    role="tab"
-                    aria-selected={filter === f.id}
-                    className={`gc-filter${filter === f.id ? ' is-active' : ''}`}
-                    onClick={() => onFilter(f.id)}
-                  >
-                    {f.label}
-                  </button>
-                ))}
-              </nav>
-            </div>
-
-            {/* Grid — cross-fade al cambiar filtro, entrance por scroll */}
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={filter}
-                className="gc-grid"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1, transition: { duration: 0.22 } }}
-                exit={{ opacity: 0, transition: { duration: 0.14 } }}
-              >
-                {list.map((p, i) => (
-                  <Card key={p.id} project={p} index={i} onOpen={setSelected} catMeta={catMeta} viewMore={t.portfolio.viewMore} />
-                ))}
-              </motion.div>
-            </AnimatePresence>
-
+        {reduced ? (
+          /* ── FALLBACK estático: grid accesible, sin movimiento ── */
+          <div className="screw__grid">
+            {PROJECTS.map((p) => (
+              <Card
+                key={p.id}
+                project={p}
+                meta={catMeta[p.cat]}
+                onOpen={setSelected}
+                viewMore={t.portfolio.viewMore}
+                variant="static"
+              />
+            ))}
           </div>
-        </div>
+        ) : (
+          /* ── TORNILLO: track alto + stage sticky con perspectiva ── */
+          <div
+            className="screw__track"
+            ref={trackRef}
+            style={{ height: `${(N - 1) * SCROLL_PER_CARD + 110}vh` }}
+          >
+            <div className="screw__stage">
+              {/* eje / rosca central */}
+              <div className="screw__axis" aria-hidden="true" />
+
+              {/* halo de foco — resalta la tarjeta del centro */}
+              <div className="screw__focus" aria-hidden="true" />
+
+              {/* HUD: número de proyecto + categoría + título */}
+              <div className="screw__hud" aria-hidden="true">
+                <div className="screw__count">
+                  <span className="screw__count-num" ref={hudNum}>01</span>
+                  <span className="screw__count-sep">/</span>
+                  <span className="screw__count-tot">{String(N).padStart(2, '0')}</span>
+                </div>
+                <span className="screw__hud-cat" ref={hudCat} style={{ color: catMeta[first.cat].accent, borderColor: catMeta[first.cat].accent + '55' }}>
+                  {catMeta[first.cat].label}
+                </span>
+                <span className="screw__hud-title" ref={hudTitle}>{first.title}</span>
+              </div>
+
+              {/* riel de progreso */}
+              <div className="screw__rail" aria-hidden="true">
+                <div className="screw__rail-fill" ref={railRef} />
+              </div>
+
+              {/* tarjetas de la hélice */}
+              <div className="screw__cyl">
+                {PROJECTS.map((p, i) => (
+                  <Card
+                    key={p.id}
+                    ref={(el) => { cardRefs.current[i] = el; }}
+                    project={p}
+                    meta={catMeta[p.cat]}
+                    onOpen={setSelected}
+                    viewMore={t.portfolio.viewMore}
+                    variant="helix"
+                  />
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
       </section>
 
       <AnimatePresence>
@@ -295,30 +438,23 @@ export default function PortfolioSection() {
       </AnimatePresence>
 
       <style>{`
-        /* ── VARS ─────────────────────────────────────────────────────── */
         :root {
-          --gc-bg:   #12110F;
-          --gc-gold: #D4AF37;
-          --gc-gl:   #F4E4BC;
-          --gc-gd:   #584A1C;
-          --gc-gb:   rgba(88,74,28,0.3);
+          --sc-bg:   #12110F;
+          --sc-gold: var(--accent);
+          --sc-gl:   #F4E4BC;
+          --sc-gd:   #584A1C;
+          --sc-gb:   rgba(88,74,28,0.3);
           --expo:    cubic-bezier(0.22,1,0.36,1);
         }
 
-        /* ── SECTION ─────────────────────────────────────────────────── */
-        .gc-section {
+        .screw {
           position: relative;
-          background: var(--gc-bg);
-          color: #fff;
+          background: var(--background);
+          color: var(--text);
         }
 
-        /* ── STICKY BACKGROUND ───────────────────────────────────────── */
-        /*
-         * Truco: margin-bottom: -100vh cancela la altura del sticky en el
-         * flujo, así el contenido empieza en la misma posición visual.
-         * El fondo se queda pegado mientras el contenido scrollea encima.
-         */
-        .gc-bg {
+        /* ── FONDO STICKY ──────────────────────────────────────────────── */
+        .screw__bg {
           position: sticky;
           top: 0;
           height: 100vh;
@@ -328,455 +464,354 @@ export default function PortfolioSection() {
           pointer-events: none;
           margin-bottom: -100vh;
         }
-
-        /* Orbs — gradientes CSS puros, cero costo en scroll */
-        .gc-bg__orb {
-          position: absolute;
-          border-radius: 50%;
-          pointer-events: none;
+        .screw__orb { position: absolute; border-radius: 50%; }
+        .screw__orb--a {
+          width: 80vw; height: 60vw; top: -15%; left: 50%; transform: translateX(-50%);
+          background: radial-gradient(ellipse at center, rgba(195,173,133,0.06) 0%, transparent 60%);
         }
-        .gc-bg__orb--a {
-          width: 80vw;
-          height: 60vw;
-          background: radial-gradient(ellipse at center, rgba(212,175,55,0.055) 0%, transparent 60%);
-          top: -15%;
-          left: 50%;
-          transform: translateX(-50%);
-        }
-        .gc-bg__orb--b {
-          width: 55vw;
-          height: 55vw;
-          background: radial-gradient(circle at center, rgba(212,175,55,0.03) 0%, transparent 65%);
-          bottom: 5%;
-          right: -15%;
+        .screw__orb--b {
+          width: 55vw; height: 55vw; bottom: 5%; right: -15%;
+          background: radial-gradient(circle at center, rgba(195,173,133,0.035) 0%, transparent 65%);
         }
 
-        /* ── CONTENT LAYER ───────────────────────────────────────────── */
-        .gc-content {
+        /* ── INTRO ─────────────────────────────────────────────────────── */
+        .screw__intro {
           position: relative;
           z-index: 1;
-          padding: 6rem 2rem 8rem;
-        }
-        .gc-wrap {
+          text-align: center;
           max-width: 1040px;
           margin: 0 auto;
+          padding: 7rem 1.4rem 2rem;
         }
-
-        /* ── HEADER ──────────────────────────────────────────────────── */
-        .gc-header {
-          text-align: center;
-          margin-bottom: 3.5rem;
-        }
-        .gc-pretitle {
+        .screw__pretitle {
           display: inline-block;
-          font-size: 0.68rem;
-          font-weight: 700;
-          letter-spacing: 0.3em;
-          text-transform: uppercase;
-          color: var(--gc-gold);
-          padding: 0.35rem 1.2rem;
-          border: 1px solid var(--gc-gb);
-          border-radius: 100px;
-          margin-bottom: 1.5rem;
-          background: rgba(88,74,28,0.08);
+          font-size: 0.68rem; font-weight: 700; letter-spacing: 0.3em;
+          text-transform: uppercase; color: var(--accent-text);
+          padding: 0.35rem 1.2rem; border: 1px solid var(--sc-gb);
+          border-radius: 100px; margin-bottom: 1.5rem; background: rgba(88,74,28,0.08);
         }
-        .gc-h1 {
-          font-size: clamp(2rem, 5vw, 3.4rem);
-          font-weight: 900;
-          line-height: 1.06;
-          background: linear-gradient(135deg, var(--gc-gl) 0%, var(--gc-gold) 55%, var(--gc-gd) 100%);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          background-clip: text;
+        .screw__h1 {
+          font-size: clamp(2rem, 5vw, 3.4rem); font-weight: 900; line-height: 1.06;
+          color: var(--text);
           margin: 0 0 1rem;
         }
-        .gc-lead {
-          font-size: 1rem;
-          color: rgba(244,228,188,0.42);
-          margin: 0;
+        .screw__lead { font-size: 1rem; color: var(--text-muted); margin: 0; }
+        .screw__hint {
+          display: inline-flex; align-items: center; gap: 0.55rem;
+          margin-top: 2.2rem; font-size: 0.7rem; font-weight: 600;
+          letter-spacing: 0.18em; text-transform: uppercase;
+          color: var(--text-muted);
+        }
+        .screw__hint svg { color: var(--sc-gold); }
+        .screw__hint-dot { animation: sc-scroll 1.8s var(--expo) infinite; }
+        @keyframes sc-scroll {
+          0% { opacity: 0; transform: translateY(0); }
+          30% { opacity: 1; }
+          70% { opacity: 1; transform: translateY(7px); }
+          100% { opacity: 0; transform: translateY(7px); }
         }
 
-        /* ── FILTROS STICKY ──────────────────────────────────────────── */
-        /*
-         * Se pegan justo debajo del navbar (72px).
-         * Sin backdrop-filter: la opacidad sólida es suficiente y
-         * evita capas de compositing que traban el scroll en mobile.
-         */
-        .gc-filters-bar {
-          position: sticky;
-          top: 72px;
-          z-index: 20;
-          padding: 0.8rem 0;
-          margin-bottom: 2.4rem;
-          background: linear-gradient(
-            to bottom,
-            rgba(18,17,15,0.98) 0%,
-            rgba(18,17,15,0.92) 70%,
-            rgba(18,17,15,0) 100%
-          );
-        }
-        .gc-filters {
-          display: flex;
-          gap: 0.45rem;
-          justify-content: center;
-          flex-wrap: wrap;
-        }
-        .gc-filter {
-          padding: 0.4rem 1.1rem;
-          border-radius: 100px;
-          border: 1px solid rgba(255,255,255,0.07);
-          background: rgba(255,255,255,0.03);
-          color: rgba(244,228,188,0.36);
-          font-size: 0.78rem;
-          font-weight: 600;
-          cursor: pointer;
-          transition: border-color .2s, color .2s, background .2s;
-          white-space: nowrap;
-        }
-        .gc-filter:hover {
-          border-color: var(--gc-gb);
-          color: var(--gc-gl);
-          background: rgba(88,74,28,0.1);
-        }
-        .gc-filter.is-active {
-          border-color: var(--gc-gd);
-          color: var(--gc-gold);
-          background: rgba(88,74,28,0.16);
-          box-shadow: 0 0 0 1px var(--gc-gb);
-        }
-
-        /* ── GRID ────────────────────────────────────────────────────── */
-        .gc-grid {
-          display: grid;
-          grid-template-columns: repeat(2, 1fr);
-          gap: 1.25rem;
-        }
-
-        /* ── CARD ────────────────────────────────────────────────────── */
-        .gc-card {
-          cursor: pointer;
-        }
-        .gc-card__frame {
+        /* ── TRACK + STAGE STICKY ──────────────────────────────────────── */
+        .screw__track {
           position: relative;
-          aspect-ratio: 16 / 9;
-          border-radius: 14px;
-          overflow: hidden;
-          border: 1px solid rgba(255,255,255,0.1);
-          box-shadow: 0 4px 24px rgba(0,0,0,0.5);
-          /* Solo transform y opacity — GPU composited, sin layout */
-          transition:
-            border-color .3s ease,
-            box-shadow    .3s ease,
-            transform     .36s var(--expo);
-          will-change: transform;
-        }
-        .gc-card__frame:hover {
-          border-color: rgba(212,175,55,0.5);
-          box-shadow:
-            0 24px 60px rgba(0,0,0,0.65),
-            0 0 0 1px rgba(212,175,55,0.16);
-          transform: translateY(-6px) scale(1.01);
-        }
-        .gc-card__img {
-          position: absolute;
-          inset: 0;
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-          object-position: top center;
-          z-index: 0;
-          display: block;
-        }
-        .gc-card__veil {
-          position: absolute;
-          inset: 0;
-          background: linear-gradient(
-            to bottom,
-            rgba(0,0,0,0)    0%,
-            rgba(0,0,0,0.15) 40%,
-            rgba(0,0,0,0.92) 100%
-          );
           z-index: 1;
         }
-        .gc-card__top {
+        .screw__stage {
+          position: sticky;
+          top: 0;
+          height: 100vh;
+          width: 100%;
+          overflow: hidden;
+          perspective: 1200px;
+          perspective-origin: 50% 50%;
+        }
+
+        /* eje central de la rosca */
+        .screw__axis {
           position: absolute;
-          top: 1rem;
-          left: 1rem;
-          right: 1rem;
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
+          top: 0; bottom: 0; left: 50%;
+          width: 1px;
+          transform: translateX(-50%);
+          background: linear-gradient(
+            to bottom,
+            transparent 0%,
+            rgba(195,173,133,0.18) 22%,
+            rgba(195,173,133,0.18) 78%,
+            transparent 100%
+          );
+          z-index: 0;
+        }
+
+        /* halo de foco difuminado en el centro (donde está la rosca) */
+        .screw__focus {
+          position: absolute;
+          top: 50%; left: 50%;
+          width: clamp(360px, 36vw, 560px);
+          height: clamp(440px, 60vh, 640px);
+          transform: translate(-50%, -50%);
+          z-index: 0;
+          pointer-events: none;
+          background: radial-gradient(
+            ellipse at center,
+            rgba(195,173,133,0.22) 0%,
+            rgba(195,173,133,0.1) 38%,
+            transparent 72%
+          );
+          filter: blur(38px);
+        }
+
+        /* cilindro = capa con conservación 3D */
+        .screw__cyl {
+          position: absolute;
+          inset: 0;
+          transform-style: preserve-3d;
+          z-index: 1;
+        }
+
+        /* ── TARJETA (modo hélice) ─────────────────────────────────────── */
+        .scard--helix {
+          --cw: 300px;
+          --ch: 384px;
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          width: var(--cw);
+          height: var(--ch);
+          margin-left: calc(var(--cw) / -2);
+          margin-top: calc(var(--ch) / -2);
+          transform-style: preserve-3d;
+          backface-visibility: hidden;
+          will-change: transform, opacity;
+          visibility: hidden;
+          cursor: pointer;
+        }
+        .scard--helix .scard__media {
+          transition: box-shadow .35s var(--expo);
+          box-shadow: 0 18px 50px rgba(0,0,0,0.5);
+        }
+        .scard--helix.is-active .scard__media {
+          box-shadow: 0 34px 80px rgba(0,0,0,0.62), 0 0 60px rgba(195,173,133,0.2);
+        }
+        .scard--helix .scard__cap { opacity: 0; transition: opacity .35s var(--expo); }
+        .scard--helix.is-active .scard__cap { opacity: 1; }
+
+        /* ── TARJETA (visual común) ────────────────────────────────────── */
+        .scard__media {
+          position: relative;
+          width: 100%;
+          height: 100%;
+          overflow: hidden;
+          border-radius: 18px;
+          background: #1b1a17;
+          border: 1px solid rgba(255,255,255,0.07);
+        }
+        .scard__img {
+          position: absolute; inset: 0;
+          width: 100%; height: 100%;
+          object-fit: cover; object-position: center;
+          display: block;
+        }
+        .scard__veil {
+          position: absolute; inset: 0;
+          background: linear-gradient(to top, rgba(8,7,5,0.92) 0%, rgba(8,7,5,0.35) 42%, rgba(8,7,5,0) 70%);
+          z-index: 1;
+        }
+        .scard__top {
+          position: absolute; top: 0.9rem; left: 0.9rem; right: 0.9rem;
+          display: flex; align-items: center; justify-content: space-between;
           z-index: 2;
         }
-        .gc-card__tag {
-          display: inline-flex;
-          align-items: center;
-          padding: 0.2rem 0.68rem;
-          border-radius: 100px;
-          border: 1px solid;
-          font-size: 0.58rem;
-          font-weight: 800;
-          letter-spacing: 0.09em;
-          text-transform: uppercase;
-          /* backdrop-filter solo en badges pequeños — bajo costo */
-          backdrop-filter: blur(10px);
-          -webkit-backdrop-filter: blur(10px);
+        .scard__tag {
+          display: inline-flex; align-items: center;
+          padding: 0.22rem 0.6rem; border-radius: 7px;
+          border: 1px solid; background: rgba(8,7,5,0.55);
+          font-size: 0.56rem; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase;
         }
-        .gc-card__live {
-          width: 7px;
-          height: 7px;
-          border-radius: 50%;
-          background: #4ade80;
-          box-shadow: 0 0 8px rgba(74,222,128,0.6);
-          animation: gc-pulse 2.2s ease infinite;
-          flex-shrink: 0;
+        .scard__live {
+          width: 7px; height: 7px; border-radius: 50%;
+          background: #4ade80; box-shadow: 0 0 8px rgba(74,222,128,0.6);
+          animation: sc-pulse 2.2s ease infinite; flex-shrink: 0;
         }
-        @keyframes gc-pulse {
-          0%, 100% { opacity: 1; }
-          50%       { opacity: 0.3; }
-        }
-        .gc-card__info {
-          position: absolute;
-          bottom: 0;
-          left: 0;
-          right: 0;
-          padding: 1.5rem 1.3rem 1.25rem;
+        @keyframes sc-pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+        .scard__cap {
+          position: absolute; left: 0; right: 0; bottom: 0;
+          padding: 1.1rem 1.15rem 1.15rem;
           z-index: 2;
         }
-        .gc-card__name {
-          font-size: clamp(0.95rem, 2vw, 1.25rem);
-          font-weight: 800;
-          color: #fff;
-          margin: 0 0 0.25rem;
-          line-height: 1.15;
-          transition: transform .28s var(--expo);
-          text-shadow: 0 1px 8px rgba(0,0,0,0.9), 0 2px 20px rgba(0,0,0,0.7);
+        .scard__name {
+          font-size: 1.18rem; font-weight: 800; color: #fff;
+          margin: 0 0 0.32rem; line-height: 1.18;
         }
-        .gc-card__frame:hover .gc-card__name {
-          transform: translateY(-2px);
+        .scard__desc {
+          font-size: 0.78rem; line-height: 1.5; color: rgba(244,228,188,0.62);
+          margin: 0 0 0.7rem;
+          display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
         }
-        .gc-card__sub {
-          font-size: 0.66rem;
-          color: rgba(244,228,188,0.75);
-          margin: 0 0 0.85rem;
-          text-transform: uppercase;
-          letter-spacing: 0.06em;
-          text-shadow: 0 1px 6px rgba(0,0,0,0.85);
+        .scard__cta {
+          display: inline-flex; align-items: center; gap: 0.36rem;
+          color: var(--sc-gold); font-size: 0.72rem; font-weight: 700;
         }
-        .gc-card__cta {
-          display: inline-flex;
-          align-items: center;
-          gap: 0.38rem;
-          padding: 0.42rem 0.95rem;
-          border-radius: 100px;
-          border: 1px solid rgba(212,175,55,0.26);
-          background: rgba(212,175,55,0.07);
-          color: var(--gc-gold);
-          font-size: 0.72rem;
-          font-weight: 700;
-          backdrop-filter: blur(10px);
-          -webkit-backdrop-filter: blur(10px);
-          opacity: 0;
-          transform: translateY(6px);
-          transition: opacity .24s ease, transform .24s var(--expo);
+
+        /* ── HUD ───────────────────────────────────────────────────────── */
+        .screw__hud {
+          position: absolute;
+          top: 50%; left: clamp(1.2rem, 5vw, 4.5rem);
+          transform: translateY(-50%);
+          z-index: 5;
+          max-width: 240px;
           pointer-events: none;
         }
-        .gc-card__frame:hover .gc-card__cta {
-          opacity: 1;
-          transform: translateY(0);
+        .screw__count {
+          display: flex; align-items: baseline; gap: 0.3rem;
+          font-weight: 900; line-height: 1; margin-bottom: 0.9rem;
+        }
+        .screw__count-num {
+          font-size: clamp(2.6rem, 6vw, 4.2rem);
+          color: var(--accent-text);
+        }
+        .screw__count-sep { font-size: 1.4rem; color: var(--text-muted); }
+        .screw__count-tot { font-size: 1.4rem; color: var(--text-muted); }
+        .screw__hud-cat {
+          display: inline-flex; align-items: center;
+          padding: 0.2rem 0.6rem; border-radius: 7px; border: 1px solid;
+          font-size: 0.56rem; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase;
+          margin-bottom: 0.7rem;
+        }
+        .screw__hud-title {
+          display: block;
+          font-size: clamp(1.2rem, 2vw, 1.6rem); font-weight: 800;
+          color: var(--text); line-height: 1.15;
         }
 
-        /* ── DETAIL OVERLAY ──────────────────────────────────────────── */
+        /* ── RIEL DE PROGRESO ──────────────────────────────────────────── */
+        .screw__rail {
+          position: absolute;
+          top: 50%; right: clamp(1rem, 3vw, 2.4rem);
+          transform: translateY(-50%);
+          width: 3px; height: 38vh; border-radius: 3px;
+          background: var(--border-strong);
+          overflow: hidden; z-index: 5;
+        }
+        .screw__rail-fill {
+          position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+          transform-origin: top; transform: scaleY(0);
+          background: linear-gradient(to bottom, var(--sc-gl), var(--sc-gold));
+          border-radius: 3px;
+        }
+
+        /* ── FALLBACK GRID (reduced-motion) ────────────────────────────── */
+        .screw__grid {
+          position: relative; z-index: 1;
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+          gap: 1.4rem;
+          max-width: 1240px;
+          margin: 0 auto;
+          padding: 2rem 1.4rem 7rem;
+        }
+        .scard--static { cursor: pointer; }
+        .scard--static .scard__media {
+          aspect-ratio: 4 / 5; height: auto;
+          transition: transform .3s var(--expo), box-shadow .3s var(--expo);
+        }
+        .scard--static:hover .scard__media {
+          transform: translateY(-5px);
+          box-shadow: 0 22px 48px rgba(0,0,0,0.5), 0 0 0 1px rgba(195,173,133,0.35);
+        }
+
+        /* ── DETAIL OVERLAY ────────────────────────────────────────────── */
         .gc-detail {
-          position: fixed;
-          inset: 0;
-          z-index: 3000;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          padding: 1.5rem;
-          overflow-y: auto;
+          position: fixed; inset: 0; z-index: 3000;
+          display: flex; align-items: center; justify-content: center;
+          padding: 1.5rem; overflow-y: auto;
         }
         .gc-detail__bg {
-          position: fixed;
-          inset: -5%;
-          width: 110%;
-          height: 110%;
-          filter: blur(18px) brightness(0.35) saturate(1.2);
-          transform: scale(1.05);
-          will-change: filter;
+          position: fixed; inset: -5%; width: 110%; height: 110%;
+          filter: blur(18px) brightness(0.35) saturate(1.2); transform: scale(1.05); will-change: filter;
         }
-        .gc-detail__scrim {
-          position: fixed;
-          inset: 0;
-          background: rgba(4,3,1,0.55);
-        }
+        .gc-detail__scrim { position: fixed; inset: 0; background: rgba(4,3,1,0.55); }
         .gc-detail__x {
-          position: fixed;
-          top: 1.5rem;
-          right: 1.5rem;
-          z-index: 10;
-          width: 40px;
-          height: 40px;
-          border-radius: 50%;
-          border: 1px solid rgba(255,255,255,0.14);
-          background: rgba(0,0,0,0.4);
-          backdrop-filter: blur(14px);
-          -webkit-backdrop-filter: blur(14px);
+          position: fixed; top: 1.5rem; right: 1.5rem; z-index: 10;
+          width: 40px; height: 40px; border-radius: 50%;
+          border: 1px solid rgba(255,255,255,0.14); background: rgba(0,0,0,0.4);
+          backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
           color: rgba(255,255,255,0.72);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          cursor: pointer;
-          transition: background .18s, color .18s;
+          display: flex; align-items: center; justify-content: center;
+          cursor: pointer; transition: background .18s, color .18s;
         }
-        .gc-detail__x:hover {
-          background: rgba(0,0,0,0.65);
-          color: #fff;
-        }
-        .gc-detail__wrap {
-          position: relative;
-          z-index: 2;
-          width: 100%;
-          max-width: 760px;
-        }
-        .gc-detail__head {
-          text-align: center;
-          margin-bottom: 1.6rem;
-        }
+        .gc-detail__x:hover { background: rgba(0,0,0,0.65); color: #fff; }
+        .gc-detail__wrap { position: relative; z-index: 2; width: 100%; max-width: 760px; }
+        .gc-detail__head { text-align: center; margin-bottom: 1.6rem; }
         .gc-detail__badge {
-          display: inline-flex;
-          align-items: center;
-          padding: 0.24rem 0.88rem;
-          border-radius: 100px;
-          border: 1px solid;
-          font-size: 0.6rem;
-          font-weight: 800;
-          letter-spacing: 0.09em;
-          text-transform: uppercase;
-          margin-bottom: 1rem;
-          backdrop-filter: blur(14px);
-          -webkit-backdrop-filter: blur(14px);
+          display: inline-flex; align-items: center;
+          padding: 0.24rem 0.88rem; border-radius: 100px; border: 1px solid;
+          font-size: 0.6rem; font-weight: 800; letter-spacing: 0.09em; text-transform: uppercase;
+          margin-bottom: 1rem; backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
         }
         .gc-detail__title {
-          font-size: clamp(2.2rem, 6vw, 3.4rem);
-          font-weight: 900;
-          color: #fff;
-          margin: 0 0 0.5rem;
-          text-shadow: 0 2px 24px rgba(0,0,0,0.6);
-          line-height: 1.05;
+          font-size: clamp(2.2rem, 6vw, 3.4rem); font-weight: 900; color: #fff;
+          margin: 0 0 0.5rem; text-shadow: 0 2px 24px rgba(0,0,0,0.6); line-height: 1.05;
         }
         .gc-detail__tagline {
-          font-size: 0.76rem;
-          color: rgba(255,255,255,0.5);
-          text-transform: uppercase;
-          letter-spacing: 0.13em;
-          margin: 0;
+          font-size: 0.76rem; color: rgba(255,255,255,0.5);
+          text-transform: uppercase; letter-spacing: 0.13em; margin: 0;
         }
-        .gc-bento {
-          display: grid;
-          grid-template-columns: 3fr 2fr;
-          gap: 0.8rem;
-          margin-bottom: 1rem;
-        }
+        .gc-bento { display: grid; grid-template-columns: 3fr 2fr; gap: 0.8rem; margin-bottom: 1rem; }
         .gc-bento__cell {
           background: rgba(0,0,0,0.36);
-          backdrop-filter: blur(20px) saturate(140%);
-          -webkit-backdrop-filter: blur(20px) saturate(140%);
-          border: 1px solid rgba(255,255,255,0.08);
-          border-radius: 16px;
-          padding: 1.3rem 1.35rem;
+          backdrop-filter: blur(20px) saturate(140%); -webkit-backdrop-filter: blur(20px) saturate(140%);
+          border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 1.3rem 1.35rem;
         }
         .gc-bento__label {
-          display: block;
-          font-size: 0.58rem;
-          font-weight: 800;
-          text-transform: uppercase;
-          letter-spacing: 0.13em;
-          color: rgba(255,255,255,0.35);
-          margin-bottom: 0.65rem;
+          display: block; font-size: 0.58rem; font-weight: 800; text-transform: uppercase;
+          letter-spacing: 0.13em; color: rgba(255,255,255,0.35); margin-bottom: 0.65rem;
         }
-        .gc-bento__body {
-          font-size: 0.86rem;
-          line-height: 1.74;
-          color: rgba(255,255,255,0.82);
-          margin: 0;
-        }
-        .gc-bento__chips {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 0.36rem;
-        }
-        .gc-bento__chip {
-          padding: 0.24rem 0.65rem;
-          border-radius: 8px;
-          border: 1px solid;
-          font-size: 0.66rem;
-          font-weight: 600;
-        }
+        .gc-bento__body { font-size: 0.86rem; line-height: 1.74; color: rgba(255,255,255,0.82); margin: 0; }
+        .gc-bento__chips { display: flex; flex-wrap: wrap; gap: 0.36rem; }
+        .gc-bento__chip { padding: 0.24rem 0.65rem; border-radius: 8px; border: 1px solid; font-size: 0.66rem; font-weight: 600; }
         .gc-detail__cta {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 0.52rem;
-          width: 100%;
-          padding: 1rem 2rem;
-          border-radius: 100px;
+          display: flex; align-items: center; justify-content: center; gap: 0.52rem;
+          width: 100%; padding: 1rem 2rem; border-radius: 100px;
           background: rgba(0,0,0,0.3);
-          backdrop-filter: blur(20px) saturate(140%);
-          -webkit-backdrop-filter: blur(20px) saturate(140%);
-          border: 1px solid rgba(212,175,55,0.38);
-          color: var(--gc-gold);
-          font-weight: 800;
-          font-size: 0.88rem;
-          text-decoration: none;
+          backdrop-filter: blur(20px) saturate(140%); -webkit-backdrop-filter: blur(20px) saturate(140%);
+          border: 1px solid rgba(195,173,133,0.38); color: var(--sc-gold);
+          font-weight: 800; font-size: 0.88rem; text-decoration: none;
           transition: background .2s, border-color .2s, box-shadow .2s, transform .2s var(--expo);
-          box-shadow: 0 4px 20px rgba(212,175,55,0.08);
+          box-shadow: 0 4px 20px rgba(195,173,133,0.08);
         }
         .gc-detail__cta:hover {
-          background: rgba(212,175,55,0.13);
-          border-color: rgba(212,175,55,0.65);
-          box-shadow: 0 8px 30px rgba(212,175,55,0.22);
-          transform: scale(1.014);
+          background: rgba(195,173,133,0.13); border-color: rgba(195,173,133,0.65);
+          box-shadow: 0 8px 30px rgba(195,173,133,0.22); transform: scale(1.014);
         }
 
-        /* ── RESPONSIVE ──────────────────────────────────────────────── */
-        @media (max-width: 900px) {
-          .gc-grid { grid-template-columns: 1fr; }
-          .gc-card__frame { aspect-ratio: 16 / 9; }
+        /* ── RESPONSIVE ────────────────────────────────────────────────── */
+        @media (max-width: 1024px) {
+          .screw__hud { max-width: 180px; left: clamp(0.8rem, 3vw, 2rem); }
         }
         @media (max-width: 768px) {
-          .gc-content { padding: 4rem 1rem 5rem; }
-          .gc-filters-bar { top: 60px; }
-          .gc-filters { justify-content: flex-start; flex-wrap: nowrap; overflow-x: auto; padding-bottom: 0.2rem; scrollbar-width: none; }
-          .gc-filters::-webkit-scrollbar { display: none; }
-          .gc-card__cta { opacity: 1; transform: none; }
+          .screw__intro { padding: 5rem 1rem 1.5rem; }
+          .scard--helix { --cw: 210px; --ch: 270px; }
+          .scard--helix .scard__cap { opacity: 1; }
+          .scard__name { font-size: 1rem; }
+          .screw__hud {
+            top: auto; bottom: 1.4rem; left: 50%;
+            transform: translateX(-50%); text-align: center; max-width: 86vw;
+          }
+          .screw__count { justify-content: center; margin-bottom: 0.5rem; }
+          .screw__count-num { font-size: 2.4rem; }
+          .screw__hud-title { font-size: 1.1rem; }
+          .screw__rail { height: 30vh; right: 0.7rem; }
           .gc-bento { grid-template-columns: 1fr; }
           .gc-detail { padding: 0.75rem; align-items: flex-end; }
           .gc-detail__title { font-size: 1.9rem; }
           .gc-detail__wrap { max-width: 100%; }
         }
-        @media (max-width: 480px) {
-          .gc-card__frame { aspect-ratio: 4 / 3; }
-          .gc-card__info { padding: 0.9rem 0.85rem 0.85rem; }
-          .gc-card__name { font-size: 0.92rem; }
-          .gc-card__sub { display: none; }
-        }
 
-        /* ── REDUCED MOTION ──────────────────────────────────────────── */
+        /* ── REDUCED MOTION ────────────────────────────────────────────── */
         @media (prefers-reduced-motion: reduce) {
-          .gc-card__frame,
-          .gc-card__name,
-          .gc-card__cta,
-          .gc-detail,
-          .gc-detail__wrap,
-          .gc-detail__cta {
-            transition: none !important;
-            animation: none !important;
-          }
-          .gc-card__frame:hover { transform: none !important; }
-          .gc-card__cta { opacity: 1 !important; transform: none !important; }
-          .gc-card__live { animation: none !important; opacity: 1; }
+          .scard--static .scard__media,
+          .gc-detail, .gc-detail__wrap, .gc-detail__cta { transition: none !important; }
+          .scard__live, .screw__hint-dot { animation: none !important; opacity: 1; }
         }
       `}</style>
     </>

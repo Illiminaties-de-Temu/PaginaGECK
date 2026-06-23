@@ -1,7 +1,6 @@
 ---
 import Layout from '@/layouts/MainLayout.astro';
 import VideoBackground from '@/components/VideoBackground.jsx';
-import Header from '@/components/hero/Header.jsx';
 import ProjectCarousel from '@/components/hero/ProjectCarousel.jsx';
 import SpecialtiesShowcase from '@/components/hero/SpecialtiesShowcase.jsx';
 import Carrusel from '@/components/hero/Carrusel.jsx';
@@ -13,9 +12,7 @@ import StatsSection from '@/components/hero/StatsSection.jsx';
   description="Agencia de desarrollo tecnológico en Parral, Chihuahua. Creamos sitios web, apps móviles, soluciones de IA y e-commerce para empresas en México y Estados Unidos."
   canonical="https://geckcodex.com/"
 >
-  <VideoBackground client:visible>
-    <Header client:visible />
-  </VideoBackground>
+  <VideoBackground client:visible />
 
   <ProjectCarousel client:visible />
   <SpecialtiesShowcase client:visible />
