@@ -108,7 +108,7 @@ export default function OutroSpecialties() {
           background: linear-gradient(
             135deg,
             #F4E4BC 0%,
-            #D4AF37 50%,
+            var(--accent) 50%,
             #B8941F 100%
           );
           -webkit-background-clip: text;
@@ -116,7 +116,7 @@ export default function OutroSpecialties() {
           background-clip: text;
           line-height: 1.2;
           letter-spacing: 0.02em;
-          filter: drop-shadow(0 4px 20px rgba(212, 175, 55, 0.4));
+          filter: drop-shadow(0 4px 20px rgba(195, 173, 133, 0.4));
         }
 
         .outro-specialties__line {
@@ -125,9 +125,9 @@ export default function OutroSpecialties() {
           background: linear-gradient(
             90deg,
             transparent,
-            #D4AF37,
+            var(--accent),
             #F4E4BC,
-            #D4AF37,
+            var(--accent),
             transparent
           );
           margin: 0 auto 2.5rem;
@@ -148,18 +148,18 @@ export default function OutroSpecialties() {
           align-items: center;
           gap: 1rem;
           padding: 1.5rem 3.5rem;
-          background: linear-gradient(135deg, rgba(212, 175, 55, 0.18), rgba(212, 175, 55, 0.08));
+          background: linear-gradient(135deg, rgba(195, 173, 133, 0.18), rgba(195, 173, 133, 0.08));
           backdrop-filter: blur(25px);
           -webkit-backdrop-filter: blur(25px);
-          color: #D4AF37;
+          color: var(--accent);
           font-weight: 700;
           font-size: 1.25rem;
           text-decoration: none;
           border-radius: 14px;
-          border: 2px solid #D4AF37;
+          border: 2px solid var(--accent);
           box-shadow: 
-            0 0 25px rgba(212, 175, 55, 0.4),
-            inset 0 0 20px rgba(212, 175, 55, 0.1);
+            0 0 25px rgba(195, 173, 133, 0.4),
+            inset 0 0 20px rgba(195, 173, 133, 0.1);
           transition: all 0.4s ease;
           cursor: pointer;
           position: relative;
@@ -177,7 +177,7 @@ export default function OutroSpecialties() {
           background: linear-gradient(
             45deg,
             transparent,
-            rgba(212, 175, 55, 0.3),
+            rgba(195, 173, 133, 0.3),
             transparent
           );
           transform: rotate(45deg);
@@ -196,23 +196,23 @@ export default function OutroSpecialties() {
         @keyframes buttonPulse {
           0%, 100% {
             box-shadow: 
-              0 0 25px rgba(212, 175, 55, 0.4),
-              inset 0 0 20px rgba(212, 175, 55, 0.1);
+              0 0 25px rgba(195, 173, 133, 0.4),
+              inset 0 0 20px rgba(195, 173, 133, 0.1);
           }
           50% {
             box-shadow: 
-              0 0 40px rgba(212, 175, 55, 0.6),
-              0 0 55px rgba(212, 175, 55, 0.3),
-              inset 0 0 30px rgba(212, 175, 55, 0.2);
+              0 0 40px rgba(195, 173, 133, 0.6),
+              0 0 55px rgba(195, 173, 133, 0.3),
+              inset 0 0 30px rgba(195, 173, 133, 0.2);
           }
         }
 
         .outro-specialties__button:hover {
           transform: scale(1.1) translateY(-4px);
           box-shadow: 
-            0 0 45px rgba(212, 175, 55, 0.8),
-            0 0 60px rgba(212, 175, 55, 0.4),
-            inset 0 0 30px rgba(212, 175, 55, 0.25);
+            0 0 45px rgba(195, 173, 133, 0.8),
+            0 0 60px rgba(195, 173, 133, 0.4),
+            inset 0 0 30px rgba(195, 173, 133, 0.25);
         }
 
         .outro-specialties__button-text {

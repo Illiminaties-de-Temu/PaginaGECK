@@ -77,7 +77,7 @@ export default function UnderConstruction() {
           display: flex;
           align-items: center;
           justify-content: center;
-          background: linear-gradient(to bottom, #0b1f49, #000000);
+          background: var(--background);
           position: relative;
           overflow: hidden;
           padding: 4rem 2rem;
@@ -100,7 +100,7 @@ export default function UnderConstruction() {
         .under-construction__orb--1 {
           width: 600px;
           height: 600px;
-          background: radial-gradient(circle, rgba(212, 175, 55, 0.15), transparent);
+          background: radial-gradient(circle, rgba(195, 173, 133, 0.15), transparent);
           top: -10%;
           left: -10%;
           animation-delay: 0s;
@@ -109,7 +109,7 @@ export default function UnderConstruction() {
         .under-construction__orb--2 {
           width: 500px;
           height: 500px;
-          background: radial-gradient(circle, rgba(74, 158, 255, 0.1), transparent);
+          background: radial-gradient(circle, rgba(195, 173, 133, 0.08), transparent);
           bottom: -10%;
           right: -10%;
           animation-delay: 5s;
@@ -152,10 +152,10 @@ export default function UnderConstruction() {
           display: flex;
           align-items: center;
           justify-content: center;
-          background: rgba(212, 175, 55, 0.1);
-          border: 2px solid rgba(212, 175, 55, 0.3);
+          background: rgba(195, 173, 133, 0.1);
+          border: 2px solid rgba(195, 173, 133, 0.3);
           border-radius: 50%;
-          color: #d4af37;
+          color: var(--accent);
           animation: iconBounce 3s ease-in-out infinite;
           position: relative;
           z-index: 2;
@@ -179,7 +179,7 @@ export default function UnderConstruction() {
         .under-construction__pulse {
           position: absolute;
           inset: -10px;
-          border: 2px solid #d4af37;
+          border: 2px solid var(--accent);
           border-radius: 50%;
           animation: pulse 2s ease-out infinite;
         }
@@ -201,10 +201,10 @@ export default function UnderConstruction() {
           align-items: center;
           gap: 0.5rem;
           padding: 0.5rem 1rem;
-          background: rgba(212, 175, 55, 0.1);
-          border: 1px solid rgba(212, 175, 55, 0.3);
+          background: rgba(195, 173, 133, 0.1);
+          border: 1px solid rgba(195, 173, 133, 0.3);
           border-radius: 50px;
-          color: #d4af37;
+          color: var(--accent-text);
           font-size: 0.9rem;
           font-weight: 600;
           animation: fadeInUp 0.8s ease-out;
@@ -215,16 +215,13 @@ export default function UnderConstruction() {
           font-size: 3.5rem;
           font-weight: 900;
           line-height: 1.2;
-          color: #f5f5f5;
+          color: var(--text);
           margin: 0;
           animation: fadeInUp 0.8s ease-out 0.2s backwards;
         }
 
         .under-construction__title-highlight {
-          background: linear-gradient(135deg, #d4af37 0%, #f4d03f 100%);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          background-clip: text;
+          color: var(--accent-text);
           display: block;
         }
 
@@ -232,7 +229,7 @@ export default function UnderConstruction() {
         .under-construction__description {
           font-size: 1.25rem;
           line-height: 1.8;
-          color: #a0a0a0;
+          color: var(--text-muted);
           margin: 0;
           max-width: 600px;
           animation: fadeInUp 0.8s ease-out 0.4s backwards;
@@ -249,7 +246,7 @@ export default function UnderConstruction() {
         .under-construction__progress-bar {
           width: 100%;
           height: 8px;
-          background: rgba(212, 175, 55, 0.1);
+          background: rgba(195, 173, 133, 0.1);
           border-radius: 50px;
           overflow: hidden;
           position: relative;
@@ -258,7 +255,7 @@ export default function UnderConstruction() {
         .under-construction__progress-fill {
           height: 100%;
           width: 70%;
-          background: linear-gradient(90deg, #d4af37, #f4d03f);
+          background: linear-gradient(90deg, var(--accent), var(--brand-bronze));
           border-radius: 50px;
           position: relative;
           animation: progressGrow 2s ease-out forwards, progressShine 2s ease-in-out infinite;
@@ -288,7 +285,7 @@ export default function UnderConstruction() {
         .under-construction__progress-text {
           margin-top: 0.75rem;
           font-size: 0.875rem;
-          color: #a0a0a0;
+          color: var(--text-muted);
           font-weight: 500;
         }
 
@@ -302,7 +299,7 @@ export default function UnderConstruction() {
         .under-construction__dot {
           width: 8px;
           height: 8px;
-          background: #d4af37;
+          background: var(--accent);
           border-radius: 50%;
           animation: dotBounce 1.4s ease-in-out infinite;
         }
@@ -332,10 +329,10 @@ export default function UnderConstruction() {
           align-items: center;
           gap: 0.75rem;
           padding: 1rem 2rem;
-          background: rgba(212, 175, 55, 0.05);
-          border: 1px solid rgba(212, 175, 55, 0.2);
+          background: rgba(195, 173, 133, 0.05);
+          border: 1px solid rgba(195, 173, 133, 0.2);
           border-radius: 12px;
-          color: #d4af37;
+          color: var(--text-muted);
           font-size: 1rem;
           font-weight: 500;
           margin-top: 1rem;

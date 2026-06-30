@@ -20,13 +20,18 @@ const CAT_ACCENT = {
   software: '#a78bfa',
 };
 
+/* Rueda en arco: triplicamos para densificar el arco y que el giro sea
+ * infinito y sin saltos (reparto angular uniforme). */
+const RING = [...PROJECTS, ...PROJECTS, ...PROJECTS];
+const STEP = 360 / RING.length; // grados entre tarjeta y tarjeta sobre el círculo
+
 /* ─── CARD ──────────────────────────────────────────────────────────── */
-function Card({ project, catLabels, onEnter, onLeave }) {
+function Card({ project, catLabels, onEnter, onLeave, idx }) {
   const accent = CAT_ACCENT[project.cat];
   return (
     <div
       className="pc-card"
-      onMouseEnter={(e) => onEnter(project, e)}
+      onMouseEnter={(e) => onEnter(project, e, idx)}
       onMouseLeave={onLeave}
     >
       <div
@@ -63,6 +68,7 @@ export default function ProjectCarousel() {
   const { t } = useLanguage();
   const [tooltip, setTooltip]   = useState(null);  // { project, top, left, align }
   const [paused,  setPaused]    = useState(false);
+  const [hoveredIdx, setHoveredIdx] = useState(null); // índice del slot activo
   const sectionRef              = useRef(null);
 
   /* Entrada — IntersectionObserver, sin scroll event, dispara una vez */
@@ -91,7 +97,7 @@ export default function ProjectCarousel() {
     return () => document.removeEventListener('visibilitychange', reset);
   }, []);
 
-  const handleEnter = (project, e) => {
+  const handleEnter = (project, e, idx) => {
     const rect = e.currentTarget.getBoundingClientRect();
     const cx   = rect.left + rect.width / 2;
     const vw   = window.innerWidth;
@@ -101,11 +107,13 @@ export default function ProjectCarousel() {
     if (cx + tipW / 2 > vw - 12) align = 'right';
     setTooltip({ project, top: rect.bottom + 12, cx, align });
     setPaused(true);
+    setHoveredIdx(idx ?? null);
   };
 
   const handleLeave = () => {
     setTooltip(null);
     setPaused(false);
+    setHoveredIdx(null);
   };
 
   /* Calcular left para el tooltip */
@@ -121,34 +129,36 @@ export default function ProjectCarousel() {
     <>
       <section ref={sectionRef} className="pc-section">
 
-        {/* Gradientes laterales — faden el carousel en los bordes */}
-        <div className="pc-fade pc-fade--l" aria-hidden="true" />
-        <div className="pc-fade pc-fade--r" aria-hidden="true" />
-
-        {/* Título */}
-        <header className="pc-header">
-          <h2 className="pc-h2">{t.projectCarousel.title}</h2>
-          <p className="pc-lead">{t.projectCarousel.subtitle}</p>
-        </header>
-
-        {/* Track — animación CSS pura, dirección DERECHA */}
-        <div className="pc-viewport">
-          <div className={`pc-track${paused ? ' is-paused' : ''}`}>
-            {[...PROJECTS, ...PROJECTS].map((p, i) => (
-              <Card key={i} project={p} catLabels={t.projectCarousel.catLabels} onEnter={handleEnter} onLeave={handleLeave} />
+        {/* Rueda en arco — las tarjetas giran sobre un círculo */}
+        <div className="pc-stage">
+          <div className="pc-stage__fade pc-stage__fade--l" aria-hidden="true" />
+          <div className="pc-stage__fade pc-stage__fade--r" aria-hidden="true" />
+          <div className={`pc-wheel${paused ? ' is-paused' : ''}`}>
+            {RING.map((p, i) => (
+              <div
+                key={i}
+                className={`pc-slot${hoveredIdx === i ? ' is-hovered' : ''}`}
+                style={{ transform: `rotate(${i * STEP}deg) translateY(calc(var(--r) * -1))` }}
+              >
+                <Card project={p} catLabels={t.projectCarousel.catLabels} onEnter={handleEnter} onLeave={handleLeave} idx={i} />
+              </div>
             ))}
           </div>
         </div>
 
-        {/* CTA */}
-        <div className="pc-cta">
-          <a href="/portafolio" className="pc-cta__link">
-            {t.projectCarousel.cta}
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-              <path d="M5 12h14M12 5l7 7-7 7" />
-            </svg>
-          </a>
-        </div>
+        {/* Título + CTA — debajo del arco */}
+        <header className="pc-header">
+          <h2 className="pc-h2">{t.projectCarousel.title}</h2>
+          <p className="pc-lead">{t.projectCarousel.subtitle}</p>
+          <div className="pc-cta">
+            <a href="/portafolio" className="pc-cta__link">
+              {t.projectCarousel.cta}
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                <path d="M5 12h14M12 5l7 7-7 7" />
+              </svg>
+            </a>
+          </div>
+        </header>
 
       </section>
 
@@ -183,7 +193,7 @@ export default function ProjectCarousel() {
       <style>{`
         /* ── SECTION ─────────────────────────────────────── */
         .pc-section {
-          background: #222220;
+          background: var(--background);
           padding: 5rem 0 4rem;
           position: relative;
           overflow: hidden;
@@ -197,74 +207,102 @@ export default function ProjectCarousel() {
           transform: translateY(0);
         }
 
-        /* Gradientes laterales — cortan el carousel */
-        .pc-fade {
+        /* ── STAGE (arco) ────────────────────────────────── */
+        /* Ventana recortada: sólo se ve la parte superior del círculo,
+         * por eso las tarjetas dibujan un arco. El centro de la rueda
+         * queda muy por debajo del stage (top: --r + offset). */
+        .pc-stage {
+          --r: 1280px;          /* radio del círculo */
+          --cw: 230px;          /* ancho de tarjeta */
+          --ch: 130px;          /* alto de tarjeta */
+          position: relative;
+          height: clamp(320px, 32vw, 460px);
+          overflow: hidden;
+          margin-bottom: 1.5rem;
+        }
+
+        /* Gradientes laterales — funden el arco en los bordes */
+        .pc-stage__fade {
           position: absolute;
           top: 0; bottom: 0;
-          width: clamp(60px, 10vw, 140px);
+          width: clamp(60px, 12vw, 180px);
           z-index: 10;
           pointer-events: none;
         }
-        .pc-fade--l { left: 0;  background: linear-gradient(to right,  #222220 0%, transparent 100%); }
-        .pc-fade--r { right: 0; background: linear-gradient(to left,   #222220 0%, transparent 100%); }
+        .pc-stage__fade--l { left: 0;  background: linear-gradient(to right, var(--background) 0%, transparent 100%); }
+        .pc-stage__fade--r { right: 0; background: linear-gradient(to left,  var(--background) 0%, transparent 100%); }
+
+        /* ── RUEDA ───────────────────────────────────────── */
+        .pc-wheel {
+          position: absolute;
+          left: 50%;
+          top: calc(var(--r) + 100px);  /* centro del círculo, bajo el stage */
+          width: 0;
+          height: 0;
+          will-change: transform;
+          animation: pc-spin 110s linear infinite;
+        }
+        .pc-wheel.is-paused { animation-play-state: paused; }
+        @keyframes pc-spin {
+          from { transform: rotate(0deg); }
+          to   { transform: rotate(-360deg); }
+        }
+
+        /* cada tarjeta se coloca en polar: rotate(ángulo) translateY(-radio) */
+        .pc-slot {
+          position: absolute;
+          top: 0; left: 0;
+          width: var(--cw);
+          height: var(--ch);
+          margin-left: calc(var(--cw) / -2);
+          margin-top: calc(var(--ch) / -2);
+          transform-origin: center center;
+          transition: filter .3s ease, opacity .3s ease;
+        }
+
+        /* al pausar (hover sobre una tarjeta): todo lo demás se difumina,
+         * la tarjeta activa se mantiene nítida y al frente */
+        .pc-wheel.is-paused .pc-slot {
+          filter: blur(3px);
+          opacity: .45;
+        }
+        .pc-wheel.is-paused .pc-slot.is-hovered {
+          filter: none;
+          opacity: 1;
+          z-index: 30;
+        }
 
         /* ── HEADER ──────────────────────────────────────── */
         .pc-header {
           text-align: center;
-          margin-bottom: 2.5rem;
+          margin-bottom: 0;
           padding: 0 1rem;
         }
         .pc-h2 {
           font-size: clamp(1.75rem, 4vw, 2.8rem);
           font-weight: 900;
-          color: #D4AF37;
+          color: var(--text);
           margin: 0 0 .5rem;
           line-height: 1.1;
         }
         .pc-lead {
           font-size: .95rem;
-          color: rgba(244,228,188,0.45);
+          color: var(--text-muted);
           margin: 0;
           font-weight: 400;
           letter-spacing: .04em;
         }
 
-        /* ── VIEWPORT ────────────────────────────────────── */
-        .pc-viewport {
-          overflow: hidden;   /* clip horizontal */
-          padding: .5rem 0 1.5rem; /* espacio para sombra de cards */
-        }
-
-        /* ── TRACK — CSS animation, dirección DERECHA ───── */
-        /*
-         * Doble lista → totalWidth = 2 × (cardW + gap) × N
-         * Animation: translateX(-50%) → translateX(0) = se mueve hacia la derecha
-         * La GPU lo anima en el compositor, sin tocar el main thread.
-         */
-        .pc-track {
-          display: flex;
-          gap: 14px;
-          width: max-content;
-          will-change: transform;
-          animation: pc-right 90s linear infinite;
-        }
-        .pc-track.is-paused {
-          animation-play-state: paused;
-        }
-        @keyframes pc-right {
-          from { transform: translateX(-50%); }
-          to   { transform: translateX(0); }
-        }
-
         /* ── CARD ────────────────────────────────────────── */
         .pc-card {
-          flex-shrink: 0;
-          width: 240px;
+          width: 100%;
+          height: 100%;
           cursor: pointer;
         }
         .pc-card__frame {
           position: relative;
-          aspect-ratio: 16 / 9;
+          width: 100%;
+          height: 100%;
           border-radius: 12px;
           overflow: hidden;
           border: 1px solid rgba(255,255,255,0.09);
@@ -272,8 +310,8 @@ export default function ProjectCarousel() {
           transition: border-color .28s ease, box-shadow .28s ease, transform .32s cubic-bezier(0.22,1,0.36,1);
         }
         .pc-card__frame:hover {
-          border-color: rgba(212,175,55,0.45);
-          box-shadow: 0 16px 48px rgba(0,0,0,0.65), 0 0 0 1px rgba(212,175,55,0.14);
+          border-color: rgba(195,173,133,0.45);
+          box-shadow: 0 16px 48px rgba(0,0,0,0.65), 0 0 0 1px rgba(195,173,133,0.14);
           transform: translateY(-5px) scale(1.03);
         }
         .pc-card__img {
@@ -318,7 +356,7 @@ export default function ProjectCarousel() {
         .pc-card__name {
           font-size: .82rem;
           font-weight: 800;
-          color: #F4E4BC;
+          color: var(--brand-ivory);
           margin: 0;
           line-height: 1.2;
           white-space: nowrap;
@@ -329,7 +367,7 @@ export default function ProjectCarousel() {
         /* ── CTA ─────────────────────────────────────────── */
         .pc-cta {
           text-align: center;
-          margin-top: 2.2rem;
+          margin-top: 1.6rem;
           position: relative;
           z-index: 20;
         }
@@ -341,14 +379,14 @@ export default function ProjectCarousel() {
           font-weight: 700;
           letter-spacing: .12em;
           text-transform: uppercase;
-          color: #D4AF37;
+          color: var(--accent-text);
           text-decoration: none;
-          border-bottom: 1px solid rgba(212,175,55,0.35);
+          border-bottom: 1px solid var(--accent);
           padding-bottom: 2px;
           transition: border-color .2s, gap .2s;
         }
         .pc-cta__link:hover {
-          border-color: #D4AF37;
+          border-color: var(--accent);
           gap: .7rem;
         }
 
@@ -360,7 +398,7 @@ export default function ProjectCarousel() {
           background: #fff;
           border-radius: 14px;
           padding: 1rem 1.1rem 1rem;
-          box-shadow: 0 20px 60px rgba(0,0,0,0.22), 0 0 0 1.5px rgba(212,175,55,0.3);
+          box-shadow: 0 20px 60px rgba(0,0,0,0.22), 0 0 0 1.5px rgba(195,173,133,0.3);
           animation: pc-tip-in .28s cubic-bezier(0.34,1.56,0.64,1);
           pointer-events: auto;
         }
@@ -384,7 +422,7 @@ export default function ProjectCarousel() {
           display: inline-block;
           font-size: .72rem;
           font-weight: 700;
-          color: #D4AF37;
+          color: var(--accent-text);
           text-decoration: none;
           letter-spacing: .04em;
           margin-bottom: .75rem;
@@ -399,19 +437,28 @@ export default function ProjectCarousel() {
         /* ── MOBILE ──────────────────────────────────────── */
         @media (max-width: 768px) {
           .pc-section { padding: 3.5rem 0 3rem; }
-          .pc-card { width: 180px; }
-          .pc-track { gap: 10px; animation-duration: 70s; }
+          .pc-stage {
+            --r: 720px;
+            --cw: 170px;
+            --ch: 96px;
+            height: clamp(230px, 46vw, 320px);
+          }
+          .pc-wheel { top: calc(var(--r) + 72px); animation-duration: 90s; }
           .pc-card__name { font-size: .75rem; }
         }
         @media (max-width: 480px) {
-          .pc-card { width: 150px; }
-          .pc-track { animation-duration: 55s; }
+          .pc-stage {
+            --r: 560px;
+            --cw: 150px;
+            --ch: 84px;
+          }
+          .pc-wheel { top: calc(var(--r) + 60px); animation-duration: 75s; }
         }
 
         /* ── REDUCED MOTION ──────────────────────────────── */
         @media (prefers-reduced-motion: reduce) {
           .pc-section { transition: none !important; opacity: 1; transform: none; }
-          .pc-track { animation: none !important; }
+          .pc-wheel { animation: none !important; will-change: auto; }
           .pc-card__frame { transition: none !important; will-change: auto; }
           .pc-tooltip { animation: none !important; }
         }

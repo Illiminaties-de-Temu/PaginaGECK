@@ -94,7 +94,7 @@ export default function IntroSpecialties() {
           background: linear-gradient(
             135deg,
             #F4E4BC 0%,
-            #D4AF37 50%,
+            var(--accent) 50%,
             #B8941F 100%
           );
           -webkit-background-clip: text;
@@ -108,9 +108,9 @@ export default function IntroSpecialties() {
           background: linear-gradient(
             90deg,
             transparent,
-            #D4AF37,
+            var(--accent),
             #F4E4BC,
-            #D4AF37,
+            var(--accent),
             transparent
           );
           margin: 0 auto 2rem;

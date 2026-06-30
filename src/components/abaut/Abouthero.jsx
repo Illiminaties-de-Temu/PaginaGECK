@@ -35,7 +35,7 @@ export default function AboutHero() {
         });
 
         const customIcon = new L.Icon({
-          iconUrl: 'data:image/svg+xml;base64,' + btoa(`<svg width="50" height="50" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="25" cy="25" r="22" fill="url(#grad)" stroke="#fff" stroke-width="4"/><circle cx="25" cy="25" r="10" fill="#fff"/><defs><linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#d4af37;stop-opacity:1" /><stop offset="100%" style="stop-color:#f4d03f;stop-opacity:1" /></linearGradient></defs></svg>`),
+          iconUrl: 'data:image/svg+xml;base64,' + btoa(`<svg width="50" height="50" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="25" cy="25" r="22" fill="url(#grad)" stroke="#fff" stroke-width="4"/><circle cx="25" cy="25" r="10" fill="#fff"/><defs><linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:var(--accent);stop-opacity:1" /><stop offset="100%" style="stop-color:#f4d03f;stop-opacity:1" /></linearGradient></defs></svg>`),
           iconSize: [50, 50],
           iconAnchor: [25, 25],
         });
@@ -62,7 +62,7 @@ export default function AboutHero() {
           <MapContainer center={[23.6345, -102.5528]} zoom={5} scrollWheelZoom={false} style={{ height: '100%', width: '100%' }}>
             <TileLayer url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png" />
             <AutoZoom />
-            <Circle center={[26.9323, -105.6669]} radius={80000} pathOptions={{ color: '#d4af37', fillColor: '#d4af37', fillOpacity: 0.1, weight: 2 }} />
+            <Circle center={[26.9323, -105.6669]} radius={80000} pathOptions={{ color: 'var(--accent)', fillColor: 'var(--accent)', fillOpacity: 0.1, weight: 2 }} />
             <Marker position={[26.9323, -105.6669]} icon={customIcon} />
           </MapContainer>
         );
@@ -115,7 +115,7 @@ export default function AboutHero() {
 
       <style>{`
         .about-hero {
-          font-family: 'Outfit', sans-serif;
+          font-family: var(--font-body);
           position: relative;
           min-height: 120vh; /* Un poco más alto para dar margen al deslizamiento */
           width: 100%;
@@ -137,16 +137,14 @@ export default function AboutHero() {
           font-size: clamp(2.5rem, 4.5vw, 4rem);
           font-weight: 900;
           line-height: 1.05;
-          color: #f5f5f5;
+          color: var(--text);
           letter-spacing: -0.03em;
         }
 
         .about-hero__title-highlight {
           display: block;
           margin-top: 1rem;
-          background: linear-gradient(135deg, #d4af37 0%, #f4d03f 100%);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
+          color: var(--accent-text);
           font-weight: 300;
           text-transform: uppercase;
           font-size: 0.35em;
@@ -155,7 +153,7 @@ export default function AboutHero() {
 
         .about-hero__subtitle {
           margin-top: 2rem;
-          color: rgba(255,255,255,0.6);
+          color: var(--text-muted);
           font-size: 1.1rem;
           font-weight: 300;
           max-width: 380px;
@@ -176,7 +174,7 @@ export default function AboutHero() {
           border-radius: 40px;
           overflow: hidden;
           box-shadow: 0 40px 100px rgba(0,0,0,0.5);
-          border: 1px solid rgba(212, 175, 55, 0.15);
+          border: 1px solid rgba(195, 173, 133, 0.15);
           background: #030816;
         }
 
@@ -185,7 +183,7 @@ export default function AboutHero() {
           display: flex;
           align-items: center;
           justify-content: center;
-          color: #d4af37;
+          color: var(--text-muted);
           text-transform: uppercase;
           font-size: 0.7rem;
           letter-spacing: 0.2em;

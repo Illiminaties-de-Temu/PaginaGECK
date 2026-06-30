@@ -169,7 +169,7 @@ export default function AboutCTA() {
         .about-cta__orb--1 {
           width: 700px;
           height: 700px;
-          background: radial-gradient(circle, rgba(212, 175, 55, 0.15), transparent);
+          background: radial-gradient(circle, rgba(195, 173, 133, 0.15), transparent);
           top: -20%;
           right: -10%;
           animation-delay: 0s;
@@ -222,7 +222,7 @@ export default function AboutCTA() {
         .stat-card {
           padding: 2.5rem;
           background: rgba(27, 54, 93, 0.4);
-          border: 1px solid rgba(212, 175, 55, 0.2);
+          border: 1px solid rgba(195, 173, 133, 0.2);
           border-radius: 20px;
           backdrop-filter: blur(10px);
           text-align: center;
@@ -231,8 +231,8 @@ export default function AboutCTA() {
 
         .stat-card:hover {
           transform: translateY(-10px);
-          border-color: rgba(212, 175, 55, 0.5);
-          box-shadow: 0 20px 60px rgba(212, 175, 55, 0.2);
+          border-color: rgba(195, 173, 133, 0.5);
+          box-shadow: 0 20px 60px rgba(195, 173, 133, 0.2);
         }
 
         .stat-card__icon {
@@ -242,22 +242,22 @@ export default function AboutCTA() {
           display: flex;
           align-items: center;
           justify-content: center;
-          background: rgba(212, 175, 55, 0.1);
-          border: 2px solid rgba(212, 175, 55, 0.3);
+          background: rgba(195, 173, 133, 0.1);
+          border: 2px solid rgba(195, 173, 133, 0.3);
           border-radius: 50%;
-          color: #d4af37;
+          color: var(--accent);
           transition: all 0.4s ease;
         }
 
         .stat-card:hover .stat-card__icon {
           transform: scale(1.1) rotate(10deg);
-          background: rgba(212, 175, 55, 0.2);
+          background: rgba(195, 173, 133, 0.2);
         }
 
         .stat-card__number {
           font-size: 3.5rem;
           font-weight: 900;
-          background: linear-gradient(135deg, #d4af37 0%, #f4d03f 100%);
+          background: linear-gradient(135deg, var(--accent) 0%, #f4d03f 100%);
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
           background-clip: text;
@@ -276,7 +276,7 @@ export default function AboutCTA() {
           text-align: center;
           padding: 4rem;
           background: rgba(27, 54, 93, 0.3);
-          border: 1px solid rgba(212, 175, 55, 0.2);
+          border: 1px solid rgba(195, 173, 133, 0.2);
           border-radius: 32px;
           backdrop-filter: blur(10px);
           opacity: 0;
@@ -298,7 +298,7 @@ export default function AboutCTA() {
         }
 
         .about-cta__title-highlight {
-          background: linear-gradient(135deg, #d4af37 0%, #f4d03f 100%);
+          background: linear-gradient(135deg, var(--accent) 0%, #f4d03f 100%);
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
           background-clip: text;
@@ -338,25 +338,25 @@ export default function AboutCTA() {
         }
 
         .about-cta__button--primary {
-          background: linear-gradient(135deg, #d4af37 0%, #f4d03f 100%);
+          background: linear-gradient(135deg, var(--accent) 0%, #f4d03f 100%);
           color: #0b1f49;
-          box-shadow: 0 4px 20px rgba(212, 175, 55, 0.3);
+          box-shadow: 0 4px 20px rgba(195, 173, 133, 0.3);
         }
 
         .about-cta__button--primary:hover {
           transform: translateY(-3px);
-          box-shadow: 0 8px 30px rgba(212, 175, 55, 0.5);
+          box-shadow: 0 8px 30px rgba(195, 173, 133, 0.5);
         }
 
         .about-cta__button--secondary {
-          background: rgba(212, 175, 55, 0.1);
-          color: #d4af37;
-          border: 2px solid rgba(212, 175, 55, 0.3);
+          background: rgba(195, 173, 133, 0.1);
+          color: var(--accent);
+          border: 2px solid rgba(195, 173, 133, 0.3);
         }
 
         .about-cta__button--secondary:hover {
-          background: rgba(212, 175, 55, 0.2);
-          border-color: rgba(212, 175, 55, 0.5);
+          background: rgba(195, 173, 133, 0.2);
+          border-color: rgba(195, 173, 133, 0.5);
           transform: translateY(-3px);
         }
 
@@ -378,7 +378,7 @@ export default function AboutCTA() {
         }
 
         .feature-item svg {
-          color: #d4af37;
+          color: var(--accent);
         }
 
         /* RESPONSIVE */

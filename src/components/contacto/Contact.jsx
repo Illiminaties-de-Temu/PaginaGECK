@@ -15,7 +15,7 @@ export default function Contact() {
 
   const contactConfig = {
     whatsapp: '+52 6271745436',
-    email: 'geckcodexoficial@gmail.com',
+    email: 'ventas@geckcodex.com',
     instagram: 'https://www.instagram.com/geckcodex/',
   };
 
@@ -84,7 +84,7 @@ export default function Contact() {
         .ct-root {
           position: relative;
           width: 100%;
-          background: #1e1e1c;
+          background: var(--background);
           padding: 8rem 2rem;
           overflow: hidden;
           font-family: inherit;
@@ -94,7 +94,7 @@ export default function Contact() {
         .ct-bg {
           position: absolute;
           inset: 0;
-          background: radial-gradient(ellipse 70% 50% at 50% 50%, rgba(212,175,55,0.05), transparent);
+          background: radial-gradient(ellipse 70% 50% at 50% 50%, rgba(195,173,133,0.05), transparent);
           animation: ctBreathe 8s ease-in-out infinite;
           pointer-events: none;
         }
@@ -133,10 +133,10 @@ export default function Contact() {
           align-items: center;
           gap: 0.5rem;
           padding: 0.45rem 1.1rem;
-          background: rgba(212,175,55,0.08);
-          border: 1px solid rgba(212,175,55,0.28);
+          background: rgba(195,173,133,0.08);
+          border: 1px solid rgba(195,173,133,0.28);
           border-radius: 50px;
-          color: #D4AF37;
+          color: var(--accent-text);
           font-size: 0.72rem;
           font-weight: 700;
           letter-spacing: 0.22em;
@@ -144,8 +144,8 @@ export default function Contact() {
           animation: badgePulse 3s ease-in-out infinite;
         }
         @keyframes badgePulse {
-          0%,100% { box-shadow: 0 0 0 0 rgba(212,175,55,0.3); }
-          50%      { box-shadow: 0 0 18px 4px rgba(212,175,55,0.12); }
+          0%,100% { box-shadow: 0 0 0 0 rgba(195,173,133,0.3); }
+          50%      { box-shadow: 0 0 18px 4px rgba(195,173,133,0.12); }
         }
 
         .ct-h1 {
@@ -154,15 +154,15 @@ export default function Contact() {
           line-height: 1.04;
           letter-spacing: -0.025em;
           margin: 0;
-          color: #F4E4BC;
+          color: var(--text);
         }
         .ct-h1 span {
-          color: #D4AF37;
+          color: var(--accent-text);
         }
 
         .ct-desc {
           font-size: 1rem;
-          color: rgba(212,175,55,0.4);
+          color: var(--text-muted);
           margin: 0;
           max-width: 480px;
           line-height: 1.7;
@@ -172,13 +172,13 @@ export default function Contact() {
         /* ── CARD principal ── */
         .ct-card {
           border-radius: 32px;
-          border: 1px solid rgba(212,175,55,0.18);
-          background: #242422;
+          border: 1px solid var(--border);
+          background: var(--surface);
           overflow: hidden;
           display: grid;
           grid-template-columns: 1fr 1px 1fr;
           box-shadow:
-            inset 0 1px 0 rgba(212,175,55,0.08),
+            inset 0 1px 0 rgba(195,173,133,0.08),
             0 48px 100px rgba(0,0,0,0.55);
 
           opacity: 0;
@@ -191,7 +191,7 @@ export default function Contact() {
 
         /* divisor vertical dorado */
         .ct-divider {
-          background: linear-gradient(to bottom, transparent, rgba(212,175,55,0.2) 20%, rgba(212,175,55,0.2) 80%, transparent);
+          background: linear-gradient(to bottom, transparent, rgba(195,173,133,0.2) 20%, rgba(195,173,133,0.2) 80%, transparent);
         }
 
         /* ── PANEL COMPARTIDO ── */
@@ -210,7 +210,7 @@ export default function Contact() {
           font-weight: 700;
           letter-spacing: 0.3em;
           text-transform: uppercase;
-          color: #D4AF37;
+          color: var(--text-muted);
           margin-bottom: 24px;
           display: flex;
           align-items: center;
@@ -218,7 +218,7 @@ export default function Contact() {
         }
         .ct-eyebrow::before {
           content: ''; width: 26px; height: 1px;
-          background: #D4AF37; display: block; flex-shrink: 0;
+          background: var(--accent); display: block; flex-shrink: 0;
         }
 
         .ct-left-title {
@@ -227,12 +227,12 @@ export default function Contact() {
           line-height: 1.05;
           letter-spacing: -0.025em;
           margin: 0 0 10px;
-          color: #D4AF37;
+          color: var(--text);
         }
 
         .ct-left-sub {
           font-size: 0.8rem;
-          color: rgba(212,175,55,0.35);
+          color: var(--text-muted);
           margin: 0 0 44px;
           letter-spacing: 0.04em;
         }
@@ -249,8 +249,8 @@ export default function Contact() {
           align-items: center;
           gap: 14px;
           padding: 15px 16px;
-          background: rgba(212,175,55,0.03);
-          border: 1px solid rgba(212,175,55,0.1);
+          background: var(--surface-2);
+          border: 1px solid var(--border);
           border-radius: 14px;
           cursor: pointer;
           text-decoration: none;
@@ -262,15 +262,15 @@ export default function Contact() {
           content: '';
           position: absolute;
           left: 0; top: 0; bottom: 0; width: 3px;
-          background: #D4AF37;
+          background: var(--accent);
           transform: scaleY(0);
           transition: transform 0.25s cubic-bezier(0.23,1,0.32,1);
           transform-origin: center;
         }
         .ct-method:hover {
-          border-color: rgba(212,175,55,0.28);
+          border-color: rgba(195,173,133,0.28);
           transform: translateX(6px);
-          background: rgba(212,175,55,0.06);
+          background: rgba(195,173,133,0.06);
           box-shadow: 0 6px 20px rgba(0,0,0,0.3);
         }
         .ct-method:hover::after { transform: scaleY(1); }
@@ -283,34 +283,34 @@ export default function Contact() {
           transition: all 0.28s ease;
         }
         .ct-icon.wa { background: rgba(16,185,129,0.12); }
-        .ct-icon.gm { background: rgba(212,175,55,0.1); border: 1px solid rgba(212,175,55,0.14); }
+        .ct-icon.gm { background: rgba(195,173,133,0.1); border: 1px solid rgba(195,173,133,0.14); }
         .ct-icon.ig { background: rgba(193,53,132,0.12); }
         .ct-method:hover .ct-icon.wa { background: rgba(16,185,129,0.2); box-shadow: 0 0 16px rgba(16,185,129,0.2); }
-        .ct-method:hover .ct-icon.gm { background: rgba(212,175,55,0.18); box-shadow: 0 0 16px rgba(212,175,55,0.15); }
+        .ct-method:hover .ct-icon.gm { background: rgba(195,173,133,0.18); box-shadow: 0 0 16px rgba(195,173,133,0.15); }
         .ct-method:hover .ct-icon.ig { background: rgba(193,53,132,0.2); box-shadow: 0 0 16px rgba(193,53,132,0.2); }
 
-        .ct-mlabel   { font-size: 0.9rem; font-weight: 600; color: #F4E4BC; display: block; }
-        .ct-msub     { font-size: 0.7rem; color: rgba(212,175,55,0.32); display: block; margin-top: 2px; }
+        .ct-mlabel   { font-size: 0.9rem; font-weight: 600; color: var(--text); display: block; }
+        .ct-msub     { font-size: 0.7rem; color: var(--text-muted); display: block; margin-top: 2px; }
 
         .ct-marrow {
           margin-left: auto; font-size: 1rem;
-          color: rgba(212,175,55,0.18);
+          color: var(--text-muted);
           transition: all 0.25s ease; flex-shrink: 0;
         }
-        .ct-method:hover .ct-marrow { color: #D4AF37; transform: translateX(4px); }
+        .ct-method:hover .ct-marrow { color: var(--accent); transform: translateX(4px); }
 
         .ct-avail {
           margin-top: 36px;
           padding-top: 24px;
-          border-top: 1px solid rgba(212,175,55,0.08);
+          border-top: 1px solid var(--border);
           display: flex; align-items: center; gap: 8px;
           font-size: 0.7rem;
-          color: rgba(212,175,55,0.32);
+          color: var(--text-muted);
           letter-spacing: 0.06em;
         }
         .ct-dot {
           width: 7px; height: 7px; border-radius: 50%;
-          background: #10b981; flex-shrink: 0;
+          background: var(--success); flex-shrink: 0;
           box-shadow: 0 0 8px rgba(16,185,129,0.7);
           animation: dotPulse 2s ease-in-out infinite;
         }
@@ -321,7 +321,7 @@ export default function Contact() {
 
         /* ── RIGHT / FORM ── */
         .ct-right {
-          background: #272725;
+          background: var(--surface-2);
           display: flex;
           flex-direction: column;
           position: relative;
@@ -332,13 +332,13 @@ export default function Contact() {
           font-weight: 700;
           letter-spacing: 0.3em;
           text-transform: uppercase;
-          color: rgba(212,175,55,0.38);
+          color: var(--text-muted);
           margin-bottom: 32px;
           display: flex; align-items: center; gap: 12px;
         }
         .ct-flabel::after {
           content: ''; flex: 1; height: 1px;
-          background: rgba(212,175,55,0.1);
+          background: var(--border);
         }
 
         .ct-field { margin-bottom: 18px; }
@@ -347,11 +347,11 @@ export default function Contact() {
           display: block;
           font-size: 0.64rem; font-weight: 700;
           letter-spacing: 0.16em; text-transform: uppercase;
-          color: rgba(212,175,55,0.42);
+          color: var(--text-muted);
           margin-bottom: 7px;
           transition: color 0.2s;
         }
-        .ct-field:focus-within .ct-field-label { color: #D4AF37; }
+        .ct-field:focus-within .ct-field-label { color: var(--accent-text); }
 
         .ct-iw { position: relative; }
 
@@ -359,18 +359,18 @@ export default function Contact() {
           position: absolute; left: 13px; top: 50%;
           transform: translateY(-50%);
           width: 15px; height: 15px;
-          color: rgba(212,175,55,0.2);
+          color: var(--text-muted);
           pointer-events: none; transition: color 0.2s;
         }
         .ct-txi { top: 15px; transform: none; }
-        .ct-field:focus-within .ct-ii { color: #D4AF37; }
+        .ct-field:focus-within .ct-ii { color: var(--accent); }
 
         .ct-input, .ct-ta {
           width: 100%;
-          background: #222220;
-          border: 1px solid rgba(212,175,55,0.12);
+          background: var(--surface);
+          border: 1px solid var(--border-strong);
           border-radius: 11px;
-          color: #F4E4BC;
+          color: var(--text);
           font-family: inherit;
           font-size: 0.9rem;
           outline: none;
@@ -378,12 +378,12 @@ export default function Contact() {
           transition: border-color 0.22s, box-shadow 0.22s, background 0.22s;
         }
         .ct-input:focus, .ct-ta:focus {
-          border-color: #D4AF37;
-          background: #252523;
-          box-shadow: 0 0 0 3px rgba(212,175,55,0.12);
+          border-color: var(--accent);
+          background: var(--surface);
+          box-shadow: 0 0 0 3px rgba(195,173,133,0.12);
         }
         .ct-input::placeholder, .ct-ta::placeholder {
-          color: rgba(212,175,55,0.17);
+          color: var(--text-muted);
         }
         .ct-ta {
           resize: vertical; min-height: 130px;
@@ -391,7 +391,7 @@ export default function Contact() {
         }
         .ct-char {
           position: absolute; bottom: 10px; right: 12px;
-          font-size: 0.62rem; color: rgba(212,175,55,0.16);
+          font-size: 0.62rem; color: var(--text-muted);
           pointer-events: none;
         }
 
@@ -402,30 +402,30 @@ export default function Contact() {
 
         .ct-btn {
           flex: 1; padding: 15px 24px;
-          background: #D4AF37;
+          background: var(--accent);
           border: none; border-radius: 11px;
-          color: #0B1D33;
+          color: var(--on-accent);
           font-family: inherit; font-size: 0.82rem;
           font-weight: 800; letter-spacing: 0.1em;
           text-transform: uppercase; cursor: pointer;
           display: flex; align-items: center;
           justify-content: center; gap: 10px;
           transition: all 0.28s cubic-bezier(0.23,1,0.32,1);
-          box-shadow: 0 4px 24px rgba(212,175,55,0.35);
+          box-shadow: 0 4px 24px rgba(195,173,133,0.35);
           position: relative; overflow: hidden;
         }
-        .ct-btn:hover { transform: translateY(-3px); box-shadow: 0 10px 36px rgba(212,175,55,0.5); background: #e8c84a; }
+        .ct-btn:hover { transform: translateY(-3px); box-shadow: 0 10px 36px rgba(195,173,133,0.5); background: var(--brand-bronze); }
         .ct-btn:active { transform: translateY(0); }
 
         .ct-hint {
-          font-size: 0.66rem; color: rgba(212,175,55,0.2);
+          font-size: 0.66rem; color: var(--text-muted);
           text-align: right; line-height: 1.6; flex-shrink: 0;
         }
         .ct-btn:disabled { opacity: 0.7; cursor: not-allowed; transform: none !important; }
         .ct-spinner {
           width: 14px; height: 14px; border-radius: 50%;
-          border: 2px solid rgba(11,29,51,0.3);
-          border-top-color: #0B1D33;
+          border: 2px solid rgba(31,31,30,0.3);
+          border-top-color: var(--on-accent);
           animation: ct-spin 0.7s linear infinite;
           flex-shrink: 0;
         }
@@ -438,7 +438,7 @@ export default function Contact() {
         /* ── SUCCESS ── */
         .ct-success {
           position: absolute; inset: 0;
-          background: #272725;
+          background: var(--surface-2);
           display: flex; flex-direction: column;
           align-items: center; justify-content: center;
           z-index: 20;
@@ -451,7 +451,7 @@ export default function Contact() {
 
         .ct-sring {
           width: 88px; height: 88px; border-radius: 50%;
-          border: 2px solid rgba(212,175,55,0.45);
+          border: 2px solid rgba(195,173,133,0.45);
           display: flex; align-items: center; justify-content: center;
           margin-bottom: 24px; position: relative;
           animation: ctRingIn 0.55s 0.1s cubic-bezier(0.34,1.56,0.64,1) both;
@@ -462,7 +462,7 @@ export default function Contact() {
         }
         .ct-sring::before, .ct-sring::after {
           content: ''; position: absolute; inset: -14px;
-          border: 1.5px solid #D4AF37;
+          border: 1.5px solid var(--accent);
           border-radius: 50%; opacity: 0;
           animation: ctRingExp 2.2s ease-out infinite;
         }
@@ -472,7 +472,7 @@ export default function Contact() {
           100% { transform: scale(2.4); opacity: 0; }
         }
 
-        .ct-check { color: #D4AF37; animation: ctPop 0.35s 0.5s both; }
+        .ct-check { color: var(--accent); animation: ctPop 0.35s 0.5s both; }
         @keyframes ctPop {
           from { transform: scale(0); opacity: 0; }
           to   { transform: scale(1); opacity: 1; }
@@ -480,12 +480,12 @@ export default function Contact() {
 
         .ct-stitle {
           font-size: 2.2rem; font-weight: 900;
-          color: #D4AF37;
+          color: var(--text);
           margin: 0 0 8px;
           animation: ctUp 0.4s 0.6s both;
         }
         .ct-ssub {
-          font-size: 0.75rem; color: rgba(212,175,55,0.32);
+          font-size: 0.75rem; color: var(--text-muted);
           letter-spacing: 0.12em;
           animation: ctUp 0.4s 0.7s both;
         }
@@ -505,7 +505,7 @@ export default function Contact() {
           .ct-divider {
             width: 100%;
             height: 1px;
-            background: linear-gradient(to right, transparent, rgba(212,175,55,0.2) 20%, rgba(212,175,55,0.2) 80%, transparent);
+            background: linear-gradient(to right, transparent, rgba(195,173,133,0.2) 20%, rgba(195,173,133,0.2) 80%, transparent);
           }
 
           .ct-left { padding: 40px 32px 36px; }
@@ -650,7 +650,7 @@ export default function Contact() {
 
                 <button className="ct-method" onClick={handleGmail}>
                   <div className="ct-icon gm">
-                    <Mail width={18} height={18} color="#D4AF37" />
+                    <Mail width={18} height={18} color="var(--accent)" />
                   </div>
                   <div>
                     <span className="ct-mlabel">{t.contact.emailLabel}</span>

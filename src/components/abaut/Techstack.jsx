@@ -74,7 +74,7 @@ export default function TechStack() {
         .bt-section {
           width: 100%;
           padding: 120px 48px 140px;
-          font-family: 'Outfit', sans-serif;
+          font-family: var(--font-body);
           background: transparent;
           box-sizing: border-box;
         }
@@ -88,19 +88,19 @@ export default function TechStack() {
           font-size: 0.72rem;
           letter-spacing: 0.3em;
           text-transform: uppercase;
-          color: #D4AF37;
+          color: var(--text-muted);
           margin: 0 0 16px;
           opacity: 0.9;
         }
         .bt-title {
           font-size: clamp(2rem, 5vw, 3.5rem);
           font-weight: 700;
-          color: #fff;
+          color: var(--text);
           margin: 0;
           line-height: 1.15;
         }
         .bt-gold {
-          color: #D4AF37;
+          color: var(--accent-text);
           font-weight: 300;
         }
 
@@ -121,15 +121,15 @@ export default function TechStack() {
         /* ── Card ── */
         .bt-card {
           background: rgba(11, 29, 51, 0.65);
-          border: 1px solid rgba(212, 175, 55, 0.1);
+          border: 1px solid rgba(195, 173, 133, 0.1);
           border-radius: 22px;
           padding: 36px 32px;
           backdrop-filter: blur(8px);
           transition: border-color 0.35s ease, box-shadow 0.35s ease, transform 0.35s ease;
         }
         .bt-card:hover {
-          border-color: rgba(212, 175, 55, 0.35);
-          box-shadow: 0 12px 48px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(212,175,55,0.08);
+          border-color: rgba(195, 173, 133, 0.35);
+          box-shadow: 0 12px 48px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(195,173,133,0.08);
           transform: translateY(-6px);
         }
 
@@ -146,7 +146,7 @@ export default function TechStack() {
           font-size: 0.65rem;
           letter-spacing: 0.24em;
           text-transform: uppercase;
-          color: #D4AF37;
+          color: var(--accent);
           opacity: 0.75;
           margin-bottom: 22px;
         }

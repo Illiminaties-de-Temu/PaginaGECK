@@ -11,7 +11,7 @@
 Sitio web corporativo de **Geck Codex**, agencia de desarrollo de tecnologia ubicada en Parral, Chihuahua, Mexico. Diseno premium orientado a captacion de clientes: muestra servicios, portafolio, equipo y contacto.
 
 - URL produccion: https://geckcodex.com
-- Contacto: geckcodexoficial@gmail.com | WhatsApp +52-627-174-5436
+- Contacto: ventas@geckcodex.com | WhatsApp +52-627-174-5436
 - Rama activa: `astro` (es la rama principal de desarrollo y produccion)
 
 ---

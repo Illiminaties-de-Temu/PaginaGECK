@@ -96,6 +96,22 @@ export default function Header() {
           opacity: 0;
           transition: opacity 1.4s ease;
           will-change: opacity, transform;
+          z-index: 5; /* por encima del canvas del modelo 3D */
+        }
+
+        /* Velo radial suave detrás del texto para legibilidad sobre el modelo */
+        .hdr::before {
+          content: '';
+          position: absolute;
+          inset: -18% -10%;
+          z-index: -1;
+          background: radial-gradient(
+            ellipse at center,
+            rgba(5, 13, 26, 0.55) 0%,
+            rgba(5, 13, 26, 0.32) 45%,
+            transparent 75%
+          );
+          pointer-events: none;
         }
 
         /* ── Eyebrow ── */
@@ -104,7 +120,7 @@ export default function Header() {
           font-weight: 600;
           letter-spacing: 0.28em;
           text-transform: uppercase;
-          color: #D4AF37;
+          color: var(--accent);
           opacity: 0.85;
           margin-bottom: 1.25rem;
         }
@@ -120,7 +136,7 @@ export default function Header() {
         }
         .hdr__title-accent {
           display: block;
-          color: #D4AF37;
+          color: var(--accent);
           font-weight: 300;
         }
 
@@ -164,9 +180,9 @@ export default function Header() {
         }
 
         .hdr__cta--solid {
-          background: #D4AF37;
+          background: var(--accent);
           color: #0B1D33;
-          border: 1px solid #D4AF37;
+          border: 1px solid var(--accent);
         }
 
         .hdr__cta--ghost {
@@ -187,6 +203,7 @@ export default function Header() {
           gap: 0.4rem;
           color: rgba(244, 228, 188, 0.35);
           opacity: 0;
+          z-index: 5;
           will-change: opacity;
           animation: hdr-scroll-in 1s ease-out 1.8s both,
                      hdr-scroll-bob 2.5s ease-in-out 2.8s infinite;

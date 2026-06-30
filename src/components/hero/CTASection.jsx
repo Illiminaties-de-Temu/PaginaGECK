@@ -88,7 +88,7 @@ export default function CTASection() {
           transform: translate(-50%, -50%);
           width: 600px;
           height: 400px;
-          background: radial-gradient(ellipse at center, rgba(212, 175, 55, 0.08) 0%, transparent 70%);
+          background: radial-gradient(ellipse at center, rgba(195, 173, 133, 0.08) 0%, transparent 70%);
           pointer-events: none;
         }
 
@@ -106,7 +106,7 @@ export default function CTASection() {
           font-weight: 600;
           letter-spacing: 0.22em;
           text-transform: uppercase;
-          color: #D4AF37;
+          color: var(--accent);
           margin-bottom: 1.5rem;
         }
 
@@ -120,7 +120,7 @@ export default function CTASection() {
         }
 
         .cta-section__headline-accent {
-          color: #D4AF37;
+          color: var(--accent);
         }
 
         .cta-section__sub {
@@ -153,15 +153,15 @@ export default function CTASection() {
         }
 
         .cta-section__btn--primary {
-          background: #D4AF37;
+          background: var(--accent);
           color: #0B1D33;
-          border: 1px solid #D4AF37;
-          box-shadow: 0 0 24px rgba(212, 175, 55, 0.25);
+          border: 1px solid var(--accent);
+          box-shadow: 0 0 24px rgba(195, 173, 133, 0.25);
         }
 
         .cta-section__btn--primary:hover {
           transform: translateY(-2px);
-          box-shadow: 0 0 36px rgba(212, 175, 55, 0.45);
+          box-shadow: 0 0 36px rgba(195, 173, 133, 0.45);
         }
 
         .cta-section__btn--primary svg {

@@ -1,25 +1,94 @@
 @import "tailwindcss";
 
+/* ════════════════════════════════════════════════════════════
+   SISTEMA DE DISEÑO — TOKENS DE TEMA (light / dark)
+   El tema se controla con [data-theme] en <html>.
+   Regla del oro: --accent es constante en ambos modos y solo
+   acento funcional. El oro NUNCA es texto sobre fondo claro:
+   para "oro como texto" usar --accent-text. Texto sobre oro = tinta.
+   ════════════════════════════════════════════════════════════ */
+
+/* ── Constantes de marca (theme-invariant) ── */
 :root {
-  /* Azules (jerarquía más clara) */
-  --navy-dark: #0B1D33;
-  --navy: #0b1f49;
-  --navy-light: #0c1e3c;
+  --brand-navy: #0D1625;
+  --brand-gold: #C3AD85;
+  --brand-bronze: #957952;
+  --brand-ivory: #F5F1E8;
+  --brand-ink: #1F1F1E;
+}
+
+/* ── LIGHT (default) — limpio, de producto ── */
+:root {
+  --background: #F8F9FA;
+  --surface: #FFFFFF;
+  --surface-2: #F1F3F5;
+  --text: #1F1F1E;
+  --text-muted: #5B6470;
+  --border: #E6E8EB;
+  --border-strong: #DDE1E6;
+  --accent: #C3AD85;
+  --on-accent: #1F1F1E;
+  --accent-text: #6F5B33;
+  --success: #2E9E6B;
+  --nav-bg: #FFFFFF;
+  --nav-text: #1F1F1E;
+  --nav-border: #E6E8EB;
+  --btn-primary-bg: #0D1625;
+  --btn-primary-text: #FFFFFF;
+  --btn-primary-hover: #16223A;
+}
+
+/* ── DARK — fondo tinta #1F1F1E ── */
+:root[data-theme="dark"] {
+  --background: #1F1F1E;
+  --surface: #2A2A28;
+  --surface-2: #323230;
+  --text: #F5F1E8;
+  --text-muted: #B5B5B5;
+  --border: #3A3A36;
+  --border-strong: #46453F;
+  --accent: #C3AD85;
+  --on-accent: #1F1F1E;
+  --accent-text: #C3AD85;
+  --success: #4FB98A;
+  --nav-bg: #0D1625;
+  --nav-text: #F5F1E8;
+  --nav-border: #C3AD85;
+  --btn-primary-bg: #C3AD85;
+  --btn-primary-text: #1F1F1E;
+  --btn-primary-hover: #B49E73;
+}
+
+:root {
+  /* ── Aliases legacy → tokens (mantienen vivos los componentes
+     que ya usan estas variables; el oro/navy son theme-invariant) ── */
+  --navy-dark: var(--brand-navy);
+  --navy: var(--brand-navy);
+  --navy-light: #16223A;
   --navy-medium: #2A3441;
   --accent-blue: #1B365D;
 
-  /* Dorados (mayor rango) */
-  --gold: #D4AF37;
-  --gold-light: #F4E4BC;
-  --gold-dark: #B8941F;
-  --gold-muted: #928250;
+  --gold: var(--accent);
+  --gold-light: var(--brand-ivory);
+  --gold-dark: var(--brand-bronze);
+  --gold-muted: var(--brand-bronze);
 
-  /* Neutrales Ampliados */
-  --black: #1E1E1E;
+  --black: var(--brand-ink);
   --carbon: #2B2B2B;
   --white: #FFFFFF;
-  --white-soft: #F8F9FA;
-  --text-muted: #6B7280;
+  --white-soft: #F8FAFC;
+
+  /* Tipografía */
+  --font-display: 'Space Grotesk', system-ui, sans-serif; /* títulos */
+  --font-body: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; /* cuerpo */
+}
+
+/* ── Transición suave SOLO de color al cambiar de tema ── */
+@media (prefers-reduced-motion: no-preference) {
+  *, *::before, *::after {
+    transition: background-color 300ms ease, border-color 300ms ease,
+                color 300ms ease, fill 300ms ease, stroke 300ms ease;
+  }
 }
 
 * {
@@ -31,9 +100,16 @@
 body {
   margin: 0;
   padding: 0;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-  background-color: var(--navy-dark);
-  color: var(--white-soft);
+  font-family: var(--font-body);
+  background-color: var(--background);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  letter-spacing: -0.01em;
 }
 
 main {

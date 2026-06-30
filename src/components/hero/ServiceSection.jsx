@@ -167,7 +167,7 @@ export default function ServiceSection({
         .service-section__title {
           font-size: clamp(3rem, 6vw, 5rem);
           font-weight: 900;
-          color: #D4AF37;
+          color: var(--accent);
           margin-bottom: 20px;
           text-transform: uppercase;
           line-height: 1;
@@ -185,15 +185,15 @@ export default function ServiceSection({
           align-items: center;
           gap: 15px;
           padding: 15px 35px;
-          border: 2px solid #D4AF37;
-          color: #D4AF37;
+          border: 2px solid var(--accent);
+          color: var(--accent);
           text-decoration: none;
           font-weight: bold;
           transition: all 0.3s ease;
         }
 
         .service-section__button:hover {
-          background: #D4AF37;
+          background: var(--accent);
           color: #030c1d;
         }
 

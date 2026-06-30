@@ -240,10 +240,10 @@ export default function ValuesSection() {
           align-items: center;
           gap: 0.5rem;
           padding: 0.5rem 1rem;
-          background: rgba(212, 175, 55, 0.1);
-          border: 1px solid rgba(212, 175, 55, 0.3);
+          background: rgba(195, 173, 133, 0.1);
+          border: 1px solid rgba(195, 173, 133, 0.3);
           border-radius: 50px;
-          color: #d4af37;
+          color: var(--accent);
           font-size: 0.9rem;
           font-weight: 600;
         }
@@ -258,7 +258,7 @@ export default function ValuesSection() {
         }
 
         .values-section__title-highlight {
-          background: linear-gradient(135deg, #d4af37 0%, #f4d03f 100%);
+          background: linear-gradient(135deg, var(--accent) 0%, #f4d03f 100%);
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
           background-clip: text;
@@ -285,7 +285,7 @@ export default function ValuesSection() {
           position: relative;
           padding: 3rem;
           background: rgba(27, 54, 93, 0.3);
-          border: 1px solid rgba(212, 175, 55, 0.2);
+          border: 1px solid rgba(195, 173, 133, 0.2);
           border-radius: 24px;
           backdrop-filter: blur(10px);
           overflow: hidden;
@@ -316,8 +316,8 @@ export default function ValuesSection() {
         /* Hover SIN brillos - solo movimiento y borde */
         .values-card:hover {
           transform: translateY(-10px) scale(1.02) !important;
-          border-color: rgba(212, 175, 55, 0.5);
-          box-shadow: 0 20px 60px rgba(212, 175, 55, 0.2);
+          border-color: rgba(195, 173, 133, 0.5);
+          box-shadow: 0 20px 60px rgba(195, 173, 133, 0.2);
         }
 
         /* Resplandor SOLO durante animación de entrada */
@@ -326,7 +326,7 @@ export default function ValuesSection() {
           inset: -2px;
           background: linear-gradient(135deg, 
             transparent, 
-            rgba(212, 175, 55, 0.3), 
+            rgba(195, 173, 133, 0.3), 
             transparent
           );
           border-radius: 24px;
@@ -341,10 +341,10 @@ export default function ValuesSection() {
           display: flex;
           align-items: center;
           justify-content: center;
-          background: rgba(212, 175, 55, 0.1);
-          border: 2px solid rgba(212, 175, 55, 0.3);
+          background: rgba(195, 173, 133, 0.1);
+          border: 2px solid rgba(195, 173, 133, 0.3);
           border-radius: 20px;
-          color: #d4af37;
+          color: var(--accent);
           margin-bottom: 2rem;
           transition: background 0.4s ease, border-color 0.4s ease;
           will-change: transform, opacity;
@@ -352,8 +352,8 @@ export default function ValuesSection() {
 
         .values-card:hover .values-card__icon {
           transform: scale(1.1) rotate(5deg) !important;
-          background: rgba(212, 175, 55, 0.2);
-          border-color: rgba(212, 175, 55, 0.5);
+          background: rgba(195, 173, 133, 0.2);
+          border-color: rgba(195, 173, 133, 0.5);
         }
 
         /* Title */
@@ -366,7 +366,7 @@ export default function ValuesSection() {
         }
 
         .values-card:hover .values-card__title {
-          color: #d4af37;
+          color: var(--accent);
         }
 
         /* Description */
@@ -382,7 +382,7 @@ export default function ValuesSection() {
           position: absolute;
           width: 20px;
           height: 20px;
-          border: 2px solid #d4af37;
+          border: 2px solid var(--accent);
           transition: top 0.4s ease, left 0.4s ease, bottom 0.4s ease, right 0.4s ease;
           will-change: transform, opacity;
         }

@@ -28,8 +28,37 @@ const twitterHandle = '@geckcodex';
 <html lang="es">
   <head>
     <meta charset="UTF-8" />
+
+    <!-- ═══════════════════════════════════════
+         TEMA — no-flash (corre ANTES del CSS)
+         Lee localStorage; si no hay, usa prefers-color-scheme.
+    ═══════════════════════════════════════ -->
+    <script is:inline>
+      (function () {
+        try {
+          var t = localStorage.getItem('geck-theme');
+          if (t !== 'light' && t !== 'dark') {
+            t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+          }
+          document.documentElement.setAttribute('data-theme', t);
+        } catch (e) {
+          document.documentElement.setAttribute('data-theme', 'dark');
+        }
+      })();
+    </script>
+
     <meta name="google-site-verification" content="zQdCDQH6eJc4lniZPIcpINIApecX4D-fwU3IgfSA2YQ" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- ═══════════════════════════════════════
+         TIPOGRAFÍA — Space Grotesk (títulos) + Inter (cuerpo)
+    ═══════════════════════════════════════ -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap"
+    />
 
     <!-- ═══════════════════════════════════════
          BÁSICO SEO
@@ -88,7 +117,7 @@ const twitterHandle = '@geckcodex';
           "@type": "ContactPoint",
           "telephone": "+52-627-174-5436",
           "contactType": "customer service",
-          "email": "geckcodexoficial@gmail.com",
+          "email": "ventas@geckcodex.com",
           "availableLanguage": ["Spanish", "English"]
         },
         "sameAs": [

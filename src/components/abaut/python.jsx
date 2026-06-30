@@ -257,7 +257,7 @@ export default function PythonTerminal() {
         .py-terminal {
           background: linear-gradient(135deg, rgba(15,23,42,0.92), rgba(0,0,0,0.96));
           border-radius: 1rem;
-          border: 2px solid rgba(212,175,55,0.38);
+          border: 2px solid rgba(195,173,133,0.38);
           box-shadow: 0 10px 40px rgba(0,0,0,0.4);
           overflow: hidden;
           will-change: auto;
@@ -270,14 +270,14 @@ export default function PythonTerminal() {
           display: flex;
           align-items: center;
           gap: 1rem;
-          border-bottom: 1px solid rgba(212,175,55,0.28);
+          border-bottom: 1px solid rgba(195,173,133,0.28);
         }
         .py-dots { display: flex; gap: .45rem; }
         .py-dot  { width: .72rem; height: .72rem; border-radius: 50%; }
         .py-dot--red    { background: #ef4444; }
         .py-dot--yellow { background: #eab308; }
         .py-dot--green  { background: #22c55e; }
-        .py-title { color: #d4af37; font-size: .78rem; font-family: monospace; }
+        .py-title { color: var(--accent); font-size: .78rem; font-family: monospace; }
 
         /* Cuerpo */
         .py-body {
@@ -309,15 +309,15 @@ export default function PythonTerminal() {
           white-space: pre;
         }
         .py-snake-line { line-height: 1; white-space: pre; position: relative; }
-        .snake-head   { color: #d4af37; }
+        .snake-head   { color: var(--accent); }
         .snake-tongue { color: #f4d03f; }
-        .snake-body   { color: #d4af37; }
+        .snake-body   { color: var(--accent); }
         .snake-tail   { color: #b8921f; }
 
         .py-eye {
           position: absolute;
-          color: #d4af37;
-          text-shadow: 0 0 10px #d4af37;
+          color: var(--accent);
+          text-shadow: 0 0 10px var(--accent);
           left: 60%;
           top: 50%;
           animation: py-pulse 2s infinite;
@@ -326,7 +326,7 @@ export default function PythonTerminal() {
           display: inline-block;
           width: .45rem;
           height: .9rem;
-          background: #d4af37;
+          background: var(--accent);
           margin-left: .25rem;
           vertical-align: text-bottom;
           animation: py-blink 1.2s step-end infinite;
@@ -337,7 +337,7 @@ export default function PythonTerminal() {
           display: flex;
           flex-direction: column;
           gap: .7rem;
-          color: rgba(212,175,55,.72);
+          color: rgba(195,173,133,.72);
           font-size: .78rem;
           align-items: center;
         }
@@ -351,13 +351,13 @@ export default function PythonTerminal() {
         .py-footer {
           background: #222220;
           padding: 1.25rem 1.5rem;
-          border-top: 1px solid rgba(212,175,55,0.28);
+          border-top: 1px solid rgba(195,173,133,0.28);
           display: flex;
           justify-content: center;
         }
         .py-btn {
-          background: linear-gradient(135deg, #d4af37, #b8921f);
-          border: 2px solid #d4af37;
+          background: linear-gradient(135deg, var(--accent), #b8921f);
+          border: 2px solid var(--accent);
           color: #000;
           padding: .85rem 2rem;
           font-family: monospace;
@@ -369,7 +369,7 @@ export default function PythonTerminal() {
           align-items: center;
           gap: .75rem;
           transition: transform .2s ease, box-shadow .2s ease;
-          box-shadow: 0 4px 14px rgba(212,175,55,.28);
+          box-shadow: 0 4px 14px rgba(195,173,133,.28);
           position: relative;
           overflow: hidden;
         }
@@ -382,7 +382,7 @@ export default function PythonTerminal() {
           transition: transform .5s ease;
         }
         .py-btn:hover::before { transform: translateX(100%); }
-        .py-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 22px rgba(212,175,55,.45); }
+        .py-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 22px rgba(195,173,133,.45); }
         .py-btn__icon { animation: py-pulse 2s infinite; }
 
         /* Keyframes */
