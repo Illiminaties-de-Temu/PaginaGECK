@@ -90,17 +90,21 @@ export default function Contact() {
           font-family: inherit;
         }
 
-        /* respira suave — igual que ProcessTimeline */
+        /* Orbes dorados de fondo — mismo lenguaje que Servicios/Portafolio */
         .ct-bg {
           position: absolute;
           inset: 0;
-          background: radial-gradient(ellipse 70% 50% at 50% 50%, rgba(195,173,133,0.05), transparent);
-          animation: ctBreathe 8s ease-in-out infinite;
           pointer-events: none;
+          overflow: hidden;
         }
-        @keyframes ctBreathe {
-          0%,100% { opacity: 0.3; transform: scale(1); }
-          50%      { opacity: 0.7; transform: scale(1.08); }
+        .ct-bg::before, .ct-bg::after { content: ''; position: absolute; border-radius: 50%; }
+        .ct-bg::before {
+          width: 80vw; height: 60vw; top: -18%; left: 50%; transform: translateX(-50%);
+          background: radial-gradient(ellipse at center, rgba(195,173,133,0.06) 0%, transparent 60%);
+        }
+        .ct-bg::after {
+          width: 55vw; height: 55vw; bottom: 2%; right: -15%;
+          background: radial-gradient(circle at center, rgba(195,173,133,0.04) 0%, transparent 65%);
         }
 
         .ct-wrap {
@@ -170,17 +174,13 @@ export default function Contact() {
         }
 
         /* ── CARD principal ── */
+        /* Sin tarjeta flotante: las dos columnas viven sobre el fondo,
+           separadas por un divisor dorado fino (look inmersivo del sitio). */
         .ct-card {
-          border-radius: 32px;
-          border: 1px solid var(--border);
-          background: var(--surface);
-          overflow: hidden;
           display: grid;
           grid-template-columns: 1fr 1px 1fr;
-          box-shadow:
-            inset 0 1px 0 rgba(195,173,133,0.08),
-            0 48px 100px rgba(0,0,0,0.55);
-
+          max-width: 1040px;
+          margin: 0 auto;
           opacity: 0;
           transform: translateY(50px);
           transition: opacity 0.8s cubic-bezier(0.23,1,0.32,1) 0.15s, transform 0.8s cubic-bezier(0.23,1,0.32,1) 0.15s;
@@ -321,7 +321,6 @@ export default function Contact() {
 
         /* ── RIGHT / FORM ── */
         .ct-right {
-          background: var(--surface-2);
           display: flex;
           flex-direction: column;
           position: relative;

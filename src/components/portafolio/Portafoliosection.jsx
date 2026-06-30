@@ -2,11 +2,13 @@ import { useState, useEffect, useRef, forwardRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage } from '../../hooks/useLanguage';
 
+/* Acentos de categoría dentro de la paleta oro/bronce (sin arcoíris),
+ * consistentes con el ProjectCarousel de la home. */
 const CAT_COLORS = {
-  landing:  { accent: '#e879f9', border: 'rgba(232,121,249,0.35)' },
-  mobile:   { accent: '#60a5fa', border: 'rgba(96,165,250,0.35)'  },
-  webapp:   { accent: '#34d399', border: 'rgba(52,211,153,0.35)'  },
-  software: { accent: '#a78bfa', border: 'rgba(167,139,250,0.35)' },
+  landing:  { accent: '#C3AD85', border: 'rgba(195,173,133,0.35)' },
+  mobile:   { accent: '#D9C49A', border: 'rgba(217,196,154,0.35)' },
+  webapp:   { accent: '#957952', border: 'rgba(149,121,82,0.35)'  },
+  software: { accent: '#B5A079', border: 'rgba(181,160,121,0.35)' },
 };
 
 const PROJECTS_STATIC = [
@@ -38,7 +40,9 @@ const PROJECTS_STATIC = [
  *           dentro de ±focus la tarjeta NO se difumina (más fácil de observar) */
 const CONF = {
   desktop: { angle: 46, radius: 430, pitch: 268, window: 2.6, minScale: 0.5,  blur: 7, focus: 0.62 },
-  mobile:  { angle: 38, radius: 170, pitch: 212, window: 2.2, minScale: 0.62, blur: 0, focus: 0.55 },
+  /* Móvil afinado para parecerse a desktop: radio amplio (separa las tarjetas
+   * en vez de encimarlas) + blur de profundidad para destacar la central. */
+  mobile:  { angle: 44, radius: 300, pitch: 230, window: 2.0, minScale: 0.56, blur: 5, focus: 0.58 },
 };
 const SCROLL_PER_CARD = 44; // vh de scroll que avanza el tornillo por proyecto
 
@@ -170,10 +174,10 @@ const Card = forwardRef(function Card({ project, meta, onOpen, viewMore, variant
     <article
       ref={ref}
       className={`scard scard--${variant}`}
-      onClick={() => onOpen(project)}
+      onClick={(e) => { e.stopPropagation(); onOpen(project); }}
       role="button"
       tabIndex={0}
-      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onOpen(project); } }}
+      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.stopPropagation(); onOpen(project); } }}
     >
       <div
         className="scard__media"
@@ -217,7 +221,7 @@ const Card = forwardRef(function Card({ project, meta, onOpen, viewMore, variant
  * Un solo listener de scroll + rAF posiciona las N tarjetas en el cilindro.
  * Se muta el DOM directamente (transform/opacity/zIndex) para no re-renderizar
  * React en cada frame. Cumple el patrón de parallax barato del proyecto.     */
-function useScrew({ enabled, count, refs, trackRef, railRef, hudNum, hudTitle, hudCat, projects, catMeta }) {
+function useScrew({ enabled, count, refs, trackRef, railRef, hudNum, hudTitle, hudCat, projects, catMeta, activeRef }) {
   useEffect(() => {
     if (!enabled || typeof window === 'undefined') return;
     let raf = 0;
@@ -272,6 +276,7 @@ function useScrew({ enabled, count, refs, trackRef, railRef, hudNum, hudTitle, h
       if (railRef.current) railRef.current.style.transform = `scaleY(${p.toFixed(4)})`;
 
       const active = clamp(Math.round(head), 0, count - 1);
+      if (activeRef) activeRef.current = active;
       if (active !== activeIdx) {
         activeIdx = active;
         const proj = projects[active];
@@ -295,7 +300,7 @@ function useScrew({ enabled, count, refs, trackRef, railRef, hudNum, hudTitle, h
       window.removeEventListener('resize', onScroll);
       if (raf) cancelAnimationFrame(raf);
     };
-  }, [enabled, count, refs, trackRef, railRef, hudNum, hudTitle, hudCat, projects, catMeta]);
+  }, [enabled, count, refs, trackRef, railRef, hudNum, hudTitle, hudCat, projects, catMeta, activeRef]);
 }
 
 /* ─── MAIN ──────────────────────────────────────────────────────────────── */
@@ -321,6 +326,7 @@ export default function PortfolioSection() {
   const hudNum = useRef(null);
   const hudTitle = useRef(null);
   const hudCat = useRef(null);
+  const activeRef = useRef(0); // índice del proyecto centrado (lo actualiza useScrew)
 
   useScrew({
     enabled: !reduced,
@@ -333,7 +339,13 @@ export default function PortfolioSection() {
     hudCat,
     projects: PROJECTS,
     catMeta,
+    activeRef,
   });
+
+  /* Abre el proyecto actualmente centrado. Se usa al hacer click en cualquier
+   * zona del escenario: como las tarjetas giran y rara vez quedan quietas en el
+   * centro, atinarles el click es difícil — así siempre se puede abrir el foco. */
+  const openActive = () => setSelected(PROJECTS[activeRef.current] || PROJECTS[0]);
 
   const first = PROJECTS[0];
 
@@ -387,7 +399,14 @@ export default function PortfolioSection() {
             ref={trackRef}
             style={{ height: `${(N - 1) * SCROLL_PER_CARD + 110}vh` }}
           >
-            <div className="screw__stage">
+            <div
+              className="screw__stage"
+              onClick={openActive}
+              role="button"
+              tabIndex={0}
+              aria-label={t.portfolio.viewMore}
+              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openActive(); } }}
+            >
               {/* eje / rosca central */}
               <div className="screw__axis" aria-hidden="true" />
 
@@ -524,6 +543,7 @@ export default function PortfolioSection() {
           overflow: hidden;
           perspective: 1200px;
           perspective-origin: 50% 50%;
+          cursor: pointer; /* todo el escenario abre el proyecto centrado */
         }
 
         /* eje central de la rosca */
@@ -802,7 +822,8 @@ export default function PortfolioSection() {
           .screw__hud-title { font-size: 1.1rem; }
           .screw__rail { height: 30vh; right: 0.7rem; }
           .gc-bento { grid-template-columns: 1fr; }
-          .gc-detail { padding: 0.75rem; align-items: flex-end; }
+          .gc-detail { padding: 1.25rem 0.9rem; align-items: center; }
+          .gc-detail__head { margin-bottom: 1.2rem; }
           .gc-detail__title { font-size: 1.9rem; }
           .gc-detail__wrap { max-width: 100%; }
         }

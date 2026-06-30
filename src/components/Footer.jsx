@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { Github, Instagram, Facebook, ArrowUp } from "lucide-react";
 
 function TikTokIcon({ size = 20 }) {
@@ -44,21 +44,41 @@ function DisperseFooterText({ text, isHovered }) {
 export default function GeckFooter() {
   const [hoveredIcon, setHoveredIcon] = useState(null);
   const [atBottom, setAtBottom] = useState(false);
+  const footerRef = useRef(null);
   const currentYear = new Date().getFullYear();
 
-  // Mostrar el footer solo al llegar al fondo de la página
+  // Mostrar el footer cuando entra en vista. Usamos IntersectionObserver en
+  // lugar de calcular scrollHeight: en móvil las barras dinámicas del navegador
+  // cambian innerHeight y el cálculo manual a veces no se cumplía → el footer
+  // nunca aparecía.
   useEffect(() => {
+    const el = footerRef.current;
+    if (!el) return;
+    const reveal = () => setAtBottom(true);
+
+    // El footer está SIEMPRE al fondo de la página: cualquier asomo significa
+    // que el usuario ya llegó. Por eso revelamos en cuanto intersecta (sin
+    // umbral): el footer puede ser más alto que el viewport y exigir 0.85 (o
+    // incluso 0.25) hacía que en la home —altísima— nunca se cumpliera.
+    const io = new IntersectionObserver(
+      ([e]) => { if (e.isIntersecting) reveal(); },
+      { rootMargin: '0px 0px -10% 0px' }
+    );
+    io.observe(el);
+
+    // Respaldo 1: al tocar el fondo real del documento.
     const onScroll = () => {
-      const reached = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 60;
-      setAtBottom(reached);
+      if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 120) reveal();
     };
     window.addEventListener('scroll', onScroll, { passive: true });
-    window.addEventListener('resize', onScroll);
-    onScroll();
-    return () => {
-      window.removeEventListener('scroll', onScroll);
-      window.removeEventListener('resize', onScroll);
-    };
+
+    // Respaldo 2: si al montar el footer ya está (parcialmente) en pantalla
+    // —con client:visible se hidrata justo al entrar al viewport, así que esto
+    // dispara el reveal de inmediato—, revélalo.
+    const r = el.getBoundingClientRect();
+    if (r.top < window.innerHeight) reveal();
+
+    return () => { io.disconnect(); window.removeEventListener('scroll', onScroll); };
   }, []);
 
   const scrollToTop = () => {
@@ -73,7 +93,7 @@ export default function GeckFooter() {
   ];
 
   return (
-    <footer className="geck-footer">
+    <footer className="geck-footer" ref={footerRef}>
       <div className={`footer-card ${atBottom ? 'show' : ''}`}>
       <div className="footer-inner">
 

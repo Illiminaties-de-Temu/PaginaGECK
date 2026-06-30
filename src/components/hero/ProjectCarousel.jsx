@@ -1,64 +1,88 @@
 import { useState, useEffect, useRef } from 'react';
+import {
+  motion, useScroll, useSpring, useTransform, useMotionTemplate,
+  useMotionValueEvent, useReducedMotion,
+} from 'framer-motion';
 import { useLanguage } from '../../hooks/useLanguage';
 
 const PROJECTS = [
-  { id:1, title:'Chuchulucos',    cat:'landing',  image:'/assets/image/portafolio/chuchu.webp',          gradient:'linear-gradient(145deg,#3b0764,#6d28d9,#db2777)', link:'https://chuchulucos.geckcodex.com/' },
-  { id:2, title:'Agend-In',       cat:'landing',  image:'/assets/image/portafolio/agendin.webp',         gradient:'linear-gradient(145deg,#1e1b4b,#4f46e5,#0ea5e9)', link:'https://agend-in.geckcodex.com/' },
-  { id:3, title:'LandingKit',     cat:'landing',  image:'/assets/image/portafolio/landig.webp',          gradient:'linear-gradient(145deg,#2e1065,#7c3aed,#c026d3)', link:'https://landig-plantilla.geckcodex.com/' },
-  { id:4, title:'Chava Calderón', cat:'landing',  image:'/assets/image/portafolio/chava.webp',           gradient:'linear-gradient(145deg,#1a0636,#6d28d9,#9d174d)', link:'https://chavacalderon.mx/' },
-  { id:5, title:'Mando',          cat:'landing',  image:'/assets/image/portafolio/mando.webp',           gradient:'linear-gradient(145deg,#0f172a,#1e3a8a,#312e81)' },
-  { id:6, title:'Mi Caja POS',    cat:'landing',  image:'/assets/image/portafolio/micaja.webp',          gradient:'linear-gradient(145deg,#1c1917,#92400e,#d97706)', link:'https://mi-caja.geckcodex.com/' },
-  { id:7, title:'FleetTrack',     cat:'mobile',   image:'/assets/image/portafolio/capital transpor.webp',gradient:'linear-gradient(145deg,#0c1a3d,#1d4ed8,#0ea5e9)' },
-  { id:8, title:'Coronado Gym',   cat:'webapp',   image:'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=480&q=80&auto=format&fit=crop', gradient:'linear-gradient(145deg,#0a2e1a,#15803d,#0d9488)' },
-  { id:9, title:'GeckCRM',        cat:'software', image:'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=480&q=80&auto=format&fit=crop', gradient:'linear-gradient(145deg,#170d2e,#7c3aed,#2563eb)' },
+  { id:1, title:'Chuchulucos',    cat:'landing',  image:'/assets/image/portafolio/chuchu.webp',          link:'https://chuchulucos.geckcodex.com/' },
+  { id:2, title:'Agend-In',       cat:'landing',  image:'/assets/image/portafolio/agendin.webp',         link:'https://agend-in.geckcodex.com/' },
+  { id:3, title:'LandingKit',     cat:'landing',  image:'/assets/image/portafolio/landig.webp',          link:'https://landig-plantilla.geckcodex.com/' },
+  { id:4, title:'Chava Calderón', cat:'landing',  image:'/assets/image/portafolio/chava.webp',           link:'https://chavacalderon.mx/' },
+  { id:5, title:'Mando',          cat:'landing',  image:'/assets/image/portafolio/mando.webp' },
+  { id:6, title:'Mi Caja POS',    cat:'landing',  image:'/assets/image/portafolio/micaja.webp',          link:'https://mi-caja.geckcodex.com/' },
+  { id:7, title:'FleetTrack',     cat:'mobile',   image:'/assets/image/portafolio/capital transpor.webp' },
+  { id:8, title:'Coronado Gym',   cat:'webapp',   image:'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=480&q=80&auto=format&fit=crop' },
+  { id:9, title:'GeckCRM',        cat:'software', image:'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=480&q=80&auto=format&fit=crop' },
 ];
 
+/* Acentos de categoría dentro de la paleta (oro / bronce), sin arcoíris */
 const CAT_ACCENT = {
-  landing:  '#e879f9',
-  mobile:   '#60a5fa',
-  webapp:   '#34d399',
-  software: '#a78bfa',
+  landing:  '#C3AD85',
+  mobile:   '#D9C49A',
+  webapp:   '#957952',
+  software: '#B5A079',
 };
 
-/* Rueda en arco: triplicamos para densificar el arco y que el giro sea
- * infinito y sin saltos (reparto angular uniforme). */
-const RING = [...PROJECTS, ...PROJECTS, ...PROJECTS];
-const STEP = 360 / RING.length; // grados entre tarjeta y tarjeta sobre el círculo
+const FALLBACK_BG = 'linear-gradient(145deg,#0D1625,#16223A,#2A3441)';
 
-/* ─── CARD ──────────────────────────────────────────────────────────── */
-function Card({ project, catLabels, onEnter, onLeave, idx }) {
+const RING = [...PROJECTS, ...PROJECTS, ...PROJECTS];
+const STEP = 360 / RING.length;
+
+/* ─── CONTENIDO DE TARJETA ───────────────────────────────────────────── */
+function CardInner({ project, catLabels }) {
   const accent = CAT_ACCENT[project.cat];
   return (
     <div
-      className="pc-card"
-      onMouseEnter={(e) => onEnter(project, e, idx)}
-      onMouseLeave={onLeave}
+      className="pc-card__frame"
+      style={project.image ? undefined : { background: FALLBACK_BG }}
     >
-      <div
-        className="pc-card__frame"
-        style={project.image ? undefined : { background: project.gradient }}
-      >
-        {project.image && (
-          <img
-            src={project.image}
-            alt={project.title}
-            className="pc-card__img"
-            loading="lazy"
-            decoding="async"
-            draggable="false"
-          />
-        )}
-        <div className="pc-card__veil" />
-        <div className="pc-card__info">
-          <span
-            className="pc-card__cat"
-            style={{ color: accent, borderColor: accent + '55', background: accent + '18' }}
-          >
-            {catLabels[project.cat]}
-          </span>
-          <p className="pc-card__name">{project.title}</p>
-        </div>
+      {project.image && (
+        <img
+          src={project.image}
+          alt={project.title}
+          className="pc-card__img"
+          loading="lazy"
+          decoding="async"
+          draggable="false"
+        />
+      )}
+      <div className="pc-card__veil" />
+      <div className="pc-card__info">
+        <span
+          className="pc-card__cat"
+          style={{ color: accent, borderColor: accent + '55', background: accent + '18' }}
+        >
+          {catLabels[project.cat]}
+        </span>
+        <p className="pc-card__name">{project.title}</p>
       </div>
+    </div>
+  );
+}
+
+/* ─── SLOT — posición polar fija + entrada animada por scroll ─────────── */
+function WheelSlot({ p, i, progress, catLabels, hovered, onEnter, onLeave, reduce }) {
+  const start = 0.18 + (i / RING.length) * 0.34;
+  const opacity = useTransform(progress, [start, start + 0.09], [0, 1]);
+  const scale   = useTransform(progress, [start, start + 0.16], [0.5, 1]);
+  const yNum    = useTransform(progress, [start, start + 0.16], [70, 0]);
+  const y       = useMotionTemplate`${yNum}px`;
+
+  return (
+    <div
+      className={`pc-slot${hovered ? ' is-hovered' : ''}`}
+      style={{ transform: `rotate(${i * STEP}deg) translateY(calc(var(--r) * -1))` }}
+    >
+      <motion.div
+        className="pc-card"
+        style={reduce ? undefined : { opacity, scale, translateY: y }}
+        onMouseEnter={(e) => onEnter(p, i)}
+        onMouseLeave={onLeave}
+      >
+        <CardInner project={p} catLabels={catLabels} />
+      </motion.div>
     </div>
   );
 }
@@ -66,189 +90,195 @@ function Card({ project, catLabels, onEnter, onLeave, idx }) {
 /* ─── MAIN ───────────────────────────────────────────────────────────── */
 export default function ProjectCarousel() {
   const { t } = useLanguage();
-  const [tooltip, setTooltip]   = useState(null);  // { project, top, left, align }
-  const [paused,  setPaused]    = useState(false);
-  const [hoveredIdx, setHoveredIdx] = useState(null); // índice del slot activo
-  const sectionRef              = useRef(null);
+  const reduce = useReducedMotion();
+  const [active,  setActive]  = useState(null);   // { project, idx }
+  const [assembled, setAssembled] = useState(false);
+  const sectionRef = useRef(null);
 
-  /* Entrada — IntersectionObserver, sin scroll event, dispara una vez */
-  useEffect(() => {
-    const el = sectionRef.current;
-    if (!el) return;
-    const observer = new IntersectionObserver(
-      ([entry]) => { if (entry.isIntersecting) { el.classList.add('is-visible'); observer.disconnect(); } },
-      { threshold: 0.12 }
-    );
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, []);
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ['start start', 'end end'],
+  });
+  const progress = useSpring(scrollYProgress, { stiffness: 90, damping: 26, mass: 0.35 });
 
-  /* Cerrar tooltip al hacer scroll o al perder foco de página */
-  useEffect(() => {
-    if (!tooltip) return;
-    const close = () => { setTooltip(null); setPaused(false); };
-    window.addEventListener('scroll', close, { passive: true, once: true });
-    return () => window.removeEventListener('scroll', close);
-  }, [tooltip]);
+  useMotionValueEvent(scrollYProgress, 'change', (v) => setAssembled(v > 0.5));
 
+  /* Transforms del título (aparece primero, sube y se asienta) */
+  const headYNum  = useTransform(progress, [0, 0.4], [32, 0]);
+  const headY     = useMotionTemplate`${headYNum}vh`;
+  const headScale = useTransform(progress, [0, 0.4], [1.12, 1]);
+  const ctaOp     = useTransform(progress, [0.5, 0.7], [0, 1]);
+
+  /* Transforms del escenario (arco) */
+  const stageOp   = useTransform(progress, [0.12, 0.4], [0, 1]);
+  const stageYNum = useTransform(progress, [0.12, 0.45], [50, 0]);
+  const stageY    = useMotionTemplate`${stageYNum}px`;
+  const capOp     = useTransform(progress, [0.4, 0.62], [0, 1]);
+
+  /* Al scrollear o cambiar de pestaña, soltar el hover (resume el giro) */
   useEffect(() => {
-    const reset = () => { setTooltip(null); setPaused(false); };
+    const reset = () => setActive(null);
+    window.addEventListener('scroll', reset, { passive: true });
     document.addEventListener('visibilitychange', reset);
-    return () => document.removeEventListener('visibilitychange', reset);
+    return () => {
+      window.removeEventListener('scroll', reset);
+      document.removeEventListener('visibilitychange', reset);
+    };
   }, []);
 
-  const handleEnter = (project, e, idx) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    const cx   = rect.left + rect.width / 2;
-    const vw   = window.innerWidth;
-    const tipW = 280;
-    let align  = 'center';
-    if (cx - tipW / 2 < 12)      align = 'left';
-    if (cx + tipW / 2 > vw - 12) align = 'right';
-    setTooltip({ project, top: rect.bottom + 12, cx, align });
-    setPaused(true);
-    setHoveredIdx(idx ?? null);
-  };
+  const handleEnter = (project, idx) => setActive({ project, idx });
+  const handleLeave = () => setActive(null);
 
-  const handleLeave = () => {
-    setTooltip(null);
-    setPaused(false);
-    setHoveredIdx(null);
-  };
+  const paused = active !== null;
+  const wheelClass =
+    'pc-wheel' +
+    (!reduce && assembled ? ' is-spinning' : '') +
+    (paused ? ' is-paused' : '');
 
-  /* Calcular left para el tooltip */
-  const tipLeft = () => {
-    if (!tooltip) return 0;
-    const tipW = 280;
-    if (tooltip.align === 'left')  return Math.max(12, tooltip.cx - tipW * 0.15);
-    if (tooltip.align === 'right') return Math.min(window.innerWidth - tipW - 12, tooltip.cx - tipW * 0.85);
-    return tooltip.cx - tipW / 2;
-  };
+  const ap = active?.project;
+  const apAccent = ap ? CAT_ACCENT[ap.cat] : null;
+  const apTag = ap ? t.projectCarousel.projects[ap.id]?.tagline : null;
 
   return (
     <>
-      <section ref={sectionRef} className="pc-section">
+      <section ref={sectionRef} className={`pc-section${reduce ? ' pc-section--static' : ''}`}>
+        <div className="pc-sticky">
+          {/* Título — aparece primero y se asienta arriba */}
+          <motion.header
+            className="pc-header"
+            style={reduce ? undefined : { translateY: headY, scale: headScale }}
+          >
+            <h2 className="pc-h2">{t.projectCarousel.title}</h2>
+          </motion.header>
 
-        {/* Rueda en arco — las tarjetas giran sobre un círculo */}
-        <div className="pc-stage">
-          <div className="pc-stage__fade pc-stage__fade--l" aria-hidden="true" />
-          <div className="pc-stage__fade pc-stage__fade--r" aria-hidden="true" />
-          <div className={`pc-wheel${paused ? ' is-paused' : ''}`}>
-            {RING.map((p, i) => (
-              <div
-                key={i}
-                className={`pc-slot${hoveredIdx === i ? ' is-hovered' : ''}`}
-                style={{ transform: `rotate(${i * STEP}deg) translateY(calc(var(--r) * -1))` }}
-              >
-                <Card project={p} catLabels={t.projectCarousel.catLabels} onEnter={handleEnter} onLeave={handleLeave} idx={i} />
+          {/* Arco — se ensambla al scrollear */}
+          <motion.div
+            className="pc-stage"
+            style={reduce ? undefined : { opacity: stageOp, translateY: stageY }}
+          >
+            <div className="pc-stage__fade pc-stage__fade--t" aria-hidden="true" />
+            <div className="pc-stage__fade pc-stage__fade--b" aria-hidden="true" />
+            <div className="pc-stage__fade pc-stage__fade--l" aria-hidden="true" />
+            <div className="pc-stage__fade pc-stage__fade--r" aria-hidden="true" />
+            <div className={wheelClass}>
+              {RING.map((p, i) => (
+                <WheelSlot
+                  key={i}
+                  p={p}
+                  i={i}
+                  progress={progress}
+                  catLabels={t.projectCarousel.catLabels}
+                  hovered={active?.idx === i}
+                  onEnter={handleEnter}
+                  onLeave={handleLeave}
+                  reduce={reduce}
+                />
+              ))}
+            </div>
+          </motion.div>
+
+          {/* Leyenda integrada — reemplaza al modal flotante */}
+          <motion.div className="pc-caption" style={reduce ? undefined : { opacity: capOp }}>
+            {ap ? (
+              <div key={ap.id} className="pc-cap__detail">
+                <span
+                  className="pc-cap__cat"
+                  style={{ color: apAccent, borderColor: apAccent + '55', background: apAccent + '14' }}
+                >
+                  {t.projectCarousel.catLabels[ap.cat]}
+                </span>
+                <h3 className="pc-cap__name">{ap.title}</h3>
+                {apTag && <p className="pc-cap__tag">{apTag}</p>}
+                {ap.link && (
+                  <a href={ap.link} target="_blank" rel="noopener noreferrer" className="pc-cap__live">
+                    {t.projectCarousel.liveCta}
+                  </a>
+                )}
               </div>
-            ))}
-          </div>
-        </div>
+            ) : (
+              <p className="pc-cap__hint">{t.projectCarousel.subtitle}</p>
+            )}
+          </motion.div>
 
-        {/* Título + CTA — debajo del arco */}
-        <header className="pc-header">
-          <h2 className="pc-h2">{t.projectCarousel.title}</h2>
-          <p className="pc-lead">{t.projectCarousel.subtitle}</p>
-          <div className="pc-cta">
+          {/* CTA */}
+          <motion.div className="pc-cta" style={reduce ? undefined : { opacity: ctaOp }}>
             <a href="/portafolio" className="pc-cta__link">
               {t.projectCarousel.cta}
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
                 <path d="M5 12h14M12 5l7 7-7 7" />
               </svg>
             </a>
-          </div>
-        </header>
-
-      </section>
-
-      {/* Tooltip — position: fixed, nunca se corta */}
-      {tooltip && (
-        <div
-          className="pc-tooltip"
-          style={{ top: tooltip.top, left: tipLeft() }}
-          onMouseEnter={() => { setTooltip(t => t); setPaused(true); }}
-          onMouseLeave={handleLeave}
-        >
-          <p className="pc-tooltip__name">{tooltip.project.title}</p>
-          <p className="pc-tooltip__sub">{t.projectCarousel.projects[tooltip.project.id]?.tagline}</p>
-          {tooltip.project.link && (
-            <a
-              href={tooltip.project.link}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="pc-tooltip__link"
-              onClick={e => { e.stopPropagation(); handleLeave(); }}
-            >
-              {t.projectCarousel.liveCta}
-            </a>
-          )}
-          <div
-            className="pc-tooltip__bar"
-            style={{ background: CAT_ACCENT[tooltip.project.cat] }}
-          />
+          </motion.div>
         </div>
-      )}
+      </section>
 
       <style>{`
         /* ── SECTION ─────────────────────────────────────── */
         .pc-section {
           background: var(--background);
-          padding: 5rem 0 4rem;
+          height: 185vh;
           position: relative;
-          overflow: hidden;
-          /* Entrada: empieza invisible, sube con CSS */
-          opacity: 0;
-          transform: translateY(32px);
-          transition: opacity .9s cubic-bezier(0.22,1,0.36,1), transform .9s cubic-bezier(0.22,1,0.36,1);
         }
-        .pc-section.is-visible {
-          opacity: 1;
-          transform: translateY(0);
+        .pc-sticky {
+          position: sticky;
+          top: 0;
+          height: 100vh;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: flex-start;
+          padding-top: clamp(3rem, 8vh, 5.5rem);
+          overflow: hidden;
+        }
+
+        /* ── HEADER ──────────────────────────────────────── */
+        .pc-header { text-align: center; padding: 0 1rem; will-change: transform; }
+        .pc-h2 {
+          font-size: clamp(1.9rem, 4.4vw, 3rem);
+          font-weight: 900;
+          color: var(--text);
+          margin: 0;
+          line-height: 1.08;
         }
 
         /* ── STAGE (arco) ────────────────────────────────── */
-        /* Ventana recortada: sólo se ve la parte superior del círculo,
-         * por eso las tarjetas dibujan un arco. El centro de la rueda
-         * queda muy por debajo del stage (top: --r + offset). */
         .pc-stage {
-          --r: 1280px;          /* radio del círculo */
-          --cw: 230px;          /* ancho de tarjeta */
-          --ch: 130px;          /* alto de tarjeta */
+          --r: 1500px;
+          --cw: 200px;
+          --ch: 256px;
           position: relative;
-          height: clamp(320px, 32vw, 460px);
+          width: 100%;
+          height: clamp(360px, 40vw, 500px);
+          margin-top: clamp(1.2rem, 3.5vh, 2.6rem);
           overflow: hidden;
-          margin-bottom: 1.5rem;
+          will-change: transform, opacity;
         }
 
-        /* Gradientes laterales — funden el arco en los bordes */
-        .pc-stage__fade {
-          position: absolute;
-          top: 0; bottom: 0;
-          width: clamp(60px, 12vw, 180px);
-          z-index: 10;
-          pointer-events: none;
-        }
-        .pc-stage__fade--l { left: 0;  background: linear-gradient(to right, var(--background) 0%, transparent 100%); }
-        .pc-stage__fade--r { right: 0; background: linear-gradient(to left,  var(--background) 0%, transparent 100%); }
+        /* Degradados que funden el arco en los 4 bordes (sin techo/piso duro) */
+        .pc-stage__fade { position: absolute; z-index: 10; pointer-events: none; }
+        .pc-stage__fade--l { top: 0; bottom: 0; left: 0;  width: clamp(50px, 11vw, 170px); background: linear-gradient(to right, var(--background) 0%, transparent 100%); }
+        .pc-stage__fade--r { top: 0; bottom: 0; right: 0; width: clamp(50px, 11vw, 170px); background: linear-gradient(to left,  var(--background) 0%, transparent 100%); }
+        .pc-stage__fade--t { top: 0; left: 0; right: 0;    height: 70px;  background: linear-gradient(to bottom, var(--background) 0%, transparent 100%); }
+        .pc-stage__fade--b { bottom: 0; left: 0; right: 0; height: 120px; background: linear-gradient(to top,    var(--background) 0%, transparent 100%); }
 
         /* ── RUEDA ───────────────────────────────────────── */
         .pc-wheel {
           position: absolute;
           left: 50%;
-          top: calc(var(--r) + 100px);  /* centro del círculo, bajo el stage */
+          top: calc(var(--r) + 150px);
           width: 0;
           height: 0;
           will-change: transform;
-          animation: pc-spin 110s linear infinite;
         }
+        /* El giro se mantiene SIEMPRE que esté armado; el hover sólo lo pausa
+         * en su lugar (no reinicia) con animation-play-state. */
+        .pc-wheel.is-spinning { animation: pc-spin 110s linear infinite; }
         .pc-wheel.is-paused { animation-play-state: paused; }
         @keyframes pc-spin {
           from { transform: rotate(0deg); }
           to   { transform: rotate(-360deg); }
         }
 
-        /* cada tarjeta se coloca en polar: rotate(ángulo) translateY(-radio) */
         .pc-slot {
           position: absolute;
           top: 0; left: 0;
@@ -260,53 +290,19 @@ export default function ProjectCarousel() {
           transition: filter .3s ease, opacity .3s ease;
         }
 
-        /* al pausar (hover sobre una tarjeta): todo lo demás se difumina,
-         * la tarjeta activa se mantiene nítida y al frente */
-        .pc-wheel.is-paused .pc-slot {
-          filter: blur(3px);
-          opacity: .45;
-        }
-        .pc-wheel.is-paused .pc-slot.is-hovered {
-          filter: none;
-          opacity: 1;
-          z-index: 30;
-        }
-
-        /* ── HEADER ──────────────────────────────────────── */
-        .pc-header {
-          text-align: center;
-          margin-bottom: 0;
-          padding: 0 1rem;
-        }
-        .pc-h2 {
-          font-size: clamp(1.75rem, 4vw, 2.8rem);
-          font-weight: 900;
-          color: var(--text);
-          margin: 0 0 .5rem;
-          line-height: 1.1;
-        }
-        .pc-lead {
-          font-size: .95rem;
-          color: var(--text-muted);
-          margin: 0;
-          font-weight: 400;
-          letter-spacing: .04em;
-        }
+        .pc-wheel.is-paused .pc-slot { filter: blur(3px); opacity: .42; }
+        .pc-wheel.is-paused .pc-slot.is-hovered { filter: none; opacity: 1; z-index: 30; }
 
         /* ── CARD ────────────────────────────────────────── */
-        .pc-card {
-          width: 100%;
-          height: 100%;
-          cursor: pointer;
-        }
+        .pc-card { width: 100%; height: 100%; cursor: pointer; will-change: transform, opacity; }
         .pc-card__frame {
           position: relative;
           width: 100%;
           height: 100%;
-          border-radius: 12px;
+          border-radius: 18px;
           overflow: hidden;
           border: 1px solid rgba(255,255,255,0.09);
-          box-shadow: 0 4px 20px rgba(0,0,0,0.45);
+          box-shadow: 0 6px 26px rgba(0,0,0,0.5);
           transition: border-color .28s ease, box-shadow .28s ease, transform .32s cubic-bezier(0.22,1,0.36,1);
         }
         .pc-card__frame:hover {
@@ -326,27 +322,25 @@ export default function ProjectCarousel() {
         .pc-card__veil {
           position: absolute;
           inset: 0;
-          background: linear-gradient(to bottom, rgba(0,0,0,0) 30%, rgba(0,0,0,0.78) 100%);
+          background: linear-gradient(to bottom, rgba(0,0,0,0) 42%, rgba(0,0,0,0.82) 100%);
           z-index: 1;
         }
         .pc-card__info {
           position: absolute;
-          bottom: 0;
-          left: 0;
-          right: 0;
-          padding: .9rem .85rem .8rem;
+          bottom: 0; left: 0; right: 0;
+          padding: 1.1rem 1rem 1rem;
           z-index: 2;
           display: flex;
           flex-direction: column;
-          gap: .3rem;
+          gap: .45rem;
         }
         .pc-card__cat {
           display: inline-flex;
           align-self: flex-start;
-          padding: .15rem .55rem;
+          padding: .2rem .65rem;
           border-radius: 100px;
           border: 1px solid;
-          font-size: .54rem;
+          font-size: .58rem;
           font-weight: 800;
           letter-spacing: .08em;
           text-transform: uppercase;
@@ -354,7 +348,7 @@ export default function ProjectCarousel() {
           -webkit-backdrop-filter: blur(8px);
         }
         .pc-card__name {
-          font-size: .82rem;
+          font-size: .98rem;
           font-weight: 800;
           color: var(--brand-ivory);
           margin: 0;
@@ -364,13 +358,76 @@ export default function ProjectCarousel() {
           text-overflow: ellipsis;
         }
 
-        /* ── CTA ─────────────────────────────────────────── */
-        .pc-cta {
+        /* ── LEYENDA (reemplaza al modal) ────────────────── */
+        .pc-caption {
+          min-height: 104px;
+          margin-top: clamp(.8rem, 2vh, 1.4rem);
+          display: flex;
+          align-items: flex-start;
+          justify-content: center;
           text-align: center;
-          margin-top: 1.6rem;
-          position: relative;
-          z-index: 20;
+          padding: 0 1.2rem;
+          width: 100%;
+          max-width: 560px;
         }
+        .pc-cap__hint {
+          font-size: .95rem;
+          color: var(--text-muted);
+          margin: 0;
+          letter-spacing: .03em;
+        }
+        .pc-cap__detail {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: .5rem;
+          animation: pc-cap-in .3s cubic-bezier(0.22,1,0.36,1);
+        }
+        @keyframes pc-cap-in {
+          from { opacity: 0; transform: translateY(8px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+        .pc-cap__cat {
+          font-size: .6rem;
+          font-weight: 800;
+          letter-spacing: .12em;
+          text-transform: uppercase;
+          padding: .25rem .7rem;
+          border: 1px solid;
+          border-radius: 100px;
+        }
+        .pc-cap__name {
+          font-size: clamp(1.15rem, 2.2vw, 1.5rem);
+          font-weight: 900;
+          color: var(--text);
+          margin: 0;
+          line-height: 1.1;
+        }
+        .pc-cap__tag {
+          font-size: .88rem;
+          color: var(--text-muted);
+          margin: 0;
+          line-height: 1.45;
+          max-width: 440px;
+        }
+        .pc-cap__live {
+          display: inline-flex;
+          align-items: center;
+          gap: .35rem;
+          font-size: .74rem;
+          font-weight: 800;
+          letter-spacing: .1em;
+          text-transform: uppercase;
+          color: var(--accent-text);
+          text-decoration: none;
+          margin-top: .15rem;
+          transition: gap .2s ease;
+        }
+        .pc-cap__live::after { content: '→'; font-size: .9rem; }
+        .pc-cap__live:hover { gap: .6rem; }
+
+        /* ── CTA ─────────────────────────────────────────── */
+        .pc-cta { text-align: center; margin-top: clamp(.6rem, 1.6vh, 1.2rem); position: relative; z-index: 20; }
         .pc-cta__link {
           display: inline-flex;
           align-items: center;
@@ -385,82 +442,39 @@ export default function ProjectCarousel() {
           padding-bottom: 2px;
           transition: border-color .2s, gap .2s;
         }
-        .pc-cta__link:hover {
-          border-color: var(--accent);
-          gap: .7rem;
-        }
-
-        /* ── TOOLTIP — position:fixed, nunca se corta ────── */
-        .pc-tooltip {
-          position: fixed;
-          z-index: 9000;
-          width: 280px;
-          background: #fff;
-          border-radius: 14px;
-          padding: 1rem 1.1rem 1rem;
-          box-shadow: 0 20px 60px rgba(0,0,0,0.22), 0 0 0 1.5px rgba(195,173,133,0.3);
-          animation: pc-tip-in .28s cubic-bezier(0.34,1.56,0.64,1);
-          pointer-events: auto;
-        }
-        @keyframes pc-tip-in {
-          from { opacity: 0; transform: translateY(-10px) scale(.96); }
-          to   { opacity: 1; transform: translateY(0) scale(1); }
-        }
-        .pc-tooltip__name {
-          font-size: .92rem;
-          font-weight: 800;
-          color: #0B1D33;
-          margin: 0 0 .25rem;
-        }
-        .pc-tooltip__sub {
-          font-size: .78rem;
-          color: #6B7280;
-          margin: 0 0 .7rem;
-          line-height: 1.4;
-        }
-        .pc-tooltip__link {
-          display: inline-block;
-          font-size: .72rem;
-          font-weight: 700;
-          color: var(--accent-text);
-          text-decoration: none;
-          letter-spacing: .04em;
-          margin-bottom: .75rem;
-        }
-        .pc-tooltip__link:hover { text-decoration: underline; }
-        .pc-tooltip__bar {
-          height: 3px;
-          width: 48px;
-          border-radius: 100px;
-        }
+        .pc-cta__link:hover { gap: .7rem; }
 
         /* ── MOBILE ──────────────────────────────────────── */
         @media (max-width: 768px) {
-          .pc-section { padding: 3.5rem 0 3rem; }
           .pc-stage {
-            --r: 720px;
-            --cw: 170px;
-            --ch: 96px;
-            height: clamp(230px, 46vw, 320px);
+            --r: 900px;
+            --cw: 152px;
+            --ch: 196px;
+            height: clamp(300px, 56vw, 380px);
           }
-          .pc-wheel { top: calc(var(--r) + 72px); animation-duration: 90s; }
-          .pc-card__name { font-size: .75rem; }
+          .pc-wheel { top: calc(var(--r) + 112px); }
+          .pc-wheel.is-spinning { animation-duration: 90s; }
+          .pc-stage__fade--b { height: 96px; }
+          .pc-card__name { font-size: .85rem; }
         }
         @media (max-width: 480px) {
-          .pc-stage {
-            --r: 560px;
-            --cw: 150px;
-            --ch: 84px;
-          }
-          .pc-wheel { top: calc(var(--r) + 60px); animation-duration: 75s; }
+          .pc-stage { --r: 680px; --cw: 132px; --ch: 172px; }
+          .pc-wheel { top: calc(var(--r) + 96px); }
+          .pc-wheel.is-spinning { animation-duration: 75s; }
         }
 
-        /* ── REDUCED MOTION ──────────────────────────────── */
+        /* ── ESTÁTICO (reduced-motion) ───────────────────── */
+        .pc-section--static { height: auto; }
+        .pc-section--static .pc-sticky {
+          position: static;
+          height: auto;
+          padding: clamp(3.5rem, 9vh, 6rem) 0 4rem;
+        }
+
         @media (prefers-reduced-motion: reduce) {
-          .pc-section { transition: none !important; opacity: 1; transform: none; }
           .pc-wheel { animation: none !important; will-change: auto; }
-          .pc-card__frame { transition: none !important; will-change: auto; }
-          .pc-tooltip { animation: none !important; }
+          .pc-card__frame { transition: none !important; }
+          .pc-cap__detail { animation: none !important; }
         }
       `}</style>
     </>

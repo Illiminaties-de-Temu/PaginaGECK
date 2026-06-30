@@ -33,16 +33,32 @@ export default function GeckNavbar() {
 
   const toggleTheme = () => {
     const next = theme === 'dark' ? 'light' : 'dark';
+    const root = document.documentElement;
+    // Activa la transición de color global solo durante el cambio de tema.
+    root.classList.add('theme-anim');
     setTheme(next);
-    document.documentElement.setAttribute('data-theme', next);
+    root.setAttribute('data-theme', next);
     localStorage.setItem('geck-theme', next);
+    window.setTimeout(() => root.classList.remove('theme-anim'), 360);
   };
 
   const [menuOpen, setMenuOpen] = useState(false);
   const [menuClosing, setMenuClosing] = useState(false);
+  const [revealOpen, setRevealOpen] = useState(false);
+  const [reveal, setReveal] = useState({ x: 0, y: 0, r: 0 });
   const [navVisible, setNavVisible] = useState(true);
   const [atTop, setAtTop] = useState(true);
+  const [isMobile, setIsMobile] = useState(false);
   const lastScrollYRef = useRef(0);
+  const menuBtnRef = useRef(null);
+
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 860px)');
+    const sync = () => setIsMobile(mq.matches);
+    sync();
+    mq.addEventListener('change', sync);
+    return () => mq.removeEventListener('change', sync);
+  }, []);
 
   const t = navTranslations[language];
   const isMenuShown = menuOpen && !menuClosing;
@@ -65,12 +81,30 @@ export default function GeckNavbar() {
     return () => { document.body.style.overflow = "unset"; };
   }, [menuOpen]);
 
-  const closeMenu = () => {
-    setMenuClosing(true);
-    setTimeout(() => { setMenuOpen(false); setMenuClosing(false); }, 380);
+  // Dispara el crecimiento del círculo en el frame siguiente al montaje
+  useEffect(() => {
+    if (!menuOpen) return;
+    const id = requestAnimationFrame(() => setRevealOpen(true));
+    return () => cancelAnimationFrame(id);
+  }, [menuOpen]);
+
+  const openMenu = () => {
+    const rect = menuBtnRef.current?.getBoundingClientRect();
+    const cx = rect ? rect.left + rect.width / 2 : window.innerWidth;
+    const cy = rect ? rect.top + rect.height / 2 : 0;
+    // Radio que alcanza la esquina más lejana (cubre todo el viewport)
+    const r = Math.hypot(Math.max(cx, window.innerWidth - cx), Math.max(cy, window.innerHeight - cy)) * 1.05;
+    setReveal({ x: cx, y: cy, r });
+    setMenuOpen(true);
   };
 
-  const toggleMenu = () => { if (menuOpen) closeMenu(); else setMenuOpen(true); };
+  const closeMenu = () => {
+    setRevealOpen(false);
+    setMenuClosing(true);
+    setTimeout(() => { setMenuOpen(false); setMenuClosing(false); }, 650);
+  };
+
+  const toggleMenu = () => { if (menuOpen) closeMenu(); else openMenu(); };
 
   const handleLanguageChange = (code) => {
     setLanguage(code);
@@ -85,6 +119,8 @@ export default function GeckNavbar() {
     { key: "services", icon: Layers, href: "/servicios" },
     { key: "about", icon: Info, href: "/nosotros" },
     { key: "blog", icon: BookOpen, href: "/blog" },
+    // En móvil el acceso a Contacto vive dentro del menú (no en la barra)
+    ...(isMobile ? [{ key: "contact", icon: Mail, href: "/contacto" }] : []),
   ];
 
   return (
@@ -105,6 +141,8 @@ export default function GeckNavbar() {
         .nav-logo-codex { color: var(--accent-text); }
         .nav-logo-link { transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1); }
         .nav-logo-link:hover { transform: translateY(-2px); }
+
+        .nav-actions { gap: 1.25rem; }
 
         .nav-pill {
           display: flex; align-items: center; gap: 1rem;
@@ -173,108 +211,123 @@ export default function GeckNavbar() {
         }
         .menu-toggle-track[data-open="true"] { transform: translateY(-50%); }
 
-        /* ── Diálogo lateral del menú ── */
-        .menu-overlay {
-          position: fixed; inset: 0; z-index: 58;
-          background: rgba(2,6,20,0.35);
-          backdrop-filter: blur(2px);
-          animation: overlayIn 0.5s ease forwards;
-        }
-        .menu-overlay.closing { animation: overlayOut 0.5s ease forwards; }
-        @keyframes overlayIn { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes overlayOut { from { opacity: 1; } to { opacity: 0; } }
-
-        .menu-dialog {
-          position: fixed;
-          top: 120px; right: 2rem;
-          width: min(490px, calc(100vw - 3rem));
-          max-height: calc(100vh - 150px);
-          overflow-y: auto;
-          z-index: 59;
-          padding: 2.25rem;
-          border-radius: 36px;
+        /* ── Menú: reveal circular ── */
+        .menu-reveal {
+          position: fixed; inset: 0; z-index: 59;
           background: var(--navy-dark);
-          border: none;
-          transform-origin: top right;
-          animation: dialogIn 0.85s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+          display: flex; align-items: center; justify-content: center;
+          clip-path: circle(0px at var(--cx) var(--cy));
+          transition: clip-path 0.62s cubic-bezier(0.76, 0, 0.24, 1);
+          overflow-y: auto;
         }
-        .menu-dialog.closing { animation: dialogOut 0.5s cubic-bezier(0.55, 0, 0.55, 0.2) forwards; }
-        @keyframes dialogIn {
-          0%   { opacity: 0; transform: translateX(calc(100% + 2rem)) scale(0.94, 1); }
-          60%  { opacity: 1; transform: translateX(-10px) scale(1.035, 0.96); }
-          80%  { transform: translateX(4px) scale(0.99, 1.02); }
-          100% { opacity: 1; transform: translateX(0) scale(1, 1); }
+        .menu-reveal.is-open {
+          clip-path: circle(var(--r) at var(--cx) var(--cy));
         }
-        @keyframes dialogOut {
-          0%   { opacity: 1; transform: translateX(0) scale(1, 1); }
-          100% { opacity: 0; transform: translateX(calc(100% + 2rem)) scale(0.94, 1); }
-        }
-
-        .menu-label {
-          color: rgba(255,255,255,0.45);
-          font-size: 1.05rem; letter-spacing: 0.18em; text-transform: uppercase;
-          margin: 0 0 1.25rem 0.35rem; font-weight: 600;
+        /* Halo dorado radial sutil centrado en el origen del círculo */
+        .menu-reveal::before {
+          content: "";
+          position: absolute; inset: 0;
+          background: radial-gradient(circle at var(--cx) var(--cy),
+            color-mix(in srgb, var(--accent) 16%, transparent), transparent 55%);
+          pointer-events: none;
         }
 
-        .menu-link {
-          display: flex; align-items: center; gap: 1.35rem;
-          padding: 1.25rem 1.5rem; border-radius: 24px;
-          color: var(--white-soft); text-decoration: none;
-          font-size: 1.55rem; font-weight: 600;
-          border: none;
-          transition: background 0.4s cubic-bezier(0.22, 1, 0.36, 1), transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+        .menu-reveal__inner {
+          position: relative;
+          width: min(820px, 90vw);
+          padding: clamp(2rem, 6vh, 4rem) clamp(1.5rem, 5vw, 3rem);
         }
-        .menu-link svg { color: var(--gold); flex-shrink: 0; transition: transform 0.4s ease; }
-        .menu-link .menu-link-arrow { margin-left: auto; opacity: 0; transform: translateX(-8px); transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.22, 1, 0.36, 1); }
-        .menu-link:hover {
-          background: var(--navy-light);
-          transform: translateX(6px);
+
+        /* ── Links grandes editoriales ── */
+        .mr-links { display: flex; flex-direction: column; }
+        .mr-link {
+          display: flex; align-items: baseline; gap: clamp(1rem, 3vw, 2rem);
+          padding: clamp(0.9rem, 2.2vh, 1.5rem) 0.5rem;
+          border-bottom: 1px solid rgba(255,255,255,0.08);
+          text-decoration: none;
+          color: var(--white-soft);
+          opacity: 0; transform: translateY(26px);
+          transition: opacity 0.5s ease, transform 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+                      color 0.3s ease, padding-left 0.3s ease;
         }
-        .menu-link:hover .menu-link-arrow { opacity: 1; transform: translateX(0); }
+        .menu-reveal.is-open .mr-link {
+          opacity: 1; transform: translateY(0);
+          transition-delay: calc(0.22s + var(--i) * 0.07s);
+        }
+        .mr-link__num {
+          font-family: var(--font-body);
+          font-size: clamp(0.85rem, 1.4vw, 1rem); font-weight: 600;
+          color: var(--accent); flex-shrink: 0; min-width: 2.4ch;
+        }
+        .mr-link__label {
+          font-family: var(--font-display);
+          font-size: clamp(2.1rem, 7vw, 4rem); font-weight: 700;
+          line-height: 1; letter-spacing: -0.02em;
+        }
+        .mr-link__arrow {
+          margin-left: auto; align-self: center;
+          color: var(--accent);
+          opacity: 0; transform: translate(-12px, 4px);
+          transition: opacity 0.35s ease, transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .mr-link:hover { color: var(--accent); padding-left: 1.25rem; }
+        .mr-link:hover .mr-link__arrow { opacity: 1; transform: translate(0, 0); }
 
-        .menu-divider { height: 1px; background: rgba(255,255,255,0.08); margin: 1.85rem 0; }
-
-        /* ── Selector de idioma: control segmentado navy ── */
-        .menu-lang-group {
-          display: flex; gap: 0.6rem;
-          padding: 0.5rem;
-          border-radius: 24px;
+        /* ── Pie: idioma + tema ── */
+        .mr-footer {
+          display: flex; flex-wrap: wrap; gap: 2.5rem;
+          margin-top: clamp(2rem, 5vh, 3.5rem);
+          opacity: 0; transform: translateY(20px);
+          transition: opacity 0.5s ease, transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .menu-reveal.is-open .mr-footer {
+          opacity: 1; transform: translateY(0);
+          transition-delay: calc(0.22s + 4 * 0.07s);
+        }
+        .mr-control { display: flex; flex-direction: column; gap: 0.85rem; }
+        .mr-control__label {
+          font-size: 0.78rem; letter-spacing: 0.22em; text-transform: uppercase;
+          color: rgba(255,255,255,0.45); font-weight: 600;
+        }
+        .mr-seg {
+          display: inline-flex; gap: 0.3rem;
+          padding: 0.35rem; border-radius: 999px;
           background: var(--navy-deep);
+          border: 1px solid var(--border);
         }
-        .menu-lang-btn {
-          flex: 1;
-          display: flex; flex-direction: column; align-items: center; gap: 0.4rem;
-          padding: 1.05rem 0.6rem; border-radius: 18px;
-          background: transparent;
-          border: none;
-          color: rgba(255,255,255,0.6); cursor: pointer;
-          font-size: 1.2rem; font-weight: 600; letter-spacing: 0.05em;
-          transition: background 0.4s cubic-bezier(0.22, 1, 0.36, 1), color 0.4s ease, transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+        .mr-seg__btn {
+          display: inline-flex; align-items: center; justify-content: center;
+          min-width: 3rem; height: 2.6rem; padding: 0 1rem;
+          border: none; border-radius: 999px;
+          background: transparent; cursor: pointer;
+          color: rgba(255,255,255,0.6);
+          font-family: var(--font-body); font-size: 0.95rem; font-weight: 700; letter-spacing: 0.05em;
+          transition: background 0.3s ease, color 0.3s ease, transform 0.3s ease;
         }
-        .menu-lang-btn .menu-lang-flag { font-size: 2rem; line-height: 1; }
-        .menu-lang-btn:hover { color: var(--white-soft); transform: translateY(-2px); }
-        .menu-lang-btn.active {
-          background: var(--navy-light);
-          color: var(--gold);
-        }
+        .mr-seg__btn:hover { color: var(--white-soft); transform: translateY(-1px); }
+        .mr-seg__btn.active { background: var(--accent); color: var(--on-accent); }
 
         /* ── Responsive ── */
+        /* En móvil/tablet Contacto pasa al menú → la barra deja solo logo + Menú */
+        @media (max-width: 860px) {
+          .nav-pill-contact { display: none; }
+        }
         @media (max-width: 768px) {
-          .nav-logo-text { font-size: 1.85rem; }
+          .nav-logo-text { font-size: 2.1rem; }
           .nav-pill { padding: 0.4rem 0.5rem 0.4rem 1.5rem; font-size: 1.2rem; }
           .nav-pill-icon { width: 2.7rem; height: 2.7rem; }
         }
         @media (max-width: 480px) {
-          .nav-row { padding: 0.8rem 1rem !important; }
-          .nav-pill-contact .nav-pill-text { display: none; }
-          .nav-pill-contact { padding: 0.4rem; }
-          .menu-dialog { top: 104px; right: 1rem; }
+          .nav-row { padding: 0.85rem 1.1rem !important; }
+          .nav-logo-text { font-size: 2rem; }
+          .mr-footer { gap: 1.5rem; }
         }
 
         @media (prefers-reduced-motion: reduce) {
-          .menu-overlay, .menu-overlay.closing,
-          .menu-dialog, .menu-dialog.closing { animation: none !important; }
-          .nav-pill, .menu-link { transition: none !important; }
+          .menu-reveal { transition: none !important; }
+          .menu-reveal .mr-link,
+          .menu-reveal .mr-footer { transition: none !important; opacity: 1 !important; transform: none !important; }
+          .nav-pill, .mr-link, .mr-seg__btn { transition: none !important; }
         }
       `}</style>
 
@@ -312,13 +365,14 @@ export default function GeckNavbar() {
           </a>
 
           {/* Secciones Contacto + Menú — con contenedor visible y bordes redondeados */}
-          <div style={{ display: "flex", alignItems: "center", gap: "1.25rem", pointerEvents: "auto" }}>
+          <div className="nav-actions" style={{ display: "flex", alignItems: "center", pointerEvents: "auto" }}>
             <a href="/contacto" className="nav-pill nav-pill-contact">
               <span className="nav-pill-text">{t.contact}</span>
               <span className="nav-pill-icon"><Mail size={20} /></span>
             </a>
 
             <button
+              ref={menuBtnRef}
               type="button"
               onClick={toggleMenu}
               aria-label={isMenuShown ? t.close : t.menu}
@@ -337,64 +391,73 @@ export default function GeckNavbar() {
         </div>
       </nav>
 
-      {/* ── Diálogo del menú (lado izquierdo) ── */}
+      {/* ── Menú: reveal circular que crece desde el botón ── */}
       {menuOpen && (
-        <>
-          <div className={`menu-overlay ${menuClosing ? "closing" : ""}`} onClick={closeMenu} />
-          <div className={`menu-dialog ${menuClosing ? "closing" : ""}`} role="dialog" aria-label={t.menu}>
-            <p className="menu-label">{t.menu}</p>
-            <nav style={{ display: "flex", flexDirection: "column", gap: "0.35rem" }}>
-              {navLinks.map(({ key, icon: Icon, href }) => (
-                <a key={key} href={href} onClick={handleNavLinkClick} className="menu-link">
-                  <Icon size={28} />
-                  <span>{t[key]}</span>
-                  <ArrowUpRight size={22} className="menu-link-arrow" />
+        <div
+          className={`menu-reveal ${revealOpen && !menuClosing ? "is-open" : ""}`}
+          style={{ "--cx": `${reveal.x}px`, "--cy": `${reveal.y}px`, "--r": `${reveal.r}px` }}
+          role="dialog"
+          aria-modal="true"
+          aria-label={t.menu}
+        >
+          <div className="menu-reveal__inner">
+            <nav className="mr-links">
+              {navLinks.map(({ key, href }, i) => (
+                <a
+                  key={key}
+                  href={href}
+                  onClick={handleNavLinkClick}
+                  className="mr-link"
+                  style={{ "--i": i }}
+                >
+                  <span className="mr-link__num">{String(i + 1).padStart(2, "0")}</span>
+                  <span className="mr-link__label">{t[key]}</span>
+                  <ArrowUpRight className="mr-link__arrow" size={28} />
                 </a>
               ))}
             </nav>
 
-            <div className="menu-divider" />
+            <div className="mr-footer">
+              <div className="mr-control">
+                <span className="mr-control__label">{t.language}</span>
+                <div className="mr-seg">
+                  {languageOptions.map((opt) => (
+                    <button
+                      key={opt.code}
+                      onClick={() => handleLanguageChange(opt.code)}
+                      className={`mr-seg__btn ${language === opt.code ? "active" : ""}`}
+                      aria-label={opt.label}
+                    >
+                      {opt.code.toUpperCase()}
+                    </button>
+                  ))}
+                </div>
+              </div>
 
-            <p className="menu-label">{t.language}</p>
-            <div className="menu-lang-group">
-              {languageOptions.map((opt) => (
-                <button
-                  key={opt.code}
-                  onClick={() => handleLanguageChange(opt.code)}
-                  className={`menu-lang-btn ${language === opt.code ? "active" : ""}`}
-                  aria-label={opt.label}
-                >
-                  <span className="menu-lang-flag">{opt.flag}</span>
-                  <span>{opt.code.toUpperCase()}</span>
-                </button>
-              ))}
-            </div>
-
-            <div className="menu-divider" />
-
-            <p className="menu-label">{t.theme}</p>
-            <div className="menu-lang-group">
-              <button
-                onClick={() => theme !== 'light' && toggleTheme()}
-                className={`menu-lang-btn ${theme === 'light' ? "active" : ""}`}
-                aria-label={t.themeLight}
-                aria-pressed={theme === 'light'}
-              >
-                <Sun size={26} />
-                <span>{t.themeLight}</span>
-              </button>
-              <button
-                onClick={() => theme !== 'dark' && toggleTheme()}
-                className={`menu-lang-btn ${theme === 'dark' ? "active" : ""}`}
-                aria-label={t.themeDark}
-                aria-pressed={theme === 'dark'}
-              >
-                <Moon size={26} />
-                <span>{t.themeDark}</span>
-              </button>
+              <div className="mr-control">
+                <span className="mr-control__label">{t.theme}</span>
+                <div className="mr-seg">
+                  <button
+                    onClick={() => theme !== "light" && toggleTheme()}
+                    className={`mr-seg__btn ${theme === "light" ? "active" : ""}`}
+                    aria-label={t.themeLight}
+                    aria-pressed={theme === "light"}
+                  >
+                    <Sun size={20} />
+                  </button>
+                  <button
+                    onClick={() => theme !== "dark" && toggleTheme()}
+                    className={`mr-seg__btn ${theme === "dark" ? "active" : ""}`}
+                    aria-label={t.themeDark}
+                    aria-pressed={theme === "dark"}
+                  >
+                    <Moon size={20} />
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
-        </>
+        </div>
       )}
     </>
   );

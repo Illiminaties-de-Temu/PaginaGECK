@@ -1,114 +1,170 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { useLanguage } from '../../hooks/useLanguage';
 
+const MEXICO_CENTER = [23.6345, -102.5528];
+const PARRAL = [26.9323, -105.6669];
+const REACH = [
+  [PARRAL, [19.4326, -99.1332]],   // Parral → CDMX
+  [PARRAL, [29.7604, -95.3698]],   // Parral → Houston, USA
+];
+const EASE = [0.16, 1, 0.3, 1];
+
 export default function AboutHero() {
   const { t } = useLanguage();
-  const [MapComponent, setMapComponent] = useState(null);
   const heroRef = useRef(null);
+  const mapRef = useRef(null);
+  const flownRef = useRef(false);
 
-  // --- LÓGICA DE PARALLAX UNIFICADA ---
-  const { scrollYProgress } = useScroll({
-    target: heroRef,
-    offset: ["start start", "end start"]
-  });
+  const [lib, setLib] = useState(null);
+  const [mapReady, setMapReady] = useState(false);
+  const [inView, setInView] = useState(false);
+  const [landed, setLanded] = useState(false);
+  const [accent, setAccent] = useState('#C3AD85');
+  const reduce = typeof window !== 'undefined'
+    && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  // El texto sube más rápido (Efecto Capa Superior)
+  // --- Parallax ---
+  const { scrollYProgress } = useScroll({ target: heroRef, offset: ['start start', 'end start'] });
   const yText = useTransform(scrollYProgress, [0, 1], [0, -300]);
-
-  // El mapa sube más lento (Efecto Capa de Fondo)
   const yMap = useTransform(scrollYProgress, [0, 1], [0, -150]);
-
-  // Desvanecimiento común al salir
   const opacity = useTransform(scrollYProgress, [0, 0.7], [1, 0]);
 
+  // --- Color de acento real desde el token (Leaflet no resuelve var() en atributos SVG) ---
   useEffect(() => {
-    import('leaflet/dist/leaflet.css');
-    import('react-leaflet').then((module) => {
-      const { MapContainer, TileLayer, Marker, Popup, Circle, useMap } = module;
-      import('leaflet').then((L) => {
-        delete L.Icon.Default.prototype._getIconUrl;
-        L.Icon.Default.mergeOptions({
-          iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
-          iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
-          shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
-        });
-
-        const customIcon = new L.Icon({
-          iconUrl: 'data:image/svg+xml;base64,' + btoa(`<svg width="50" height="50" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="25" cy="25" r="22" fill="url(#grad)" stroke="#fff" stroke-width="4"/><circle cx="25" cy="25" r="10" fill="#fff"/><defs><linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:var(--accent);stop-opacity:1" /><stop offset="100%" style="stop-color:#f4d03f;stop-opacity:1" /></linearGradient></defs></svg>`),
-          iconSize: [50, 50],
-          iconAnchor: [25, 25],
-        });
-
-        function AutoZoom() {
-          const map = useMap();
-          const timeoutsRef = useRef([]);
-          useEffect(() => {
-            const mexicoCenter = [23.6345, -102.5528];
-            const parralCoords = [26.9323, -105.6669];
-            const run = () => {
-              map.setView(mexicoCenter, 5, { animate: true });
-              timeoutsRef.current.push(setTimeout(() => map.flyTo(parralCoords, 7, { duration: 3.5 }), 2000));
-              timeoutsRef.current.push(setTimeout(() => map.flyTo(parralCoords, 9, { duration: 2.5 }), 6500));
-            };
-            run();
-            const int = setInterval(run, 15000);
-            return () => { clearInterval(int); timeoutsRef.current.forEach(clearTimeout); };
-          }, [map]);
-          return null;
-        }
-
-        const Map = () => (
-          <MapContainer center={[23.6345, -102.5528]} zoom={5} scrollWheelZoom={false} style={{ height: '100%', width: '100%' }}>
-            <TileLayer url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png" />
-            <AutoZoom />
-            <Circle center={[26.9323, -105.6669]} radius={80000} pathOptions={{ color: 'var(--accent)', fillColor: 'var(--accent)', fillOpacity: 0.1, weight: 2 }} />
-            <Marker position={[26.9323, -105.6669]} icon={customIcon} />
-          </MapContainer>
-        );
-        setMapComponent(() => Map);
-      });
-    });
+    const c = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim();
+    if (c) setAccent(c);
   }, []);
+
+  // --- Carga diferida de Leaflet (evita SSR de window/document) ---
+  useEffect(() => {
+    let mounted = true;
+    import('leaflet/dist/leaflet.css');
+    Promise.all([import('react-leaflet'), import('leaflet')]).then(([rl, leafletMod]) => {
+      if (!mounted) return;
+      const L = leafletMod.default || leafletMod;
+      setLib({ MapContainer: rl.MapContainer, TileLayer: rl.TileLayer, Marker: rl.Marker, Circle: rl.Circle, Polyline: rl.Polyline, L });
+    });
+    return () => { mounted = false; };
+  }, []);
+
+  // --- Marcador dorado con pulso ---
+  const pinIcon = useMemo(() => {
+    if (!lib) return null;
+    return lib.L.divIcon({
+      className: 'ah-pin',
+      html: '<span class="ah-pin__pulse"></span><span class="ah-pin__pulse ah-pin__pulse--2"></span><span class="ah-pin__core"></span>',
+      iconSize: [22, 22],
+      iconAnchor: [11, 11],
+    });
+  }, [lib]);
+
+  // --- Disparar el vuelo cuando el hero entra en vista (una sola vez) ---
+  useEffect(() => {
+    const el = heroRef.current;
+    if (!el) return;
+    const io = new IntersectionObserver(([e]) => { if (e.isIntersecting) setInView(true); }, { threshold: 0.35 });
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (!inView || !mapReady || flownRef.current) return;
+    flownRef.current = true;
+    const map = mapRef.current;
+    if (!map) return;
+
+    if (reduce) {
+      map.setView(PARRAL, 8, { animate: false });
+      setLanded(true);
+      return;
+    }
+
+    map.setView(MEXICO_CENTER, 5, { animate: false });
+    const t1 = setTimeout(() => map.flyTo(PARRAL, 7, { duration: 3.2 }), 700);
+    const t2 = setTimeout(() => map.flyTo(PARRAL, 9, { duration: 2.6 }), 4200);
+    const t3 = setTimeout(() => setLanded(true), 7200);
+    return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
+  }, [inView, mapReady, reduce]);
+
+  const Map = lib;
 
   return (
     <>
       <section className="about-hero" ref={heroRef}>
-        {/* COLUMNA IZQUIERDA - TEXTO DESLIZANTE */}
+        {/* TEXTO */}
         <div className="about-hero__text-side">
-          <motion.div 
+          <motion.div
             style={{ y: yText, opacity }}
             initial={{ opacity: 0, y: 100 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+            transition={{ duration: 1, ease: EASE }}
             className="about-hero__text-content"
           >
             <h1 className="about-hero__title">
               {t.about.title}
               <span className="about-hero__title-highlight">{t.about.highlight}</span>
             </h1>
-            <p className="about-hero__subtitle">
-              {t.about.subtitle}
-            </p>
+            <p className="about-hero__subtitle">{t.about.subtitle}</p>
           </motion.div>
         </div>
 
-        {/* COLUMNA DERECHA - MAPA DESLIZANTE */}
+        {/* MAPA */}
         <div className="about-hero__map-side">
-          <motion.div 
+          <motion.div
             style={{ y: yMap, opacity }}
             initial={{ opacity: 0, y: 150 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 1.2, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+            transition={{ duration: 1.2, delay: 0.2, ease: EASE }}
             className="about-hero__map-wrapper"
           >
-            {MapComponent ? (
-              <MapComponent />
+            {Map ? (
+              <Map.MapContainer
+                center={MEXICO_CENTER}
+                zoom={5}
+                scrollWheelZoom={false}
+                zoomControl={false}
+                attributionControl={false}
+                style={{ height: '100%', width: '100%' }}
+                ref={(m) => { if (m && !mapRef.current) { mapRef.current = m; setMapReady(true); } }}
+              >
+                <Map.TileLayer url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png" />
+
+                {landed && REACH.map((line, i) => (
+                  <Map.Polyline
+                    key={i}
+                    positions={line}
+                    pathOptions={{ color: accent, weight: 1.4, opacity: 0.5, dashArray: '4 9' }}
+                  />
+                ))}
+
+                <Map.Circle
+                  center={PARRAL}
+                  radius={80000}
+                  pathOptions={{ color: accent, fillColor: accent, fillOpacity: 0.08, weight: 1.5 }}
+                />
+                {pinIcon && <Map.Marker position={PARRAL} icon={pinIcon} />}
+              </Map.MapContainer>
             ) : (
               <div className="about-hero__map-loading"><span>{t.about.mapLoading}</span></div>
             )}
+
+            {/* Tarjeta que aparece al aterrizar */}
+            <motion.div
+              className="about-hero__card"
+              initial={false}
+              animate={landed ? { opacity: 1, y: 0 } : { opacity: 0, y: 18 }}
+              transition={{ duration: 0.6, ease: EASE }}
+            >
+              <span className="about-hero__card-dot" aria-hidden="true" />
+              <div className="about-hero__card-body">
+                <strong className="about-hero__card-city">{t.about.mapCity}</strong>
+                <span className="about-hero__card-badge">{t.about.mapBadge}</span>
+                <span className="about-hero__card-reach">{t.about.mapReach}</span>
+              </div>
+            </motion.div>
           </motion.div>
         </div>
       </section>
@@ -117,7 +173,7 @@ export default function AboutHero() {
         .about-hero {
           font-family: var(--font-body);
           position: relative;
-          min-height: 120vh; /* Un poco más alto para dar margen al deslizamiento */
+          min-height: 120vh;
           width: 100%;
           display: flex;
           background: transparent;
@@ -169,6 +225,7 @@ export default function AboutHero() {
         }
 
         .about-hero__map-wrapper {
+          position: relative;
           width: 100%;
           height: 75vh;
           border-radius: 40px;
@@ -189,11 +246,89 @@ export default function AboutHero() {
           letter-spacing: 0.2em;
         }
 
+        /* ── Tarjeta de ubicación ── */
+        .about-hero__card {
+          position: absolute;
+          left: 22px;
+          bottom: 22px;
+          z-index: 500;
+          display: flex;
+          align-items: flex-start;
+          gap: 12px;
+          max-width: 280px;
+          padding: 16px 20px;
+          border-radius: 16px;
+          background: color-mix(in srgb, #030816 78%, transparent);
+          border: 1px solid color-mix(in srgb, var(--accent) 28%, transparent);
+          backdrop-filter: blur(10px);
+          box-shadow: 0 18px 40px rgba(0,0,0,0.45);
+          pointer-events: none;
+        }
+        .about-hero__card-dot {
+          width: 9px;
+          height: 9px;
+          margin-top: 6px;
+          border-radius: 50%;
+          background: var(--accent);
+          box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 25%, transparent);
+          flex-shrink: 0;
+        }
+        .about-hero__card-body { display: flex; flex-direction: column; gap: 3px; }
+        .about-hero__card-city {
+          font-size: 1rem;
+          font-weight: 700;
+          color: var(--gold-light, #F4E4BC);
+          letter-spacing: 0.01em;
+        }
+        .about-hero__card-badge {
+          font-size: 0.66rem;
+          text-transform: uppercase;
+          letter-spacing: 0.2em;
+          color: var(--accent);
+        }
+        .about-hero__card-reach {
+          margin-top: 6px;
+          font-size: 0.78rem;
+          line-height: 1.4;
+          color: rgba(255,255,255,0.62);
+        }
+
+        /* ── Marcador con pulso (divIcon) ── */
+        .ah-pin { position: relative; }
+        .ah-pin__core {
+          position: absolute;
+          top: 50%; left: 50%;
+          width: 12px; height: 12px;
+          border-radius: 50%;
+          background: var(--accent);
+          border: 2px solid #fff;
+          transform: translate(-50%, -50%);
+          box-shadow: 0 0 12px color-mix(in srgb, var(--accent) 80%, transparent);
+        }
+        .ah-pin__pulse {
+          position: absolute;
+          top: 50%; left: 50%;
+          width: 12px; height: 12px;
+          border-radius: 50%;
+          background: var(--accent);
+          transform: translate(-50%, -50%);
+          animation: ah-pulse 2.4s ease-out infinite;
+        }
+        .ah-pin__pulse--2 { animation-delay: 1.2s; }
+        @keyframes ah-pulse {
+          0%   { opacity: 0.6; transform: translate(-50%, -50%) scale(1); }
+          100% { opacity: 0; transform: translate(-50%, -50%) scale(5); }
+        }
+
         @media (max-width: 1024px) {
           .about-hero { flex-direction: column; min-height: auto; }
           .about-hero__text-side { width: 100%; padding: 10rem 2rem 4rem; text-align: center; justify-content: center; }
           .about-hero__map-side { width: 100%; padding: 2rem; }
           .about-hero__map-wrapper { height: 50vh; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          .ah-pin__pulse { animation: none; opacity: 0; }
         }
       `}</style>
     </>
