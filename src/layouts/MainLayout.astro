@@ -1,4 +1,5 @@
 ---
+import { ClientRouter } from 'astro:transitions';
 import Footer from '@/components/Footer.jsx';
 import Navbar from '@/components/Navbar.jsx';
 import '@/styles/global.css';
@@ -51,14 +52,89 @@ const twitterHandle = '@geckcodex';
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <!-- ═══════════════════════════════════════
+         TRANSICIONES DE PÁGINA — wipe circular (rima con el menú)
+    ═══════════════════════════════════════ -->
+    <ClientRouter />
+    <style is:global>
+      /* El círculo crece desde el punto del clic (--vt-x/--vt-y),
+         con la misma curva que el reveal del menú. */
+      @keyframes gc-page-reveal {
+        from { clip-path: circle(0% at var(--vt-x, 50%) var(--vt-y, 50%)); }
+        to   { clip-path: circle(150% at var(--vt-x, 50%) var(--vt-y, 50%)); }
+      }
+      /* La página saliente se queda quieta debajo; la entrante la cubre con el círculo. */
+      ::view-transition-old(root) {
+        animation: none;
+        z-index: 0;
+      }
+      ::view-transition-new(root) {
+        animation: gc-page-reveal 0.46s cubic-bezier(0.76, 0, 0.24, 1) both;
+        z-index: 1;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        ::view-transition-old(root),
+        ::view-transition-new(root) { animation: none; }
+      }
+    </style>
+    <script>
+      // Origen del círculo = último punto de clic (fallback: centro).
+      document.addEventListener('click', (e) => {
+        const x = (e.clientX / window.innerWidth) * 100;
+        const y = (e.clientY / window.innerHeight) * 100;
+        document.documentElement.style.setProperty('--vt-x', x + '%');
+        document.documentElement.style.setProperty('--vt-y', y + '%');
+      }, true);
+
+      // Durante la navegación, el reset de scroll debe ser INSTANTÁNEO.
+      // Sin esto, `scroll-behavior: smooth` anima el regreso al tope cuando
+      // vienes de una página scrolleada (p. ej. Contacto → Home) y la
+      // transición se siente "eterna".
+      document.addEventListener('astro:before-swap', () => {
+        document.documentElement.style.scrollBehavior = 'auto';
+      });
+
+      // Reaplica el tema tras cada swap (el script no-flash solo corre en carga completa).
+      document.addEventListener('astro:after-swap', () => {
+        // Restaura el smooth-scroll una vez asentada la nueva página.
+        requestAnimationFrame(() => {
+          document.documentElement.style.scrollBehavior = '';
+        });
+        try {
+          let t = localStorage.getItem('geck-theme');
+          if (t !== 'light' && t !== 'dark') {
+            t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+          }
+          document.documentElement.setAttribute('data-theme', t);
+        } catch (e) {
+          document.documentElement.setAttribute('data-theme', 'dark');
+        }
+      });
+    </script>
+
+    <!-- ═══════════════════════════════════════
          TIPOGRAFÍA — Space Grotesk (títulos) + Inter (cuerpo)
     ═══════════════════════════════════════ -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    {/* Fuente no-bloqueante: se carga sin frenar el primer render (display=swap
+        muestra texto al instante con la fuente de sistema y la cambia al cargar). */}
+    <link
+      rel="preload"
+      as="style"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap"
+    />
     <link
       rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap"
+      media="print"
+      onload="this.media='all'"
     />
+    <noscript>
+      <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap"
+      />
+    </noscript>
 
     <!-- ═══════════════════════════════════════
          BÁSICO SEO
@@ -158,6 +234,6 @@ const twitterHandle = '@geckcodex';
       <slot />
     </main>
     
-    <Footer client:idle />
+    <Footer client:visible />
   </body>
 </html>

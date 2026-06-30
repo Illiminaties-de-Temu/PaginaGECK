@@ -2,6 +2,7 @@
 import Layout from '@/layouts/MainLayout.astro';
 import VideoBackground from '@/components/VideoBackground.jsx';
 import ProjectCarousel from '@/components/hero/ProjectCarousel.jsx';
+import AboutTeaser from '@/components/hero/AboutTeaser.jsx';
 import SpecialtiesShowcase from '@/components/hero/SpecialtiesShowcase.jsx';
 import Carrusel from '@/components/hero/Carrusel.jsx';
 import StatsSection from '@/components/hero/StatsSection.jsx';
@@ -12,10 +13,39 @@ import StatsSection from '@/components/hero/StatsSection.jsx';
   description="Agencia de desarrollo tecnológico en Parral, Chihuahua. Creamos sitios web, apps móviles, soluciones de IA y e-commerce para empresas en México y Estados Unidos."
   canonical="https://geckcodex.com/"
 >
-  <VideoBackground client:visible />
+  {/* Fondo fijo compartido — plano (el contenido se mueve por encima, el fondo no) */}
+  <div class="home-bg" aria-hidden="true"></div>
 
-  <ProjectCarousel client:visible />
-  <SpecialtiesShowcase client:visible />
-  <Carrusel client:visible />
-  <StatsSection client:visible />
+  <div class="home-flow">
+    <VideoBackground client:visible />
+
+    <ProjectCarousel client:visible />
+    <AboutTeaser client:visible />
+    <SpecialtiesShowcase client:visible />
+    <Carrusel client:visible />
+    <StatsSection client:visible />
+  </div>
 </Layout>
+
+<style is:global>
+  /* ── Fondo estático compartido (parallax), sin decoración ── */
+  .home-bg {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background: var(--background);
+    pointer-events: none;
+  }
+
+  /* El contenido va por encima del fondo fijo */
+  .home-flow { position: relative; z-index: 1; }
+
+  /* Las secciones se vuelven transparentes para dejar ver el fondo fijo */
+  .home-flow .hero-section,
+  .home-flow .pc-section,
+  .home-flow .stk,
+  .home-flow .cc-section,
+  .home-flow .st-section {
+    background: transparent !important;
+  }
+</style>
