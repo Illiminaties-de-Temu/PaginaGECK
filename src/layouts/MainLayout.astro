@@ -52,39 +52,18 @@ const twitterHandle = '@geckcodex';
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <!-- ═══════════════════════════════════════
-         TRANSICIONES DE PÁGINA — wipe circular (rima con el menú)
+         NAVEGACIÓN — ClientRouter sin animación de transición.
+         Mantiene el SPA/prefetch (cambio de página rápido) pero el swap
+         es instantáneo: sin wipe ni fade entre páginas.
     ═══════════════════════════════════════ -->
     <ClientRouter />
     <style is:global>
-      /* El círculo crece desde el punto del clic (--vt-x/--vt-y),
-         con la misma curva que el reveal del menú. */
-      @keyframes gc-page-reveal {
-        from { clip-path: circle(0% at var(--vt-x, 50%) var(--vt-y, 50%)); }
-        to   { clip-path: circle(150% at var(--vt-x, 50%) var(--vt-y, 50%)); }
-      }
-      /* La página saliente se queda quieta debajo; la entrante la cubre con el círculo. */
-      ::view-transition-old(root) {
-        animation: none;
-        z-index: 0;
-      }
+      ::view-transition-old(root),
       ::view-transition-new(root) {
-        animation: gc-page-reveal 0.46s cubic-bezier(0.76, 0, 0.24, 1) both;
-        z-index: 1;
-      }
-      @media (prefers-reduced-motion: reduce) {
-        ::view-transition-old(root),
-        ::view-transition-new(root) { animation: none; }
+        animation: none;
       }
     </style>
     <script>
-      // Origen del círculo = último punto de clic (fallback: centro).
-      document.addEventListener('click', (e) => {
-        const x = (e.clientX / window.innerWidth) * 100;
-        const y = (e.clientY / window.innerHeight) * 100;
-        document.documentElement.style.setProperty('--vt-x', x + '%');
-        document.documentElement.style.setProperty('--vt-y', y + '%');
-      }, true);
-
       // Durante la navegación, el reset de scroll debe ser INSTANTÁNEO.
       // Sin esto, `scroll-behavior: smooth` anima el regreso al tope cuando
       // vienes de una página scrolleada (p. ej. Contacto → Home) y la
@@ -228,6 +207,96 @@ const twitterHandle = '@geckcodex';
     <link rel="dns-prefetch" href="https://cdn.simpleicons.org" />
   </head>
   <body>
+    <!-- ═══════════════════════════════════════
+         PRELOADER — carga inicial + transición de carga entre páginas.
+         transition:persist mantiene el MISMO nodo entre navegaciones (no se
+         recrea ni parpadea); el script lo muestra/oculta en cada cambio.
+    ═══════════════════════════════════════ -->
+    <div id="gc-preloader" class="gc-preloader" aria-hidden="true" transition:persist>
+      <div class="gc-preloader__inner">
+        <img src="/assets/image/logo.png" alt="" class="gc-preloader__logo" width="72" height="72" />
+        <span class="gc-preloader__bar"><span class="gc-preloader__bar-fill"></span></span>
+      </div>
+    </div>
+    <style is:global>
+      .gc-preloader {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--background);
+        transition: opacity 0.55s ease;
+      }
+      .gc-preloader.is-done { opacity: 0; pointer-events: none; }
+      .gc-preloader__inner {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 22px;
+      }
+      .gc-preloader__logo {
+        width: 72px;
+        height: 72px;
+        object-fit: contain;
+        animation: gc-pl-pulse 1.6s ease-in-out infinite;
+      }
+      @keyframes gc-pl-pulse {
+        0%, 100% { opacity: 0.5; transform: scale(0.95); }
+        50%      { opacity: 1;   transform: scale(1); }
+      }
+      .gc-preloader__bar {
+        width: 140px;
+        height: 2px;
+        border-radius: 2px;
+        background: color-mix(in srgb, var(--accent) 20%, transparent);
+        overflow: hidden;
+      }
+      .gc-preloader__bar-fill {
+        display: block;
+        height: 100%;
+        width: 40%;
+        border-radius: 2px;
+        background: var(--accent);
+        animation: gc-pl-slide 1.1s ease-in-out infinite;
+      }
+      @keyframes gc-pl-slide {
+        0%   { transform: translateX(-120%); }
+        100% { transform: translateX(320%); }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .gc-preloader__logo,
+        .gc-preloader__bar-fill { animation: none; }
+        .gc-preloader { transition: none; }
+      }
+    </style>
+    <script is:inline>
+      // is:inline → corre durante el parseo y sus listeners sobre `document`
+      // persisten entre navegaciones SPA (el preloader usa transition:persist,
+      // así que es siempre el MISMO nodo).
+      (function () {
+        function pl() { return document.getElementById('gc-preloader'); }
+        function show() { var el = pl(); if (el) el.classList.remove('is-done'); }
+        function hide() { var el = pl(); if (el) el.classList.add('is-done'); }
+
+        // ── Carga inicial: visible por defecto; ocultar cuando el DOM está listo
+        //    (no esperamos a videos/imágenes pesadas, que cargan en 2.º plano).
+        if (document.readyState !== 'loading') hide();
+        else document.addEventListener('DOMContentLoaded', hide, { once: true });
+        setTimeout(hide, 1500); // red de seguridad
+
+        // ── Transición de carga entre páginas:
+        //    mostrar al iniciar la navegación, ocultar cuando la nueva ya cargó.
+        document.addEventListener('astro:before-preparation', show);
+        document.addEventListener('astro:after-swap', function () {
+          // La nueva página ya está en el DOM; breve pausa para que se vea la
+          // transición de carga y se monte el contenido, luego revelar.
+          requestAnimationFrame(function () { setTimeout(hide, 350); });
+        });
+      })();
+    </script>
+
     <Navbar client:load />
     
     <main>
