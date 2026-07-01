@@ -64,10 +64,12 @@ function CardInner({ project, catLabels }) {
 
 /* ─── SLOT — posición polar fija + entrada animada por scroll ─────────── */
 function WheelSlot({ p, i, progress, catLabels, hovered, onEnter, onLeave, reduce }) {
-  const start = 0.18 + (i / RING.length) * 0.34;
-  const opacity = useTransform(progress, [start, start + 0.09], [0, 1]);
-  const scale   = useTransform(progress, [start, start + 0.16], [0.5, 1]);
-  const yNum    = useTransform(progress, [start, start + 0.16], [70, 0]);
+  /* Todas las tarjetas entran en la MISMA ventana de scroll (sin escalonado por
+     índice) para que el arco aparezca de un jalón y no "por partes". */
+  const start = 0.18;
+  const opacity = useTransform(progress, [start, start + 0.12], [0, 1]);
+  const scale   = useTransform(progress, [start, start + 0.18], [0.5, 1]);
+  const yNum    = useTransform(progress, [start, start + 0.18], [70, 0]);
   const y       = useMotionTemplate`${yNum}px`;
 
   return (
@@ -453,14 +455,17 @@ export default function ProjectCarousel() {
             height: clamp(300px, 56vw, 380px);
           }
           .pc-wheel { top: calc(var(--r) + 112px); }
-          .pc-wheel.is-spinning { animation-duration: 90s; }
+          /* Radio ~900 (vs 1500 en desktop): para conservar la MISMA velocidad
+             lineal percibida que en desktop hay que acortar la vuelta. */
+          .pc-wheel.is-spinning { animation-duration: 64s; }
           .pc-stage__fade--b { height: 96px; }
           .pc-card__name { font-size: .85rem; }
         }
         @media (max-width: 480px) {
           .pc-stage { --r: 680px; --cw: 132px; --ch: 172px; }
           .pc-wheel { top: calc(var(--r) + 96px); }
-          .pc-wheel.is-spinning { animation-duration: 75s; }
+          /* Radio ~680: misma lógica, vuelta aún más corta para no sentirse lento. */
+          .pc-wheel.is-spinning { animation-duration: 48s; }
         }
 
         /* ── ESTÁTICO (reduced-motion) ───────────────────── */

@@ -73,19 +73,8 @@ export default function ProcessTimeline() {
     h: typeof window !== 'undefined' ? window.innerHeight : 800,
   }));
 
-  /* En pantallas angostas el "árbol con cámara" recorta las tarjetas laterales.
-     Ahí usamos el timeline vertical (mismo layout del fallback), siempre legible. */
-  const [compact, setCompact] = useState(false);
-  useEffect(() => {
-    const mq = window.matchMedia('(max-width: 860px)');
-    const sync = () => setCompact(mq.matches);
-    sync();
-    mq.addEventListener('change', sync);
-    return () => mq.removeEventListener('change', sync);
-  }, []);
-
   /* Zoom y desvío de ramas adaptados al ancho disponible */
-  const narrow = stage.w < 760;
+  const narrow = stage.w < 860;
   const zoom = narrow ? 1.0 : ZOOM;
   const points = nodePoints(N, narrow ? 130 : OFFSET_X);
 
@@ -107,10 +96,14 @@ export default function ProcessTimeline() {
     stiffness: 80, damping: 26, mass: 0.4, restDelta: 0.001,
   });
 
-  /* Cámara: centra y enfoca el nodo activo (pan vertical/horizontal con zoom fijo) */
+  /* Cámara: centra y enfoca el nodo activo (pan vertical/horizontal con zoom fijo).
+     En móvil la tarjeta cuelga DEBAJO del nodo, así que el punto de enfoque se
+     baja (focusY) para que el grupo nodo+tarjeta quede centrado y legible, sin
+     que la tarjeta se desborde por abajo. */
+  const focusY = narrow ? 120 : 0;
   const input = points.map((_, i) => i / (N - 1));
   const txArr = points.map((p) => stage.w / 2 - p.px * zoom);
-  const tyArr = points.map((p) => stage.h / 2 - p.py * zoom);
+  const tyArr = points.map((p) => stage.h / 2 - (p.py + focusY) * zoom);
   const camX = useTransform(progress, input, txArr);
   const camY = useTransform(progress, input, tyArr);
 
@@ -118,8 +111,8 @@ export default function ProcessTimeline() {
   const trunkLen = useSpring(scrollYProgress, { stiffness: 90, damping: 30, restDelta: 0.001 });
   const pathD = points.map((p, i) => `${i ? 'L' : 'M'} ${p.px} ${p.py}`).join(' ');
 
-  /* ── Timeline vertical: reduced-motion o pantallas angostas ── */
-  if (reduce || compact) {
+  /* ── Timeline vertical: solo como fallback de reduced-motion ── */
+  if (reduce) {
     return (
       <section className="ptz-section ptz-section--static">
         <div className="ptz-heading">
@@ -334,7 +327,7 @@ const styles = `
      Al lado del nodo, la tarjeta (cámara centra el nodo) se salía del
      viewport y el stage la recortaba. En móvil la centramos DEBAJO del nodo
      y acotamos su ancho a la pantalla → sin recorte, sin perder el efecto. */
-  @media (max-width: 760px) {
+  @media (max-width: 860px) {
     .ptz-node { width: 60px; height: 60px; }
     .ptz-node--root { width: 72px; height: 72px; }
     .ptz-card {

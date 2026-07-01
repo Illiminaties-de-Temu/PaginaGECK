@@ -178,31 +178,10 @@ export default function VideoBackground({ children }) {
       wrap.style.setProperty('--my', (((cur.py - r.top) / r.height) * 100).toFixed(2) + '%');
       wrap.style.setProperty('--spotO', cur.on.toFixed(3));
 
-      /* Scrollytelling: progreso sobre el recorrido alto del hero (0 arriba → 1
-       * cuando termina). El gecko queda fijo (sticky) un instante y luego TODO
-       * sale a la vez: las palabras se separan hacia afuera y el gecko sube +
-       * escala, desvaneciéndose juntos hasta revelar el carrusel. */
-      const sr = section.getBoundingClientRect();
-      const travel = Math.max(1, sr.height - innerHeight);
-      const sp = Math.max(0, Math.min(1, -sr.top / travel));
-      const p = Math.max(0, Math.min(1, (sp - 0.12) / 0.78)); // hold inicial, luego salida única
-      const xMax = innerWidth * 0.45;
-
-      /* Palabras: se separan en sentidos opuestos + fade (sobre el parallax de mouse) */
-      if (labelEl) {
-        labelEl.style.transform = `translateX(${(-p * xMax).toFixed(1)}px)`;
-        labelEl.style.opacity = (1 - p).toFixed(3);
-      }
-      if (svcEl) {
-        svcEl.style.transform = `translateX(${(p * xMax).toFixed(1)}px)`;
-        svcEl.style.opacity = (1 - p).toFixed(3);
-      }
-
-      /* Gecko ASCII: sale al mismo tiempo que las palabras (sube + escala + fade) */
-      const asciiY = p * -120;
-      const asciiScale = 1 - p * 0.12;
-      wrap.style.transform = `translate(${(-cur.nx * 55).toFixed(1)}px, ${(-cur.ny * 45 + asciiY).toFixed(1)}px) scale(${asciiScale.toFixed(3)})`;
-      wrap.style.opacity = (1 - p).toFixed(3);
+      /* Hero ESTÁTICO: no hay salida por scroll. El gecko y los textos se quedan
+       * fijos (solo parallax sutil del mouse). El hero ya no se desvanece ni se
+       * desplaza al hacer scroll; simplemente se sale de pantalla con la página. */
+      wrap.style.transform = `translate(${(-cur.nx * 55).toFixed(1)}px, ${(-cur.ny * 45).toFixed(1)}px)`;
       if (content) content.style.transform = `translate(${(cur.nx * 26).toFixed(1)}px, ${(cur.ny * 20).toFixed(1)}px)`;
 
       if (running) raf = requestAnimationFrame(frame);
@@ -305,8 +284,8 @@ export default function VideoBackground({ children }) {
         .hero-section {
           position: relative;
           width: 100%;
-          /* Alto = recorrido del scrollytelling. La capa interna queda sticky. */
-          height: 190vh;
+          /* Hero estático: ocupa una pantalla. Sin recorrido de scrollytelling. */
+          height: 100vh;
           background: var(--background);
           /* Color del ASCII según el modo: navy en claro, marfil en oscuro.
            * --ascii-glow = color de la CRESTA de la onda (más brillante que la tinta). */
@@ -479,7 +458,7 @@ export default function VideoBackground({ children }) {
 
         /* ── Tablet/Mobile: se apila (frase arriba · ASCII medio · servicio abajo) ── */
         @media (max-width: 768px) {
-          .hero-section { height: 160vh; }
+          .hero-section { height: 100vh; }
           .hero-ascii {
             font-size: clamp(3px, 2.05vw, 9px);
           }
