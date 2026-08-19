@@ -1,13 +1,6 @@
 import { useState, useMemo, useEffect, useRef } from "react";
 import { Github, Instagram, Facebook, ArrowUp } from "lucide-react";
-
-function TikTokIcon({ size = 20 }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
-      <path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.18 8.18 0 004.77 1.52V6.78a4.85 4.85 0 01-1-.09z"/>
-    </svg>
-  );
-}
+import { useLanguage } from "../hooks/useLanguage";
 
 // --- DISPERSIÓN DE TEXTO (mismo patrón que el logo del Navbar) ---
 function DisperseFooterText({ text, isHovered }) {
@@ -42,6 +35,7 @@ function DisperseFooterText({ text, isHovered }) {
 }
 
 export default function GeckFooter() {
+  const { t } = useLanguage();
   const [hoveredIcon, setHoveredIcon] = useState(null);
   const [atBottom, setAtBottom] = useState(false);
   const footerRef = useRef(null);
@@ -86,16 +80,69 @@ export default function GeckFooter() {
   };
 
   const socialLinks = [
-    { Icon: Github,    name: 'github',    label: 'GitHub',    url: '#' },
+    { Icon: Github,    name: 'github',    label: 'GitHub',    url: 'https://github.com/Geck-Codex' },
     { Icon: Instagram, name: 'instagram', label: 'Instagram', url: 'https://www.instagram.com/geckcodex?igsh=MTV5YWY5Nnh4OWQ2Mw==' },
     { Icon: Facebook,  name: 'facebook',  label: 'Facebook',  url: 'https://www.facebook.com/share/1Dt3nBrVgm/' },
-    { Icon: TikTokIcon, name: 'tiktok',   label: 'TikTok',    url: '#' },
+    // TikTok retirado: apuntaba a '#'. Un perfil enlazado a ningún lado resta
+    // confianza y no suma al sameAs del schema. Restaurar cuando exista la URL.
   ];
 
   return (
     <footer className="geck-footer" ref={footerRef}>
       <div className={`footer-card ${atBottom ? 'show' : ''}`}>
       <div className="footer-inner">
+
+        {/* ══════════════════════════════════════════════════════════
+            NAVEGACIÓN + NAP
+            Los enlaces internos del footer reparten autoridad hacia las
+            páginas comerciales, y el bloque de contacto repite el NAP
+            (nombre, dirección, teléfono) exactamente igual que el JSON-LD:
+            esa coincidencia literal es lo que consolida la entidad en la
+            búsqueda local y en los motores con IA.
+        ══════════════════════════════════════════════════════════ */}
+        <div className="footer-nav">
+          <div className="footer-col footer-col--brand">
+            <p className="footer-brand">Geck Codex</p>
+            <p className="footer-tagline">{t.footer.tagline}</p>
+          </div>
+
+          <nav className="footer-col" aria-label={t.footer.navTitle}>
+            <p className="footer-col__title">{t.footer.navTitle}</p>
+            <ul className="footer-list">
+              <li><a href="/">{t.nav.home}</a></li>
+              <li><a href="/servicios/">{t.nav.services}</a></li>
+              <li><a href="/portafolio/">{t.nav.portfolio}</a></li>
+              <li><a href="/nosotros/">{t.nav.about}</a></li>
+              <li><a href="/contacto/">{t.nav.contact}</a></li>
+            </ul>
+          </nav>
+
+
+          <div className="footer-col">
+            <p className="footer-col__title">{t.footer.contactTitle}</p>
+            <ul className="footer-list">
+              <li>
+                <a href="https://wa.me/526271745436" target="_blank" rel="noopener noreferrer">
+                  +52 627 174 5436
+                </a>
+              </li>
+              <li><a href="mailto:ventas@geckcodex.com">ventas@geckcodex.com</a></li>
+              <li>
+                <address className="footer-address">
+                  Hidalgo del Parral, Chihuahua, México
+                </address>
+              </li>
+            </ul>
+          </div>
+
+          <div className="footer-col">
+            <p className="footer-col__title">{t.footer.legalTitle}</p>
+            <ul className="footer-list">
+              <li><a href="/privacidad/">{t.footer.privacy}</a></li>
+              <li><a href="/terminos/">{t.footer.terms}</a></li>
+            </ul>
+          </div>
+        </div>
 
         {/* REDES SOCIALES — control segmentado navy (mismo estilo que el selector de idioma del nav) */}
         <div className="footer-social-group">
@@ -169,6 +216,75 @@ export default function GeckFooter() {
         .footer-inner {
           max-width: 1200px; margin: 0 auto;
           display: flex; flex-direction: column; align-items: center; gap: 40px;
+        }
+
+        /* ── Navegación + NAP ── */
+        .footer-nav {
+          width: 100%;
+          display: grid;
+          grid-template-columns: 1.6fr 1fr 1.3fr 1fr;
+          gap: 2.5rem;
+          padding-bottom: 2.5rem;
+          border-bottom: 1px solid var(--border);
+          text-align: left;
+        }
+
+        .footer-brand {
+          font-family: var(--font-display, inherit);
+          font-size: 1.15rem;
+          font-weight: 700;
+          letter-spacing: 0.04em;
+          color: var(--text);
+          margin: 0 0 0.6rem;
+        }
+
+        .footer-tagline {
+          font-size: 0.88rem;
+          line-height: 1.6;
+          color: var(--text-muted);
+          margin: 0;
+          max-width: 32ch;
+        }
+
+        .footer-col__title {
+          font-size: 0.72rem;
+          text-transform: uppercase;
+          letter-spacing: 0.16em;
+          font-weight: 700;
+          color: var(--accent-text);
+          margin: 0 0 1rem;
+        }
+
+        .footer-list {
+          list-style: none;
+          margin: 0;
+          padding: 0;
+          display: flex;
+          flex-direction: column;
+          gap: 0.6rem;
+        }
+
+        .footer-list a,
+        .footer-address {
+          font-size: 0.88rem;
+          line-height: 1.5;
+          color: var(--text-muted);
+          font-style: normal;
+          transition: color 0.3s ease;
+        }
+
+        .footer-list a:hover { color: var(--accent-text); }
+
+        @media (max-width: 860px) {
+          .footer-nav {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem 1.5rem;
+          }
+          .footer-col--brand { grid-column: 1 / -1; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          .footer-list a { transition: none; }
         }
 
         /* ── Grupo de redes (track navy) ── */
