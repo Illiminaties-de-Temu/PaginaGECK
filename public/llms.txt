@@ -1,0 +1,83 @@
+# Geck Codex
+
+> Agencia mexicana de desarrollo tecnológico con sede en Hidalgo del Parral, Chihuahua, México. Construye sitios web, aplicaciones móviles, sistemas de inteligencia artificial, e-commerce, plataformas SaaS y software a la medida para empresas y emprendedores en México y Estados Unidos.
+
+**Sitio:** https://geckcodex.com
+**Correo:** ventas@geckcodex.com
+**WhatsApp:** +52 627 174 5436
+**Ubicación:** Hidalgo del Parral, Chihuahua, México
+**Idiomas de atención:** español, inglés, portugués
+**Zona de servicio:** todo México (Chihuahua, Parral, Ciudad Juárez, Chihuahua capital, Monterrey, CDMX, Guadalajara) y Estados Unidos, además de proyectos remotos en Latinoamérica.
+
+## Qué hace Geck Codex
+
+Geck Codex es un equipo de desarrolladores mexicanos que construye productos digitales a medida. No es una agencia de plantillas: cada proyecto se desarrolla desde cero con código propio, con enfoque en resultados de negocio (más clientes, menos trabajo manual, más ventas).
+
+Consultoría inicial sin costo. Respuesta en menos de 24 horas.
+
+## Servicios
+
+- **Desarrollo Web** — Sitios y plataformas web responsive, optimizados para SEO y Core Web Vitals, con integración a Google Analytics y CRM.
+- **Apps Móviles** — Aplicaciones iOS y Android con Flutter desde una sola base de código; notificaciones push y publicación en App Store y Google Play.
+- **Inteligencia Artificial** — Automatización inteligente de procesos, visión por computadora, modelos predictivos, análisis avanzado de datos e integración con sistemas existentes.
+- **E-commerce** — Tiendas en línea con Shopify, WooCommerce o desarrollo custom: catálogo, pagos (Stripe, MercadoPago, PayPal), envíos e inventario.
+- **SaaS y Plataformas** — Plataformas con suscripciones recurrentes, arquitectura multi-tenant, dashboards de métricas y API REST.
+- **Automatización de procesos** — Workflows con Zapier, Make o n8n, integración entre sistemas vía API y bots RPA para tareas repetitivas.
+- **Software a Medida** — ERP, CRM, control de inventario, facturación y dashboards con KPIs desarrollados desde cero.
+- **Diseño UI/UX** — Research con usuarios, design systems escalables, prototipos interactivos e implementación pixel-perfect.
+- **Social Media / Marketing Digital** — Estrategia de contenido, calendario editorial, community management y reportes mensuales.
+- **Venture Studio** — Productos digitales propios con tracción real, abiertos a inversión.
+
+## Proceso de trabajo
+
+1. **Descubrimiento** — Análisis del negocio, objetivos y audiencia.
+2. **Diseño / Propuesta** — Wireframes y prototipos interactivos, tiempos y alcance definidos.
+3. **Desarrollo** — Código limpio, escalable y con buenas prácticas.
+4. **Testing y QA** — Pruebas de funcionalidad, rendimiento y seguridad.
+5. **Lanzamiento y soporte** — Despliegue, acompañamiento y actualizaciones.
+
+## Clientes y colaboraciones
+
+Gobierno Municipal de Hidalgo del Parral, Restaurante Las Chikis, Capital Transport, ITParral, Coronado Gym.
+
+## Proyectos representativos
+
+- **Chuchulucos** — Landing de alta conversión para marca de botanas artesanales picosas.
+- **Agend-In** — Automatización de citas por WhatsApp y Telegram con asistente virtual personalizable.
+- **Mando** — Bot que conecta WhatsApp/Telegram con la base de datos del negocio para consultas en lenguaje natural sobre ventas, inventario y métricas.
+- **Mi Caja** — Punto de venta (POS) accesible para restaurantes, carnicerías, abarrotes y fondas.
+- **FleetTrack** — App móvil de gestión de flotillas: rastreo en tiempo real, control documental y comunicación con operadores.
+- **SpendWise** — App de control de gastos personales con presupuestos y alertas.
+- **GymHub** — Plataforma de gestión de gimnasios y membresías.
+- **GeckCRM** — CRM para negocios locales.
+
+## Tecnologías
+
+React, Next.js, Astro, Node.js, Python, FastAPI, Flutter, TypeScript, Tailwind CSS, PostgreSQL, Docker, Figma, visión por computadora y machine learning.
+
+## Preguntas frecuentes
+
+**¿Dónde está Geck Codex?**
+En Hidalgo del Parral, Chihuahua, México. Trabaja de forma remota con clientes de todo México, Estados Unidos y Latinoamérica.
+
+**¿Cuánto cuesta un sitio web con Geck Codex?**
+El precio depende del alcance. La cotización y la consultoría inicial son sin costo: se define alcance y presupuesto antes de comenzar.
+
+**¿Cuánto tarda un proyecto?**
+Una landing page suele tomar semanas; una plataforma o app a medida, meses. El calendario se define en la fase de propuesta.
+
+**¿Cómo se contacta a Geck Codex?**
+Por WhatsApp al +52 627 174 5436, por correo a ventas@geckcodex.com, o desde el formulario en https://geckcodex.com/contacto/. Respuesta en menos de 24 horas.
+
+**¿Geck Codex trabaja con negocios pequeños?**
+Sí. Trabaja tanto con negocios locales de Parral y Chihuahua como con empresas medianas y proyectos internacionales.
+
+## Páginas del sitio
+
+- [Inicio](https://geckcodex.com/) — Presentación, proyectos destacados, especialidades y clientes.
+- [Servicios](https://geckcodex.com/servicios/) — Detalle de los diez servicios y su proceso.
+- [Portafolio](https://geckcodex.com/portafolio/) — Proyectos reales por categoría (landing, móvil, web, software e IA).
+- [Nosotros](https://geckcodex.com/nosotros/) — Equipo, misión, visión, stack tecnológico y proceso.
+- [Contacto](https://geckcodex.com/contacto/) — Formulario, WhatsApp, correo e Instagram.
+- [Privacidad](https://geckcodex.com/privacidad/) — Aviso de privacidad.
+- [Términos](https://geckcodex.com/terminos/) — Términos y condiciones.

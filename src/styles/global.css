@@ -146,3 +146,20 @@ a {
   text-decoration: none;
   color: inherit;
 }
+/* ══════════════════════════════════════════════════════════════
+   Accesibilidad — texto solo para lectores de pantalla y bots.
+   Se usa para el H1 semántico de la home (el hero es un rotador
+   animado que no puede cumplir esa función) y para contexto
+   descriptivo que el diseño comunica de forma visual.
+══════════════════════════════════════════════════════════════ */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

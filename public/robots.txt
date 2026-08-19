@@ -1,4 +1,86 @@
+# ═══════════════════════════════════════════════════════════
+#  robots.txt — geckcodex.com
+#  Buscadores tradicionales + motores de respuesta con IA
+# ═══════════════════════════════════════════════════════════
+
+# ── Buscadores tradicionales ──────────────────────────────
 User-agent: *
 Allow: /
+Disallow: /blog
 
-Sitemap: https://geckcodex.com/sitemap.xml
+# ── Motores de busqueda con IA (AEO / GEO) ────────────────
+# Se permiten explicitamente para que el sitio pueda ser
+# citado como fuente en respuestas generativas.
+
+# OpenAI — ChatGPT Search / navegacion
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+# OpenAI — entrenamiento e indexado
+User-agent: GPTBot
+Allow: /
+
+# Anthropic — Claude
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-User
+Allow: /
+
+User-agent: Claude-SearchBot
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+# Perplexity
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Perplexity-User
+Allow: /
+
+# Google — Gemini / AI Overviews
+User-agent: Google-Extended
+Allow: /
+
+# Microsoft Copilot / Bing
+User-agent: bingbot
+Allow: /
+
+# Apple Intelligence
+User-agent: Applebot
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+# Meta AI
+User-agent: meta-externalagent
+Allow: /
+
+# Common Crawl (fuente de muchos modelos)
+User-agent: CCBot
+Allow: /
+
+# Amazon
+User-agent: Amazonbot
+Allow: /
+
+# You.com
+User-agent: YouBot
+Allow: /
+
+# Mistral
+User-agent: MistralAI-User
+Allow: /
+
+# Cohere
+User-agent: cohere-ai
+Allow: /
+
+# ── Mapas del sitio ───────────────────────────────────────
+Sitemap: https://geckcodex.com/sitemap-index.xml
