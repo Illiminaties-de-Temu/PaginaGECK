@@ -33,18 +33,42 @@ export default function Contact() {
     return () => obs.disconnect();
   }, []);
 
+  // Access key de Web3Forms: vive en .env (PUBLIC_WEB3FORMS_KEY), no en el código.
+  const WEB3FORMS_KEY = import.meta.env.PUBLIC_WEB3FORMS_KEY;
+
+  /**
+   * Registra la conversión en GA4 / Google Ads. `gcTrack` la define
+   * Analytics.astro y solo existe si hay IDs configurados, por eso la llamada
+   * es opcional: sin tracking, esto no hace nada y no rompe nada.
+   */
+  const track = (method) => {
+    if (typeof window !== 'undefined' && typeof window.gcTrack === 'function') {
+      window.gcTrack('generate_lead', { method, page: window.location.pathname });
+    }
+  };
+
   const handleWhatsApp = () => {
+    track('whatsapp');
     const msg = t.contact.waMsg(formData.name);
     window.open(`https://wa.me/${contactConfig.whatsapp.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(msg)}`, '_blank');
   };
 
   const handleGmail = () => {
+    track('email');
     const body = `${t.contact.name}: ${formData.name}\nEmail: ${formData.email}\n\n${t.contact.msg}:\n${formData.message}`;
     window.open(`https://mail.google.com/mail/?view=cm&to=${contactConfig.email}&su=${encodeURIComponent(t.contact.emailSubject)}&body=${encodeURIComponent(body)}`, '_blank');
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Sin key configurada el POST siempre falla en silencio y el lead se pierde.
+    // Mejor mandar al usuario a WhatsApp, que sí funciona.
+    if (!WEB3FORMS_KEY) {
+      setError(true);
+      return;
+    }
+
     setLoading(true);
     setError(false);
     try {
@@ -52,16 +76,21 @@ export default function Contact() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
         body: JSON.stringify({
-          access_key: 'TU_ACCESS_KEY_AQUI',
-          subject: 'Nuevo contacto desde geckcodex.com',
+          access_key: WEB3FORMS_KEY,
+          subject: `Nuevo contacto de ${formData.name || 'la web'} — geckcodex.com`,
           from_name: 'Geck Codex Web',
+          // Con replyto, al dar "Responder" en Gmail el correo va directo al
+          // cliente en vez de a Web3Forms.
+          replyto: formData.email,
           name: formData.name,
           email: formData.email,
           message: formData.message,
+          botcheck: false,
         }),
       });
       const data = await res.json();
       if (data.success) {
+        track('form');
         setSubmitted(true);
         setTimeout(() => { setFormData({ name: '', email: '', message: '' }); setSubmitted(false); }, 4000);
       } else {
@@ -338,6 +367,19 @@ export default function Contact() {
         .ct-flabel::after {
           content: ''; flex: 1; height: 1px;
           background: var(--border);
+        }
+
+        /* Honeypot: fuera de la vista y del recorrido de foco, pero presente en
+           el DOM para que los bots que rellenan todo caigan en él. No usar
+           display:none — algunos bots ignoran los campos ocultos así. */
+        .ct-botcheck {
+          position: absolute !important;
+          left: -9999px !important;
+          opacity: 0 !important;
+          height: 0 !important;
+          width: 0 !important;
+          margin: 0 !important;
+          pointer-events: none;
         }
 
         .ct-field { margin-bottom: 18px; }
@@ -684,6 +726,17 @@ export default function Contact() {
               <span className="ct-flabel">{t.contact.formLabel}</span>
 
               <form onSubmit={handleSubmit} style={{ display:'flex', flexDirection:'column', flex:1 }}>
+                {/* Honeypot de Web3Forms: invisible para las personas, los bots
+                    lo rellenan y el envío se descarta del lado del servicio. */}
+                <input
+                  type="checkbox"
+                  name="botcheck"
+                  className="ct-botcheck"
+                  tabIndex={-1}
+                  autoComplete="off"
+                  aria-hidden="true"
+                />
+
                 <div className="ct-field">
                   <label className="ct-field-label" htmlFor="ct-name">{t.contact.name}</label>
                   <div className="ct-iw">
