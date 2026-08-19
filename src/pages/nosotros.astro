@@ -6,12 +6,24 @@ import Processtimeline from '@/components/abaut/Processtimeline.jsx';
 import Techstack from '@/components/abaut/Techstack.jsx';
 import Fin from '@/components/abaut/Fin.jsx';
 import Python from '@/components/abaut/python.jsx';
+import { SITE_URL } from '@/data/seo';
+
+const aboutPage = {
+  '@type': 'AboutPage',
+  '@id': `${SITE_URL}/nosotros/#webpage`,
+  url: `${SITE_URL}/nosotros/`,
+  name: 'Nosotros | Geck Codex',
+  about: { '@id': `${SITE_URL}/#organization` },
+  mainEntity: { '@id': `${SITE_URL}/#organization` },
+};
 ---
 
 <Layout
-  title="Nosotros | Geck Codex — Equipo Tecnológico de Parral, Chihuahua"
-  description="Conoce al equipo detrás de Geck Codex. Jóvenes desarrolladores mexicanos especializados en React, Node.js, Python, IA y más. Con sede en Parral, Chihuahua."
-  canonical="https://geckcodex.com/nosotros"
+  title="Nosotros: Equipo Tecnológico en Parral, Chihuahua | Geck Codex"
+  description="Conoce al equipo detrás de Geck Codex: desarrolladores mexicanos especializados en React, Node.js, Python, Flutter e inteligencia artificial, con sede en Hidalgo del Parral, Chihuahua."
+  canonical={`${SITE_URL}/nosotros/`}
+  breadcrumbs={[{ name: 'Nosotros', url: `${SITE_URL}/nosotros/` }]}
+  schema={[aboutPage]}
 >
   <div class="components-container">
     <Abouthero client:visible />
