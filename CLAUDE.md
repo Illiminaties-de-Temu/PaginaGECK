@@ -61,7 +61,6 @@ src/
 │   ├── Navbar.jsx                  # Nav multi-idioma + animacion logo + ondas canvas
 │   ├── Footer.jsx                  # Redes sociales + boton UP + ondas canvas
 │   ├── VideoBackground.jsx         # Wrapper parallax para videos
-│   ├── PageContent.jsx             # Layout generico de pagina
 │   └── EnConstruccioin.jsx         # Placeholder "en construccion"
 ├── pages/
 │   ├── index.astro                 # Homepage
