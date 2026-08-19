@@ -2,7 +2,10 @@
 import { ClientRouter } from 'astro:transitions';
 import Footer from '@/components/Footer.jsx';
 import Navbar from '@/components/Navbar.jsx';
+import Analytics from '@/components/Analytics.astro';
 import '@/styles/global.css';
+
+import { ORGANIZATION_SCHEMA, WEBSITE_SCHEMA, breadcrumbSchema, BUSINESS } from '@/data/seo';
 
 interface Props {
   title?: string;
@@ -11,6 +14,16 @@ interface Props {
   canonical?: string;
   noindex?: boolean;
   type?: 'website' | 'article';
+  /** Migas de pan de la página → genera BreadcrumbList. Omitir en la home. */
+  breadcrumbs?: { name: string; url: string }[];
+  /** JSON-LD adicional específico de la página (Service, FAQPage, ItemList…). */
+  schema?: Record<string, unknown>[];
+  /**
+   * Título y descripción SOLO para la tarjeta que se ve al compartir el enlace
+   * (WhatsApp, LinkedIn, Facebook). Si se omiten, se usan los de buscador.
+   */
+  ogTitle?: string;
+  ogDescription?: string;
 }
 
 const {
@@ -20,13 +33,34 @@ const {
   canonical = Astro.url.href,
   noindex = false,
   type = 'website',
+  breadcrumbs = [],
+  schema = [],
+  ogTitle,
+  ogDescription,
 } = Astro.props;
 
 const siteName = 'Geck Codex';
 const twitterHandle = '@geckcodex';
+
+// El título de buscador y el de la tarjeta social cumplen funciones distintas.
+// En Google conviene "Servicios… | Geck Codex" porque compite entre diez
+// resultados; en WhatsApp la marca y el dominio ya se muestran aparte, así que
+// repetirlos gasta el espacio visible. Por eso se recorta el sufijo de marca.
+const socialTitle = ogTitle ?? title.replace(/\s*\|\s*Geck Codex\s*$/, '');
+const socialDescription = ogDescription ?? description;
+
+// ── Grafo JSON-LD: entidad de negocio + sitio + migas + schema de página ──
+// Se emite como un solo @graph: los motores (y los buscadores con IA) resuelven
+// mejor las relaciones entre entidades cuando comparten un único bloque.
+const jsonLdGraph = [
+  ORGANIZATION_SCHEMA,
+  WEBSITE_SCHEMA,
+  ...(breadcrumbs.length ? [breadcrumbSchema(breadcrumbs)] : []),
+  ...schema,
+];
 ---
 
-<html lang="es">
+<html lang="es-MX">
   <head>
     <meta charset="UTF-8" />
 
@@ -129,82 +163,68 @@ const twitterHandle = '@geckcodex';
     ═══════════════════════════════════════ -->
     <meta property="og:type" content={type} />
     <meta property="og:url" content={canonical} />
-    <meta property="og:title" content={title} />
-    <meta property="og:description" content={description} />
+    <meta property="og:title" content={socialTitle} />
+    <meta property="og:description" content={socialDescription} />
     <meta property="og:image" content={image} />
+    <meta property="og:image:secure_url" content={image} />
+    <meta property="og:image:type" content="image/jpeg" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt" content={title} />
+    <meta property="og:image:alt" content="Geck Codex — desarrollo web, apps móviles e inteligencia artificial en Parral, Chihuahua" />
     <meta property="og:site_name" content={siteName} />
     <meta property="og:locale" content="es_MX" />
+    <meta property="og:locale:alternate" content="en_US" />
+    <meta property="og:locale:alternate" content="pt_BR" />
 
     <!-- ═══════════════════════════════════════
          TWITTER CARD
     ═══════════════════════════════════════ -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:site" content={twitterHandle} />
-    <meta name="twitter:title" content={title} />
-    <meta name="twitter:description" content={description} />
+    <meta name="twitter:creator" content={twitterHandle} />
+    <meta name="twitter:title" content={socialTitle} />
+    <meta name="twitter:description" content={socialDescription} />
     <meta name="twitter:image" content={image} />
+    <meta name="twitter:image:alt" content="Geck Codex — desarrollo web, apps móviles e inteligencia artificial en Parral, Chihuahua" />
 
     <!-- ═══════════════════════════════════════
          FAVICON Y ICONOS
+         Usar los PNG recortados (32/192/512) en vez del logo de 261 KB.
     ═══════════════════════════════════════ -->
-    <link rel="icon" type="image/png" href="/assets/image/logo.png" />
-    <link rel="apple-touch-icon" href="/assets/image/logo.png" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/image/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/assets/image/favicon-192x192.png" />
+    <link rel="apple-touch-icon" href="/assets/image/favicon-192x192.png" />
+    <meta name="theme-color" content="#0B1D33" />
 
     <!-- ═══════════════════════════════════════
-         SCHEMA.ORG (Datos Estructurados)
+         GEO — señales de ubicación para búsqueda local
     ═══════════════════════════════════════ -->
-    <script type="application/ld+json">
-      {
-        "@context": "https://schema.org",
-        "@type": "Organization",
-        "name": "Geck Codex",
-        "url": "https://geckcodex.com",
-        "logo": "https://geckcodex.com/assets/image/logo.png",
-        "description": "Empresa de desarrollo web, apps móviles e inteligencia artificial en Parral, Chihuahua, México.",
-        "foundingLocation": {
-          "@type": "Place",
-          "name": "Parral, Chihuahua, México"
-        },
-        "contactPoint": {
-          "@type": "ContactPoint",
-          "telephone": "+52-627-174-5436",
-          "contactType": "customer service",
-          "email": "ventas@geckcodex.com",
-          "availableLanguage": ["Spanish", "English"]
-        },
-        "sameAs": [
-          "https://www.instagram.com/geckcodex/",
-          "https://github.com/geckcodex"
-        ],
-        "address": {
-          "@type": "PostalAddress",
-          "addressLocality": "Hidalgo del Parral",
-          "addressRegion": "Chihuahua",
-          "addressCountry": "MX"
-        },
-        "areaServed": {
-          "@type": "Country",
-          "name": "México"
-        },
-        "knowsAbout": [
-          "Desarrollo Web",
-          "Aplicaciones Móviles",
-          "Inteligencia Artificial",
-          "Computer Vision",
-          "E-commerce",
-          "SaaS",
-          "UI/UX Design"
-        ]
-      }
-    </script>
+    <meta name="geo.region" content={BUSINESS.regionCode} />
+    <meta name="geo.placename" content="Hidalgo del Parral, Chihuahua" />
+    <meta name="geo.position" content={`${BUSINESS.latitude};${BUSINESS.longitude}`} />
+    <meta name="ICBM" content={`${BUSINESS.latitude}, ${BUSINESS.longitude}`} />
+    <meta name="author" content={siteName} />
+    <meta name="publisher" content={siteName} />
+
+    <!-- ═══════════════════════════════════════
+         SCHEMA.ORG — grafo único de entidades
+         Organization/ProfessionalService + WebSite + migas + schema de página
+    ═══════════════════════════════════════ -->
+    <script
+      type="application/ld+json"
+      set:html={JSON.stringify({ '@context': 'https://schema.org', '@graph': jsonLdGraph })}
+    />
 
     <!-- ═══════════════════════════════════════
          PERFORMANCE
     ═══════════════════════════════════════ -->
     <link rel="dns-prefetch" href="https://cdn.simpleicons.org" />
+
+    <!-- ═══════════════════════════════════════
+         MEDICIÓN — GA4 + Google Ads (solo si hay IDs en .env)
+    ═══════════════════════════════════════ -->
+    <Analytics />
   </head>
   <body>
     <!-- ═══════════════════════════════════════

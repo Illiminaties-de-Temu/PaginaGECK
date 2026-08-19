@@ -1,0 +1,74 @@
+---
+/**
+ * Analytics.astro — Google Tag (GA4 + Google Ads).
+ *
+ * Los IDs viven en variables de entorno, NO en el código: así el sitio se puede
+ * construir sin tracking (desarrollo, previews) y los identificadores no quedan
+ * fijados en el repositorio. Si no hay IDs configurados, este componente no
+ * emite absolutamente nada.
+ *
+ * Configurar en `.env` (ver `.env.example`):
+ *   PUBLIC_GA4_ID=G-XXXXXXXXXX
+ *   PUBLIC_GOOGLE_ADS_ID=AW-XXXXXXXXXX
+ *   PUBLIC_ADS_CONVERSION_LABEL=xxxxxxxxxxxxxxxxx   (etiqueta de la conversión "contacto")
+ */
+const GA4_ID = import.meta.env.PUBLIC_GA4_ID;
+const ADS_ID = import.meta.env.PUBLIC_GOOGLE_ADS_ID;
+const ADS_LABEL = import.meta.env.PUBLIC_ADS_CONVERSION_LABEL;
+
+// El script se carga una sola vez con el primer ID disponible; el resto se
+// registran con config() adicionales sobre el mismo gtag.
+const primaryId = GA4_ID || ADS_ID;
+---
+
+{
+  primaryId && (
+    <>
+      <link rel="preconnect" href="https://www.googletagmanager.com" />
+      <script is:inline async src={`https://www.googletagmanager.com/gtag/js?id=${primaryId}`} />
+      <script
+        is:inline
+        define:vars={{ GA4_ID, ADS_ID, ADS_LABEL }}
+        set:html={`
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        window.gtag = gtag;
+        gtag('js', new Date());
+
+        // ClientRouter hace navegación tipo SPA: sin esto, gtag contaría una
+        // sola vista de página para toda la sesión.
+        gtag('set', { send_page_view: false });
+        if (GA4_ID) gtag('config', GA4_ID, { send_page_view: false });
+        if (ADS_ID) gtag('config', ADS_ID);
+
+        function gcPageView() {
+          if (!GA4_ID) return;
+          gtag('event', 'page_view', {
+            page_location: window.location.href,
+            page_path: window.location.pathname,
+            page_title: document.title,
+          });
+        }
+        gcPageView();
+        document.addEventListener('astro:page-load', gcPageView);
+
+        /**
+         * API de conversión usada por el formulario de contacto y los botones de
+         * WhatsApp/correo. Registra el evento en GA4 y, si hay etiqueta de Ads,
+         * la conversión correspondiente.
+         *
+         *   window.gcTrack('generate_lead', { method: 'whatsapp' })
+         */
+        window.gcTrack = function (eventName, params) {
+          try {
+            gtag('event', eventName, params || {});
+            if (ADS_ID && ADS_LABEL && (eventName === 'generate_lead' || eventName === 'contact')) {
+              gtag('event', 'conversion', { send_to: ADS_ID + '/' + ADS_LABEL });
+            }
+          } catch (e) { /* nunca romper la UI por analítica */ }
+        };
+      `}
+      />
+    </>
+  )
+}

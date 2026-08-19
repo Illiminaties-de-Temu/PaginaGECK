@@ -56,13 +56,13 @@ export default function CTASection() {
           </p>
 
           <div className="cta-section__actions">
-            <a href="/contacto" className="cta-section__btn cta-section__btn--primary">
+            <a href="/contacto/" className="cta-section__btn cta-section__btn--primary">
               Empezar ahora
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M5 12h14M12 5l7 7-7 7"/>
               </svg>
             </a>
-            <a href="/portafolio" className="cta-section__btn cta-section__btn--ghost">
+            <a href="/portafolio/" className="cta-section__btn cta-section__btn--ghost">
               Ver nuestro trabajo
             </a>
           </div>

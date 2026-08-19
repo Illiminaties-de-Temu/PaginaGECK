@@ -4,6 +4,7 @@ export const translations = {
   ══════════════════════════════════════════════════════════════════ */
   es: {
     nav: {
+      home: 'Inicio',
       portfolio: 'Portafolio', about: 'Nosotros', blog: 'Blog',
       services: 'Servicios', contact: 'Contacto', language: 'Idioma',
       menu: 'Menú', close: 'Cerrar',
@@ -232,7 +233,58 @@ export const translations = {
       waMsg: (name) => name ? `Hola! Soy ${name}. Quiero hablar sobre mi proyecto.` : 'Hola! Quiero hablar sobre un proyecto.',
       emailSubject: 'Nuevo contacto desde geckcodex.com',
     },
-    footer: { up: 'UP' },
+    faq: {
+      badge: 'Preguntas frecuentes',
+      title: 'Lo que todos',
+      titleSpan: 'nos preguntan',
+      subtitle: 'Respuestas directas, sin letra chica.',
+      items: [
+        {
+          q: '¿Cuánto cuesta una página web con Geck Codex?',
+          a: 'Depende del alcance. Una landing page de una sola sección cuesta mucho menos que una plataforma con usuarios, pagos y panel de administración. Por eso cotizamos cada proyecto por separado: analizamos lo que necesitas y te damos un precio cerrado antes de empezar. La consultoría inicial y la cotización no tienen costo.',
+        },
+        {
+          q: '¿Cuánto tarda un proyecto?',
+          a: 'Una landing page suele tomar de 2 a 4 semanas. Una app móvil o una plataforma web a la medida, de 2 a 6 meses según la complejidad. En la propuesta te entregamos un calendario con fechas por etapa: diseño, desarrollo, pruebas y lanzamiento.',
+        },
+        {
+          q: '¿Dónde están ubicados y atienden fuera de Parral?',
+          a: 'Estamos en Hidalgo del Parral, Chihuahua, México. Trabajamos con clientes de todo México —Chihuahua, Ciudad Juárez, Monterrey, CDMX, Guadalajara— y de Estados Unidos. Todo el proceso puede llevarse a distancia por videollamada y WhatsApp; con clientes locales también nos vemos en persona.',
+        },
+        {
+          q: '¿Qué servicios ofrecen exactamente?',
+          a: 'Desarrollo web, aplicaciones móviles para iOS y Android, soluciones de inteligencia artificial y automatización, tiendas en línea (e-commerce), plataformas SaaS con suscripciones, software empresarial a la medida como CRM y ERP, diseño UI/UX y gestión de redes sociales.',
+        },
+        {
+          q: '¿Con qué tecnologías trabajan?',
+          a: 'React, Next.js y Astro para web; Flutter para apps móviles en iOS y Android desde una sola base de código; Node.js, Python y FastAPI en el backend; PostgreSQL para datos; y modelos de machine learning y visión por computadora para los proyectos de inteligencia artificial.',
+        },
+        {
+          q: '¿El sitio queda optimizado para Google?',
+          a: 'Sí. Todos nuestros desarrollos web incluyen estructura SEO técnica, metadatos, datos estructurados, sitemap y optimización de Core Web Vitals (velocidad de carga). También configuramos Google Analytics y, si vas a invertir en publicidad, el seguimiento de conversiones de Google Ads.',
+        },
+        {
+          q: '¿Dan mantenimiento después de entregar?',
+          a: 'Sí. Después del lanzamiento ofrecemos soporte y planes de mantenimiento: actualizaciones, respaldos, monitoreo, correcciones y nuevas funciones. No desaparecemos al entregar el proyecto.',
+        },
+        {
+          q: '¿Cómo empiezo un proyecto con ustedes?',
+          a: 'Escríbenos por WhatsApp al +52 627 174 5436, al correo ventas@geckcodex.com o desde el formulario de contacto. Agendamos una llamada sin costo para entender tu idea, y en pocos días te enviamos una propuesta con alcance, tiempos y precio. Respondemos en menos de 24 horas.',
+        },
+      ],
+      ctaText: '¿Tu duda no está aquí?',
+      ctaLink: 'Escríbenos y te respondemos hoy mismo',
+    },
+    footer: {
+      up: 'UP',
+      navTitle: 'Navegación',
+      contactTitle: 'Contacto',
+      legalTitle: 'Legal',
+      tagline: 'Desarrollo web, apps móviles e inteligencia artificial desde Hidalgo del Parral, Chihuahua, México.',
+      privacy: 'Aviso de Privacidad',
+      terms: 'Términos y Condiciones',
+      rights: 'Todos los derechos reservados.',
+    },
   },
 
   /* ══════════════════════════════════════════════════════════════════
@@ -240,6 +292,7 @@ export const translations = {
   ══════════════════════════════════════════════════════════════════ */
   en: {
     nav: {
+      home: 'Home',
       portfolio: 'Portfolio', about: 'About Us', blog: 'Blog',
       services: 'Services', contact: 'Contact', language: 'Language',
       menu: 'Menu', close: 'Close',
@@ -468,7 +521,58 @@ export const translations = {
       waMsg: (name) => name ? `Hi! I'm ${name}. I'd like to talk about my project.` : 'Hi! I\'d like to talk about a project.',
       emailSubject: 'New contact from geckcodex.com',
     },
-    footer: { up: 'UP' },
+    faq: {
+      badge: 'Frequently asked questions',
+      title: 'What everyone',
+      titleSpan: 'asks us',
+      subtitle: 'Straight answers, no fine print.',
+      items: [
+        {
+          q: 'How much does a website cost with Geck Codex?',
+          a: 'It depends on scope. A single-section landing page costs far less than a platform with users, payments and an admin panel. That is why we quote every project individually: we analyze what you need and give you a closed price before starting. The initial consultation and the quote are free.',
+        },
+        {
+          q: 'How long does a project take?',
+          a: 'A landing page usually takes 2 to 4 weeks. A mobile app or a custom web platform, 2 to 6 months depending on complexity. The proposal includes a schedule with dates for each stage: design, development, testing and launch.',
+        },
+        {
+          q: 'Where are you located, and do you work outside Parral?',
+          a: 'We are based in Hidalgo del Parral, Chihuahua, Mexico. We work with clients across Mexico — Chihuahua, Ciudad Juárez, Monterrey, Mexico City, Guadalajara — and in the United States. The whole process can run remotely over video calls and WhatsApp; with local clients we also meet in person.',
+        },
+        {
+          q: 'What services do you offer exactly?',
+          a: 'Web development, iOS and Android mobile apps, artificial intelligence and automation, online stores (e-commerce), SaaS platforms with subscriptions, custom business software such as CRM and ERP, UI/UX design and social media management.',
+        },
+        {
+          q: 'What technologies do you work with?',
+          a: 'React, Next.js and Astro for web; Flutter for iOS and Android apps from a single codebase; Node.js, Python and FastAPI on the backend; PostgreSQL for data; and machine learning and computer vision models for AI projects.',
+        },
+        {
+          q: 'Is the site optimized for Google?',
+          a: 'Yes. Every web build includes technical SEO structure, metadata, structured data, a sitemap and Core Web Vitals optimization. We also set up Google Analytics and, if you plan to run ads, Google Ads conversion tracking.',
+        },
+        {
+          q: 'Do you provide maintenance after delivery?',
+          a: 'Yes. After launch we offer support and maintenance plans: updates, backups, monitoring, fixes and new features. We do not disappear once the project ships.',
+        },
+        {
+          q: 'How do I start a project with you?',
+          a: 'Message us on WhatsApp at +52 627 174 5436, email ventas@geckcodex.com, or use the contact form. We schedule a free call to understand your idea, and within a few days we send a proposal with scope, timeline and price. We reply in under 24 hours.',
+        },
+      ],
+      ctaText: 'Question not listed?',
+      ctaLink: 'Write to us and we will answer today',
+    },
+    footer: {
+      up: 'UP',
+      navTitle: 'Navigation',
+      contactTitle: 'Contact',
+      legalTitle: 'Legal',
+      tagline: 'Web development, mobile apps and artificial intelligence from Hidalgo del Parral, Chihuahua, Mexico.',
+      privacy: 'Privacy Policy',
+      terms: 'Terms and Conditions',
+      rights: 'All rights reserved.',
+    },
   },
 
   /* ══════════════════════════════════════════════════════════════════
@@ -476,6 +580,7 @@ export const translations = {
   ══════════════════════════════════════════════════════════════════ */
   pt: {
     nav: {
+      home: 'Início',
       portfolio: 'Portfólio', about: 'Sobre Nós', blog: 'Blog',
       services: 'Serviços', contact: 'Contato', language: 'Idioma',
       menu: 'Menu', close: 'Fechar',
@@ -704,6 +809,57 @@ export const translations = {
       waMsg: (name) => name ? `Olá! Sou ${name}. Quero falar sobre meu projeto.` : 'Olá! Quero falar sobre um projeto.',
       emailSubject: 'Novo contato pelo geckcodex.com',
     },
-    footer: { up: 'UP' },
+    faq: {
+      badge: 'Perguntas frequentes',
+      title: 'O que todos',
+      titleSpan: 'nos perguntam',
+      subtitle: 'Respostas diretas, sem letras miúdas.',
+      items: [
+        {
+          q: 'Quanto custa um site com a Geck Codex?',
+          a: 'Depende do escopo. Uma landing page de uma única seção custa muito menos do que uma plataforma com usuários, pagamentos e painel administrativo. Por isso orçamos cada projeto separadamente: analisamos o que você precisa e damos um preço fechado antes de começar. A consultoria inicial e o orçamento são gratuitos.',
+        },
+        {
+          q: 'Quanto tempo leva um projeto?',
+          a: 'Uma landing page costuma levar de 2 a 4 semanas. Um aplicativo móvel ou uma plataforma web sob medida, de 2 a 6 meses conforme a complexidade. Na proposta entregamos um cronograma com datas por etapa: design, desenvolvimento, testes e lançamento.',
+        },
+        {
+          q: 'Onde vocês ficam e atendem fora de Parral?',
+          a: 'Estamos em Hidalgo del Parral, Chihuahua, México. Trabalhamos com clientes de todo o México — Chihuahua, Ciudad Juárez, Monterrey, Cidade do México, Guadalajara — e dos Estados Unidos. Todo o processo pode ser feito à distância por videochamada e WhatsApp; com clientes locais também nos encontramos pessoalmente.',
+        },
+        {
+          q: 'Quais serviços vocês oferecem exatamente?',
+          a: 'Desenvolvimento web, aplicativos móveis para iOS e Android, soluções de inteligência artificial e automação, lojas virtuais (e-commerce), plataformas SaaS com assinaturas, software empresarial sob medida como CRM e ERP, design UI/UX e gestão de redes sociais.',
+        },
+        {
+          q: 'Com quais tecnologias vocês trabalham?',
+          a: 'React, Next.js e Astro para web; Flutter para aplicativos iOS e Android a partir de uma única base de código; Node.js, Python e FastAPI no backend; PostgreSQL para dados; e modelos de machine learning e visão computacional nos projetos de inteligência artificial.',
+        },
+        {
+          q: 'O site fica otimizado para o Google?',
+          a: 'Sim. Todos os nossos desenvolvimentos web incluem estrutura de SEO técnico, metadados, dados estruturados, sitemap e otimização de Core Web Vitals. Também configuramos o Google Analytics e, se você for investir em publicidade, o rastreamento de conversões do Google Ads.',
+        },
+        {
+          q: 'Vocês dão manutenção depois da entrega?',
+          a: 'Sim. Após o lançamento oferecemos suporte e planos de manutenção: atualizações, backups, monitoramento, correções e novas funcionalidades. Não desaparecemos depois de entregar o projeto.',
+        },
+        {
+          q: 'Como começo um projeto com vocês?',
+          a: 'Fale conosco pelo WhatsApp +52 627 174 5436, pelo e-mail ventas@geckcodex.com ou pelo formulário de contato. Agendamos uma conversa gratuita para entender sua ideia e, em poucos dias, enviamos uma proposta com escopo, prazos e preço. Respondemos em menos de 24 horas.',
+        },
+      ],
+      ctaText: 'Sua dúvida não está aqui?',
+      ctaLink: 'Fale conosco e respondemos hoje mesmo',
+    },
+    footer: {
+      up: 'UP',
+      navTitle: 'Navegação',
+      contactTitle: 'Contato',
+      legalTitle: 'Legal',
+      tagline: 'Desenvolvimento web, aplicativos móveis e inteligência artificial de Hidalgo del Parral, Chihuahua, México.',
+      privacy: 'Aviso de Privacidade',
+      terms: 'Termos e Condições',
+      rights: 'Todos os direitos reservados.',
+    },
   },
 };

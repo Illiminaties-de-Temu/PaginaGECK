@@ -75,7 +75,7 @@ export default function OutroSpecialties() {
           <p className="outro-specialties__text">
             Estas son solo algunas de nuestras especialidades. Explora todas nuestras soluciones y descubre cómo podemos ayudarte
           </p>
-          <a href="/servicios" className="outro-specialties__button">
+          <a href="/servicios/" className="outro-specialties__button">
             <span className="outro-specialties__button-text">Explorar Todos los Servicios</span>
             <span className="outro-specialties__button-arrow">→</span>
           </a>

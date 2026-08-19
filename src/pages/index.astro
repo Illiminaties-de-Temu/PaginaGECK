@@ -6,15 +6,41 @@ import AboutTeaser from '@/components/hero/AboutTeaser.jsx';
 import SpecialtiesShowcase from '@/components/hero/SpecialtiesShowcase.jsx';
 import Carrusel from '@/components/hero/Carrusel.jsx';
 import StatsSection from '@/components/hero/StatsSection.jsx';
+import FaqSection from '@/components/FaqSection.jsx';
+import { translations } from '@/i18n/translations';
+import { faqSchema, serviceListSchema, SITE_URL } from '@/data/seo';
+
+// El schema sale del MISMO texto que se pinta en pantalla: si la FAQ visible y
+// la estructurada divergen, Google trata los datos como engañosos.
+const faq = faqSchema(translations.es.faq.items.map((i) => ({ question: i.q, answer: i.a })));
+
+const svc = translations.es.services.items;
+const services = serviceListSchema(
+  Object.values(svc).map((s) => ({ name: s.name, description: s.description })),
+);
 ---
 
 <Layout
-  title="Geck Codex | Desarrollo Web, Apps Móviles e IA en México"
-  description="Agencia de desarrollo tecnológico en Parral, Chihuahua. Creamos sitios web, apps móviles, soluciones de IA y e-commerce para empresas en México y Estados Unidos."
+  title="Desarrollo Web, Apps Móviles e IA en México | Geck Codex"
+  description="Agencia de desarrollo de software en Parral, Chihuahua. Sitios web, apps móviles, inteligencia artificial y e-commerce a la medida. Cotización sin costo y respuesta en menos de 24 h."
   canonical="https://geckcodex.com/"
+  ogTitle="Desarrollo web, apps e IA — Parral y Chihuahua"
+  ogDescription="Software a la medida para empresas de México y Estados Unidos. Cotización sin costo y respuesta en menos de 24 horas."
+  schema={[faq, services]}
 >
   {/* Fondo fijo compartido — plano (el contenido se mueve por encima, el fondo no) */}
   <div class="home-bg" aria-hidden="true"></div>
+
+  {/*
+    H1 de la página. Vive aquí, en el HTML estático, y no en el hero: el hero es
+    un rotador animado ("Lo que hacemos / Lo que creamos…") cuyo texto ni
+    describe la página ni existe hasta que React se hidrata. Este encabezado sí
+    está en el HTML que reciben Google y los rastreadores de IA en la primera
+    respuesta del servidor.
+  */}
+  <h1 class="sr-only">
+    Geck Codex — Desarrollo web, apps móviles e inteligencia artificial en Parral, Chihuahua, México
+  </h1>
 
   <div class="home-flow">
     <VideoBackground client:visible />
@@ -24,6 +50,7 @@ import StatsSection from '@/components/hero/StatsSection.jsx';
     <SpecialtiesShowcase client:visible />
     <Carrusel client:visible />
     <StatsSection client:visible />
+    <FaqSection client:visible />
   </div>
 </Layout>
 

@@ -4,12 +4,21 @@
 ---
 import Layout from '@/layouts/MainLayout.astro';
 import ServicesSection from '@/components/servicios/ServicesSection.jsx';
+import { translations } from '@/i18n/translations';
+import { serviceListSchema, SITE_URL } from '@/data/seo';
+
+const items = Object.values(translations.es.services.items);
+const services = serviceListSchema(
+  items.map((s) => ({ name: s.name, description: s.description })),
+);
 ---
 
 <Layout
-  title="Servicios | Desarrollo Web, Apps, IA y Marketing Digital — Geck Codex"
-  description="Ofrecemos desarrollo web, apps móviles, inteligencia artificial, e-commerce, SaaS, automatización y marketing digital. Soluciones tecnológicas a la medida para tu negocio."
-  canonical="https://geckcodex.com/servicios"
+  title="Servicios: Desarrollo Web, Apps, IA y Marketing Digital | Geck Codex"
+  description="Desarrollo web, apps móviles, inteligencia artificial, e-commerce, SaaS, automatización, software a la medida y marketing digital. Cotización sin costo para tu negocio en México."
+  canonical={`${SITE_URL}/servicios/`}
+  breadcrumbs={[{ name: 'Servicios', url: `${SITE_URL}/servicios/` }]}
+  schema={[services]}
 >
   <ServicesSection client:visible />
 </Layout>

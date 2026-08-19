@@ -69,8 +69,8 @@ export default function Header() {
         </p>
 
         <div className="hdr__ctas">
-          <a href="/portafolio" className="hdr__cta hdr__cta--solid">{t.header.ctaSolid}</a>
-          <a href="/contacto"   className="hdr__cta hdr__cta--ghost">{t.header.ctaGhost}</a>
+          <a href="/portafolio/" className="hdr__cta hdr__cta--solid">{t.header.ctaSolid}</a>
+          <a href="/contacto/"   className="hdr__cta hdr__cta--ghost">{t.header.ctaGhost}</a>
         </div>
 
       </div>

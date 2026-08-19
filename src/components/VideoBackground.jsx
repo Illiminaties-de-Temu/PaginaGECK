@@ -237,8 +237,12 @@ export default function VideoBackground({ children }) {
 
         {/* 3 tercios: frase rotando (izq) · logo ASCII (medio) · servicio rotando (der) */}
         <div ref={contentRef} className="hero-content-wrapper">
-          {/* Tercio 1 — rodillo INVERTIDO: entra desde abajo, sale por arriba */}
-          <h1 ref={labelRef} className="hero-label">
+          {/* Tercio 1 — rodillo INVERTIDO: entra desde abajo, sale por arriba.
+              Es un <p>, no un <h1>: su texto rota ("Lo que hacemos", "Lo que
+              creamos"…) y no describe la página. El H1 real de la home vive en
+              index.astro, dentro del HTML estático, para que exista aunque
+              React no se hidrate. */}
+          <p ref={labelRef} className="hero-label">
             <span className="hero-rotator">
               <AnimatePresence initial={false} mode="wait">
                 <motion.span
@@ -254,10 +258,10 @@ export default function VideoBackground({ children }) {
                 </motion.span>
               </AnimatePresence>
             </span>
-          </h1>
+          </p>
 
           {/* Tercio 3 — rodillo: entra desde arriba, sale por abajo */}
-          <a ref={servicesRef} href="/servicios" className="hero-services" aria-label={`${labels[labelIdx]}: ${services[svcIdx]}`}>
+          <a ref={servicesRef} href="/servicios/" className="hero-services" aria-label={`${labels[labelIdx]}: ${services[svcIdx]}`}>
             <span className="hero-rotator">
               <AnimatePresence initial={false} mode="wait">
                 <motion.span

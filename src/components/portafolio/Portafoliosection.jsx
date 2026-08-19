@@ -11,7 +11,9 @@ const CAT_COLORS = {
   software: { accent: '#B5A079', border: 'rgba(181,160,121,0.35)' },
 };
 
-const PROJECTS_STATIC = [
+// Exportado para que portafolio.astro genere el JSON-LD desde los MISMOS
+// proyectos que se pintan en pantalla (una sola fuente de verdad).
+export const PROJECTS_STATIC = [
   { id: 1,  cat: 'landing',  title: 'Chuchulucos',          tech: ['Astro', 'Tailwind CSS', 'Framer Motion'],                           link: 'https://chuchulucos.geckcodex.com/',        gradient: 'linear-gradient(145deg, #3b0764 0%, #6d28d9 40%, #db2777 100%)', image: '/assets/image/portafolio/chuchu.webp' },
   { id: 2,  cat: 'landing',  title: 'Agend-In',              tech: ['Astro', 'React', 'Node.js', 'Tailwind CSS'],                        link: 'https://agend-in.geckcodex.com/',           gradient: 'linear-gradient(145deg, #1e1b4b 0%, #4f46e5 45%, #0ea5e9 100%)', image: '/assets/image/portafolio/agendin.webp' },
   { id: 3,  cat: 'landing',  title: 'LandingKit',            tech: ['Astro', 'React', 'Tailwind CSS'],                                   link: 'https://landig-plantilla.geckcodex.com/',   gradient: 'linear-gradient(145deg, #2e1065 0%, #7c3aed 45%, #c026d3 100%)', image: '/assets/image/portafolio/landig.webp' },
@@ -155,7 +157,7 @@ function Detail({ project, onClose, catMeta, strings }) {
             </svg>
           </a>
         ) : (
-          <a href="/contacto" className="gc-detail__cta">
+          <a href="/contacto/" className="gc-detail__cta">
             {strings.contact}
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
               <path d="M4 10H16M16 10L10 4M16 10L10 16" />
@@ -186,7 +188,7 @@ const Card = forwardRef(function Card({ project, meta, onOpen, viewMore, variant
         {project.image && (
           <img
             src={project.image}
-            alt={project.title}
+            alt={`${project.title} — proyecto desarrollado por Geck Codex`}
             className="scard__img"
             loading="lazy"
             decoding="async"

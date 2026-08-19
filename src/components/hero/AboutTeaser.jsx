@@ -75,7 +75,7 @@ export default function AboutTeaser() {
                 <span className="at-point__text">{p}</span>
               </div>
             ))}
-            <a href="/nosotros" className="at-card at-card--cta" style={{ gridArea: 'cta' }}>
+            <a href="/nosotros/" className="at-card at-card--cta" style={{ gridArea: 'cta' }}>
               <span>{a.cta}</span>
               <Arrow />
             </a>
@@ -122,7 +122,7 @@ export default function AboutTeaser() {
             ))}
 
             <MosaicCard progress={progress} start={0.74} fromX={-40} fromY={30} area="cta" className="at-cta-cell">
-              <a href="/nosotros" className="at-card at-card--cta">
+              <a href="/nosotros/" className="at-card at-card--cta">
                 <span>{a.cta}</span>
                 <Arrow />
               </a>

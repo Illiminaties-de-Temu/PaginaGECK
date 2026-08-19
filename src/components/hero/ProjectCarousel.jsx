@@ -41,7 +41,7 @@ function CardInner({ project, catLabels }) {
       {project.image && (
         <img
           src={project.image}
-          alt={project.title}
+          alt={`${project.title} — proyecto desarrollado por Geck Codex`}
           className="pc-card__img"
           loading="lazy"
           decoding="async"
@@ -204,7 +204,7 @@ export default function ProjectCarousel() {
 
           {/* CTA */}
           <motion.div className="pc-cta" style={reduce ? undefined : { opacity: ctaOp }}>
-            <a href="/portafolio" className="pc-cta__link">
+            <a href="/portafolio/" className="pc-cta__link">
               {t.projectCarousel.cta}
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
                 <path d="M5 12h14M12 5l7 7-7 7" />

@@ -1,0 +1,116 @@
+---
+/**
+ * LegalDoc — contenedor de documentos legales (privacidad, términos).
+ * Texto plano, alto contraste y sin animación: son páginas que Google Ads
+ * revisa manualmente y que el usuario consulta, no páginas de venta.
+ */
+interface Props {
+  heading: string;
+  intro: string;
+  updated: string;
+}
+
+const { heading, intro, updated } = Astro.props;
+---
+
+<section class="legal">
+  <div class="legal__inner">
+    <p class="legal__eyebrow">Geck Codex</p>
+    <h1 class="legal__title">{heading}</h1>
+    <p class="legal__intro">{intro}</p>
+    <p class="legal__updated">Última actualización: {updated}</p>
+
+    <div class="legal__body">
+      <slot />
+    </div>
+  </div>
+</section>
+
+<style>
+  .legal {
+    background: var(--background);
+    color: var(--text);
+    padding: clamp(120px, 16vh, 180px) 1.5rem 100px;
+    min-height: 100vh;
+  }
+
+  .legal__inner {
+    max-width: 780px;
+    margin: 0 auto;
+  }
+
+  .legal__eyebrow {
+    font-family: var(--font-display, inherit);
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    font-size: 0.75rem;
+    color: var(--accent-text);
+    margin: 0 0 0.75rem;
+  }
+
+  .legal__title {
+    font-family: var(--font-display, inherit);
+    font-size: clamp(2rem, 5vw, 3rem);
+    line-height: 1.1;
+    margin: 0 0 1.25rem;
+    color: var(--text);
+  }
+
+  .legal__intro {
+    font-size: 1.075rem;
+    line-height: 1.7;
+    color: var(--text-muted);
+    margin: 0 0 0.5rem;
+  }
+
+  .legal__updated {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin: 0 0 2.5rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .legal__body :global(h2) {
+    font-family: var(--font-display, inherit);
+    font-size: clamp(1.25rem, 2.6vw, 1.6rem);
+    margin: 2.75rem 0 0.9rem;
+    color: var(--text);
+  }
+
+  .legal__body :global(h3) {
+    font-size: 1.05rem;
+    margin: 1.75rem 0 0.6rem;
+    color: var(--text);
+  }
+
+  .legal__body :global(p),
+  .legal__body :global(li) {
+    font-size: 1rem;
+    line-height: 1.75;
+    color: var(--text-muted);
+  }
+
+  .legal__body :global(p) {
+    margin: 0 0 1rem;
+  }
+
+  .legal__body :global(ul) {
+    margin: 0 0 1.25rem;
+    padding-left: 1.25rem;
+  }
+
+  .legal__body :global(li) {
+    margin-bottom: 0.5rem;
+  }
+
+  .legal__body :global(a) {
+    color: var(--accent-text);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .legal__body :global(strong) {
+    color: var(--text);
+  }
+</style>
