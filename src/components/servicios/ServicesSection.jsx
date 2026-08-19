@@ -92,7 +92,7 @@ const Card = forwardRef(function Card({ service, onOpen, seeDetails, variant }, 
       <div className="svc-card__media">
         <img
           src={service.image}
-          alt={service.name}
+          alt={`${service.name} — servicio de Geck Codex`}
           className="svc-card__img"
           loading="lazy"
           decoding="async"
@@ -492,7 +492,7 @@ export default function ImprovedServices() {
                     <h3 className="service-modal__section-title">{t.services.modal.relatedTitle}</h3>
                     <div className="service-modal__related-grid">
                       {relatedProjects.map((p, i) => (
-                        <a key={i} href="/portafolio" className="related-card">
+                        <a key={i} href="/portafolio/" className="related-card">
                           <img src={p.image} alt={p.title} loading="lazy" decoding="async" />
                           <div className="related-card__veil" />
                           <span className="related-card__title">{p.title}</span>
@@ -540,7 +540,7 @@ export default function ImprovedServices() {
                       <span>{t.services.modal.waAgent}</span>
                     </button>
                   </div>
-                  <a href="/contacto" className="service-modal__cta">
+                  <a href="/contacto/" className="service-modal__cta">
                     <span>{expandedServiceData.id === 9 ? t.services.modal.ctaInversion : t.services.modal.formCta}</span>
                     <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
                       <path d="M4 10H16M16 10L10 4M16 10L10 16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>

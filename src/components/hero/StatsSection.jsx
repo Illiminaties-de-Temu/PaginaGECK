@@ -46,7 +46,7 @@ function Climax({ headline, cta, progress }) {
   return (
     <motion.div className="sty__climax" style={{ opacity, y, scale }}>
       <p className="sty__headline">{headline}</p>
-      <a href="/contacto" className="sty__btn">
+      <a href="/contacto/" className="sty__btn">
         {cta}
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
           <path d="M5 12h14M12 5l7 7-7 7" />
@@ -86,7 +86,7 @@ export default function StatsSection() {
           </div>
           <div className="sty__climax sty__climax--static">
             <p className="sty__headline">{t.stats.headline}</p>
-            <a href="/contacto" className="sty__btn">
+            <a href="/contacto/" className="sty__btn">
               {t.stats.cta}
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M5 12h14M12 5l7 7-7 7" />

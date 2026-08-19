@@ -22,6 +22,13 @@ export default function GeckNavbar() {
     if (stored !== 'es') setLanguage(stored);
   }, []);
 
+  // El atributo lang de <html> debe seguir al idioma real de la página: es lo
+  // que usan lectores de pantalla, traductores y rastreadores para saber en qué
+  // idioma está el contenido que están leyendo.
+  useEffect(() => {
+    document.documentElement.lang = { es: 'es-MX', en: 'en', pt: 'pt-BR' }[language] || 'es-MX';
+  }, [language]);
+
   // ── Tema (light/dark). El valor inicial ya lo fijó el script no-flash
   //    del <head> sobre <html data-theme>; aquí solo lo leemos. ──
   const [theme, setTheme] = useState('dark');
@@ -115,12 +122,12 @@ export default function GeckNavbar() {
   const handleNavLinkClick = () => { if (menuOpen) closeMenu(); };
 
   const navLinks = [
-    { key: "portfolio", icon: Briefcase, href: "/portafolio" },
-    { key: "services", icon: Layers, href: "/servicios" },
-    { key: "about", icon: Info, href: "/nosotros" },
-    { key: "blog", icon: BookOpen, href: "/blog" },
+    { key: "portfolio", icon: Briefcase, href: "/portafolio/" },
+    { key: "services", icon: Layers, href: "/servicios/" },
+    { key: "about", icon: Info, href: "/nosotros/" },
+    { key: "blog", icon: BookOpen, href: "/blog/" },
     // En móvil el acceso a Contacto vive dentro del menú (no en la barra)
-    ...(isMobile ? [{ key: "contact", icon: Mail, href: "/contacto" }] : []),
+    ...(isMobile ? [{ key: "contact", icon: Mail, href: "/contacto/" }] : []),
   ];
 
   return (
@@ -366,7 +373,7 @@ export default function GeckNavbar() {
 
           {/* Secciones Contacto + Menú — con contenedor visible y bordes redondeados */}
           <div className="nav-actions" style={{ display: "flex", alignItems: "center", pointerEvents: "auto" }}>
-            <a href="/contacto" className="nav-pill nav-pill-contact">
+            <a href="/contacto/" className="nav-pill nav-pill-contact">
               <span className="nav-pill-text">{t.contact}</span>
               <span className="nav-pill-icon"><Mail size={20} /></span>
             </a>
