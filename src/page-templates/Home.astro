@@ -1,0 +1,96 @@
+---
+/**
+ * Home, en cualquiera de los tres idiomas.
+ *
+ * El contenido vive aquí y no en `src/pages/` porque la misma página se publica
+ * en tres URLs (`/`, `/en/`, `/pt/`). Los archivos de `src/pages/` son envoltorios
+ * que solo eligen el idioma.
+ */
+import Layout from '@/layouts/MainLayout.astro';
+import VideoBackground from '@/components/VideoBackground.jsx';
+import ProjectCarousel from '@/components/hero/ProjectCarousel.jsx';
+import AboutTeaser from '@/components/hero/AboutTeaser.jsx';
+import SpecialtiesShowcase from '@/components/hero/SpecialtiesShowcase.jsx';
+import Carrusel from '@/components/hero/Carrusel.jsx';
+import StatsSection from '@/components/hero/StatsSection.jsx';
+import FaqSection from '@/components/FaqSection.jsx';
+import { translations } from '@/i18n/translations';
+import { faqSchema, serviceListSchema, SITE_URL } from '@/data/seo';
+import { PAGE_META } from '@/i18n/seo-meta';
+import { localizedUrl } from '@/i18n/routes';
+import type { Locale } from '@/i18n/routes';
+
+interface Props {
+  lang: Locale;
+}
+
+const { lang } = Astro.props;
+const meta = PAGE_META.home[lang];
+const t = translations[lang];
+
+// El schema sale del MISMO texto que se pinta en pantalla, en el mismo idioma:
+// si la FAQ visible y la estructurada divergen, Google trata los datos como
+// engañosos.
+const faq = faqSchema(t.faq.items.map((i) => ({ question: i.q, answer: i.a })));
+
+const services = serviceListSchema(
+  Object.values(t.services.items).map((s) => ({ name: s.name, description: s.description })),
+);
+---
+
+<Layout
+  title={meta.title}
+  description={meta.description}
+  canonical={localizedUrl('home', lang, SITE_URL)}
+  ogTitle={meta.ogTitle}
+  ogDescription={meta.ogDescription}
+  schema={[faq, services]}
+  lang={lang}
+  pageKey="home"
+>
+  {/* Fondo fijo compartido — plano (el contenido se mueve por encima, el fondo no) */}
+  <div class="home-bg" aria-hidden="true"></div>
+
+  {/*
+    H1 de la página. Vive aquí, en el HTML estático, y no en el hero: el hero es
+    un rotador animado ("Lo que hacemos / Lo que creamos…") cuyo texto ni
+    describe la página ni existe hasta que React se hidrata. Este encabezado sí
+    está en el HTML que reciben Google y los rastreadores de IA en la primera
+    respuesta del servidor.
+  */}
+  <h1 class="sr-only">{meta.h1}</h1>
+
+  <div class="home-flow">
+    <VideoBackground client:visible lang={lang} />
+
+    <ProjectCarousel client:visible lang={lang} />
+    <AboutTeaser client:visible lang={lang} />
+    <SpecialtiesShowcase client:visible lang={lang} />
+    <Carrusel client:visible lang={lang} />
+    <StatsSection client:visible lang={lang} />
+    <FaqSection client:visible lang={lang} />
+  </div>
+</Layout>
+
+<style is:global>
+  /* ── Fondo estático compartido (parallax), sin decoración ── */
+  .home-bg {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background: var(--background);
+    pointer-events: none;
+  }
+
+  /* El contenido va por encima del fondo fijo */
+  .home-flow { position: relative; z-index: 1; }
+
+  /* Las secciones se vuelven transparentes para dejar ver el fondo fijo */
+  .home-flow .hero-section,
+  .home-flow .pc-section,
+  .home-flow .stk,
+  .home-flow .cc-section,
+  .home-flow .st-section {
+    background: transparent !important;
+  }
+</style>

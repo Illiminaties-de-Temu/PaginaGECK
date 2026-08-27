@@ -1,43 +1,10 @@
 ---
-import Layout from '@/layouts/MainLayout.astro';
-import Abouthero from '@/components/abaut/Abouthero.jsx';
-import MisionVision from '@/components/abaut/MisionVision.jsx';
-import Processtimeline from '@/components/abaut/Processtimeline.jsx';
-import Techstack from '@/components/abaut/Techstack.jsx';
-import Fin from '@/components/abaut/Fin.jsx';
-import Python from '@/components/abaut/python.jsx';
-import { SITE_URL } from '@/data/seo';
-
-const aboutPage = {
-  '@type': 'AboutPage',
-  '@id': `${SITE_URL}/nosotros/#webpage`,
-  url: `${SITE_URL}/nosotros/`,
-  name: 'Nosotros | Geck Codex',
-  about: { '@id': `${SITE_URL}/#organization` },
-  mainEntity: { '@id': `${SITE_URL}/#organization` },
-};
+/**
+ * Versión en español, servida desde la raíz sin prefijo de idioma.
+ * El contenido vive en la plantilla; aquí solo se elige el idioma.
+ * Las variantes en inglés y portugués las genera `src/pages/[...path].astro`.
+ */
+import About from '@/page-templates/About.astro';
 ---
 
-<Layout
-  title="Nosotros: Equipo Tecnológico en Parral, Chihuahua | Geck Codex"
-  description="Conoce al equipo detrás de Geck Codex: desarrolladores mexicanos especializados en React, Node.js, Python, Flutter e inteligencia artificial, con sede en Hidalgo del Parral, Chihuahua."
-  canonical={`${SITE_URL}/nosotros/`}
-  breadcrumbs={[{ name: 'Nosotros', url: `${SITE_URL}/nosotros/` }]}
-  schema={[aboutPage]}
->
-  <div class="components-container">
-    <Abouthero client:visible />
-    <MisionVision client:visible />
-    <Techstack client:visible />
-  </div>
-
-  <div class="dos">
-    <Processtimeline client:visible />
-    <Python client:visible />
-  </div>
-</Layout>
-
-<style>
-  .components-container { background: var(--background); }
-  .dos { background: var(--background); }
-</style>
+<About lang="es" />

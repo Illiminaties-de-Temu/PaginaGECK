@@ -58,8 +58,8 @@ function TreeNode({ step, i, n, point, isRoot, progress, reduce }) {
   );
 }
 
-export default function ProcessTimeline() {
-  const { t } = useLanguage();
+export default function ProcessTimeline({ lang }) {
+  const { t } = useLanguage(lang);
   const reduce = useReducedMotion();
   const sectionRef = useRef(null);
   const stageRef = useRef(null);

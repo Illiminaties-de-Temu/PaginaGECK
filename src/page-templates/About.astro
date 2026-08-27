@@ -1,0 +1,58 @@
+---
+import Layout from '@/layouts/MainLayout.astro';
+import Abouthero from '@/components/abaut/Abouthero.jsx';
+import MisionVision from '@/components/abaut/MisionVision.jsx';
+import Processtimeline from '@/components/abaut/Processtimeline.jsx';
+import Techstack from '@/components/abaut/Techstack.jsx';
+import Python from '@/components/abaut/python.jsx';
+import { SITE_URL } from '@/data/seo';
+import { PAGE_META } from '@/i18n/seo-meta';
+import { localizedUrl } from '@/i18n/routes';
+import type { Locale } from '@/i18n/routes';
+
+interface Props {
+  lang: Locale;
+}
+
+const { lang } = Astro.props;
+const meta = PAGE_META.about[lang];
+const url = localizedUrl('about', lang, SITE_URL);
+
+// El @id lleva el idioma para que las tres variantes no colisionen en el grafo:
+// son páginas distintas que describen a la misma organización.
+const aboutPage = {
+  '@type': 'AboutPage',
+  '@id': `${url}#webpage`,
+  url,
+  name: meta.title,
+  inLanguage: lang,
+  about: { '@id': `${SITE_URL}/#organization` },
+  mainEntity: { '@id': `${SITE_URL}/#organization` },
+};
+---
+
+<Layout
+  title={meta.title}
+  description={meta.description}
+  canonical={url}
+  breadcrumbs={[{ name: meta.breadcrumb!, url }]}
+  schema={[aboutPage]}
+  lang={lang}
+  pageKey="about"
+>
+  <div class="components-container">
+    <Abouthero client:visible lang={lang} />
+    <MisionVision client:visible lang={lang} />
+    <Techstack client:visible lang={lang} />
+  </div>
+
+  <div class="dos">
+    <Processtimeline client:visible lang={lang} />
+    <Python client:visible />
+  </div>
+</Layout>
+
+<style>
+  .components-container { background: var(--background); }
+  .dos { background: var(--background); }
+</style>

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useLanguage } from '../hooks/useLanguage';
+import { localizedPath } from '../i18n/routes';
 
 /**
  * FaqSection — bloque de preguntas frecuentes.
@@ -15,8 +16,8 @@ import { useLanguage } from '../hooks/useLanguage';
  * un toque en móvil dispara hover Y clic, y la pregunta se abriría y cerraría
  * en el mismo gesto.
  */
-export default function FaqSection() {
-  const { t } = useLanguage();
+export default function FaqSection({ lang }) {
+  const { t } = useLanguage(lang);
   const f = t.faq;
 
   // Índice abierto. Acordeón: una respuesta a la vez.
@@ -94,7 +95,7 @@ export default function FaqSection() {
 
         <p className="gc-faq__cta">
           {f.ctaText}{' '}
-          <a href="/contacto/" className="gc-faq__cta-link">
+          <a href={localizedPath("contact", lang)} className="gc-faq__cta-link">
             {f.ctaLink}
           </a>
         </p>

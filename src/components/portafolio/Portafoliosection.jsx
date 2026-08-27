@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, forwardRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage } from '../../hooks/useLanguage';
+import { localizedPath } from '../../i18n/routes';
 
 /* Acentos de categoría dentro de la paleta oro/bronce (sin arcoíris),
  * consistentes con el ProjectCarousel de la home. */
@@ -13,22 +14,28 @@ const CAT_COLORS = {
 
 // Exportado para que portafolio.astro genere el JSON-LD desde los MISMOS
 // proyectos que se pintan en pantalla (una sola fuente de verdad).
+// Fondo unico de todas las tarjetas y de los detalles con logo. Se invierte
+// respecto al tema: blanco en modo oscuro, tinta en modo claro (ver
+// --pf-card-bg mas abajo). Un proyecto puede fijar el suyo con `cardBg`
+// —sobreescribe la variable en la tarjeta— cuando su imagen solo se lee sobre
+// un fondo concreto en los dos temas.
+const CARD_BG = 'var(--pf-card-bg)';
+
 export const PROJECTS_STATIC = [
-  { id: 1,  cat: 'landing',  title: 'Chuchulucos',          tech: ['Astro', 'Tailwind CSS', 'Framer Motion'],                           link: 'https://chuchulucos.geckcodex.com/',        gradient: 'linear-gradient(145deg, #3b0764 0%, #6d28d9 40%, #db2777 100%)', image: '/assets/image/portafolio/chuchu.webp' },
-  { id: 2,  cat: 'landing',  title: 'Agend-In',              tech: ['Astro', 'React', 'Node.js', 'Tailwind CSS'],                        link: 'https://agend-in.geckcodex.com/',           gradient: 'linear-gradient(145deg, #1e1b4b 0%, #4f46e5 45%, #0ea5e9 100%)', image: '/assets/image/portafolio/agendin.webp' },
-  { id: 3,  cat: 'landing',  title: 'LandingKit',            tech: ['Astro', 'React', 'Tailwind CSS'],                                   link: 'https://landig-plantilla.geckcodex.com/',   gradient: 'linear-gradient(145deg, #2e1065 0%, #7c3aed 45%, #c026d3 100%)', image: '/assets/image/portafolio/landig.webp' },
-  { id: 4,  cat: 'landing',  title: 'Chava Calderón',        tech: ['Astro', 'Tailwind CSS', 'Framer Motion'],                           link: 'https://chavacalderon.mx/',                 gradient: 'linear-gradient(145deg, #1a0636 0%, #6d28d9 45%, #9d174d 100%)', image: '/assets/image/portafolio/chava.webp' },
-  { id: 5,  cat: 'landing',  title: 'Mando',                 tech: ['Astro', 'React', 'Tailwind CSS'],                                                                                      gradient: 'linear-gradient(145deg, #0f172a 0%, #1e3a8a 45%, #312e81 100%)', image: '/assets/image/portafolio/mando.webp' },
-  { id: 6,  cat: 'landing',  title: 'Mi Caja POS',           tech: ['Astro', 'React', 'Tailwind CSS'],                                   link: 'https://mi-caja.geckcodex.com/',            gradient: 'linear-gradient(145deg, #1c1917 0%, #92400e 45%, #d97706 100%)', image: '/assets/image/portafolio/micaja.webp' },
+  { id: 1,  cat: 'landing',  title: 'Chuchulucos',          tech: ['Astro', 'Tailwind CSS', 'Framer Motion'],                           link: 'https://chuchulucos.geckcodex.com/',        gradient: 'linear-gradient(145deg, #3b0764 0%, #6d28d9 40%, #db2777 100%)', image: '/assets/image/portafolio/chuchu.webp', cardImage: '/assets/image/portafolio/chuchulucos.png', cardFit: 'contain', cardBg: '#141414' },
+  { id: 2,  cat: 'landing',  title: 'Agend-In',              tech: ['Astro', 'React', 'Node.js', 'Tailwind CSS'],                        link: 'https://agend-in.geckcodex.com/',           gradient: 'linear-gradient(145deg, #1e1b4b 0%, #4f46e5 45%, #0ea5e9 100%)', image: '/assets/image/portafolio/agendin.webp', cardImage: '/assets/image/portafolio/agendin.jpeg' },
+  { id: 3,  cat: 'landing',  title: 'LandingKit',            tech: ['Astro', 'React', 'Tailwind CSS'],                                   link: 'https://landig-plantilla.geckcodex.com/',   gradient: 'linear-gradient(145deg, #2e1065 0%, #7c3aed 45%, #c026d3 100%)', image: '/assets/image/portafolio/landig.webp', cardFit: 'contain', imgPos: 'center 38%' },
+  { id: 6,  cat: 'landing',  title: 'Mi Caja POS',           tech: ['Astro', 'React', 'Tailwind CSS'],                                   link: 'https://mi-caja.geckcodex.com/',            gradient: 'linear-gradient(145deg, #1c1917 0%, #92400e 45%, #d97706 100%)', image: '/assets/image/portafolio/micaja.webp', cardImage: '/assets/image/portafolio/mi%20caja.png' },
   { id: 7,  cat: 'mobile',   title: 'capital Transport',     tech: ['React Native', 'Node.js', 'Firebase', 'Google Maps API'],                                                              gradient: 'linear-gradient(145deg, #0c1a3d 0%, #1d4ed8 45%, #0ea5e9 100%)', image: '/assets/image/portafolio/capital transpor.webp' },
-  { id: 8,  cat: 'mobile',   title: 'SpendWise',             tech: ['React Native', 'Expo', 'SQLite', 'Chart.js'],                                                                         gradient: 'linear-gradient(145deg, #0e2a5c 0%, #2563eb 45%, #06b6d4 100%)', image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=640&q=80&auto=format&fit=crop' },
   { id: 9,  cat: 'webapp',   title: 'Coronado Gym',          tech: ['React', 'Node.js', 'PostgreSQL', 'Tailwind CSS'],                                                                     gradient: 'linear-gradient(145deg, #0a2e1a 0%, #15803d 45%, #0d9488 100%)', image: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=640&q=80&auto=format&fit=crop' },
   { id: 11, cat: 'webapp',   title: 'Generador de Gafetes',  tech: ['React', 'Node.js', 'PostgreSQL', 'PDF-lib', 'QR Generator'],                                                         gradient: 'linear-gradient(145deg, #1c1917 0%, #064e3b 45%, #0f766e 100%)', image: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=640&q=80&auto=format&fit=crop' },
-  { id: 12, cat: 'software', title: 'SafePosture',           tech: ['Python', 'OpenCV', 'MediaPipe', 'TensorFlow', 'React'],                                                               gradient: 'linear-gradient(145deg, #1e0a3c 0%, #6d28d9 45%, #4338ca 100%)', image: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=640&q=80&auto=format&fit=crop' },
-  { id: 13, cat: 'software', title: 'El mezquite control',   tech: ['React', 'Node.js', 'PostgreSQL', 'Chart.js'],                                                                         gradient: 'linear-gradient(145deg, #0f172a 0%, #5b21b6 45%, #4f46e5 100%)', image: 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=640&q=80&auto=format&fit=crop' },
-  { id: 14, cat: 'software', title: 'velt',                  tech: ['Python', 'OpenCV', 'MediaPipe', 'TensorFlow', 'WebSockets'],                                                         gradient: 'linear-gradient(145deg, #1a0533 0%, #7c3aed 45%, #6d28d9 100%)', image: 'https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=640&q=80&auto=format&fit=crop' },
-  { id: 15, cat: 'software', title: 'EduAI',                 tech: ['Python', 'TensorFlow', 'React', 'FastAPI', 'PostgreSQL'],                                                            gradient: 'linear-gradient(145deg, #09090b 0%, #5b21b6 45%, #4338ca 100%)', image: 'https://images.unsplash.com/photo-1546410531-bb4caa6b424d?w=640&q=80&auto=format&fit=crop' },
-  { id: 16, cat: 'software', title: 'GeckCRM',               tech: ['React', 'Node.js', 'PostgreSQL', 'Tailwind CSS'],                                                                    gradient: 'linear-gradient(145deg, #170d2e 0%, #7c3aed 45%, #2563eb 100%)', image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=640&q=80&auto=format&fit=crop' },
+  { id: 17, cat: 'webapp',   title: 'Nuki',                   tech: ['React', 'Node.js', 'PostgreSQL', 'Tailwind CSS'],                                                                    gradient: 'linear-gradient(145deg, #030C1D 0%, #0B1D33 45%, #B8941F 100%)', image: '/assets/image/portafolio/nuki2.png', cardFit: 'contain', cardBg: '#FFFFFF' },
+  { id: 18, cat: 'webapp',   title: 'Menús Digitales',        tech: ['Astro', 'React', 'Tailwind CSS'],                                                                                    gradient: 'linear-gradient(145deg, #1e1e1c 0%, #222220 40%, #D4AF37 100%)', image: '/assets/image/portafolio/menudigital.png', link: 'https://laschikis.vercel.app/?tema=fonda' },
+  { id: 19, cat: 'mobile',   title: 'Ganova App',             tech: ['Flutter', 'Firebase', 'SQLite'],                                                                                     gradient: 'linear-gradient(145deg, #0B1D33 0%, #0c1e3c 45%, #D4AF37 100%)', image: '/assets/image/portafolio/ganova.png' },
+  { id: 21, cat: 'software', title: 'Bot Calificador de Leads', tech: ['Python', 'FastAPI', 'PostgreSQL', 'WhatsApp API'],                                                                  gradient: 'linear-gradient(145deg, #222220 0%, #0B1D33 50%, #D4AF37 100%)', image: '/assets/image/portafolio/seguiar_resized.png', cardFit: 'contain' },
+  { id: 22, cat: 'landing',  title: 'Handlove',               tech: ['Astro', 'Tailwind CSS'],                                            link: 'https://handloves.mx/',                   gradient: 'linear-gradient(145deg, #030C1D 0%, #0D1625 45%, #F4E4BC 100%)', image: '/assets/image/portafolio/handlove.png', cardFit: 'contain' },
+  { id: 23, cat: 'landing',  title: 'Plantilla Inmobiliaria', tech: ['Astro', 'React', 'Tailwind CSS'],                                                                                    gradient: 'linear-gradient(145deg, #0c1e3c 0%, #0B1D33 45%, #B8941F 100%)', image: '/assets/image/portafolio/inmovil.png', link: 'https://inmobil.netlify.app/', cardFit: 'contain', imgPos: 'center 38%' },
+  { id: 24, cat: 'software', title: 'Bot de Atención al Cliente', tech: ['Python', 'FastAPI', 'PostgreSQL', 'WhatsApp API'], gradient: 'linear-gradient(145deg, #1e1e1c 0%, #0B1D33 50%, #B8941F 100%)', image: '/assets/image/portafolio/nomda.jpg' },
 ];
 
 /* ─── CONFIG DE LA HÉLICE (el "tornillo") ───────────────────────────────
@@ -62,7 +69,7 @@ const contentVariants = {
   exit:   { y: 14, opacity: 0, transition: { duration: 0.16 } },
 };
 
-function Detail({ project, onClose, catMeta, strings }) {
+function Detail({ project, onClose, catMeta, strings, lang }) {
   const meta = catMeta[project.cat];
   const [imgFailed, setImgFailed] = useState(false);
 
@@ -84,8 +91,18 @@ function Detail({ project, onClose, catMeta, strings }) {
     };
   }, [onClose]);
 
+  // `cardFit` describe como encuadrar el logo de la TARJETA. Si el proyecto
+  // tiene `cardImage` propia, el detalle muestra otra imagen (la captura del
+  // sitio) y ese ajuste no le aplica.
+  const useFit = !project.cardImage;
   const bgStyle = (project.image && !imgFailed)
-    ? { backgroundImage: `url("${project.image}")`, backgroundSize: 'cover', backgroundPosition: 'center top' }
+    ? {
+        backgroundImage: `url("${project.image}")`,
+        backgroundSize: useFit && project.cardFit === 'contain' ? 'contain' : 'cover',
+        backgroundPosition: project.imgPos || 'center top',
+        backgroundRepeat: 'no-repeat',
+        backgroundColor: useFit && project.cardFit === 'contain' ? (project.cardBg || CARD_BG) : undefined,
+      }
     : { background: project.gradient };
 
   return (
@@ -157,7 +174,7 @@ function Detail({ project, onClose, catMeta, strings }) {
             </svg>
           </a>
         ) : (
-          <a href="/contacto/" className="gc-detail__cta">
+          <a href={localizedPath("contact", lang)} className="gc-detail__cta">
             {strings.contact}
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
               <path d="M4 10H16M16 10L10 4M16 10L10 16" />
@@ -171,7 +188,43 @@ function Detail({ project, onClose, catMeta, strings }) {
 
 /* ─── CARD (tarjeta de la hélice / fallback) ────────────────────────────
  * forwardRef: el contenedor padre muta su transform en cada frame de scroll. */
+// Por encima de esta proporción la imagen es una captura de web apaisada: en una
+// tarjeta vertical (0.78:1) `cover` se comería dos tercios del ancho, así que se
+// encuadra por arriba —donde está el encabezado del sitio— y se funde con el fondo.
+const WIDE_RATIO = 1.6;
+
 const Card = forwardRef(function Card({ project, meta, onOpen, viewMore, variant }, ref) {
+  // La tarjeta puede mostrar el logo de la marca y reservar la captura del
+  // sitio para el detalle: a ese tamaño un logo se reconoce y una captura no.
+  const cardSrc = project.cardImage || project.image;
+
+  // La proporción se mide de la imagen ya cargada en vez de fijarla por
+  // categoría: hay landings con captura apaisada y otras con logo cuadrado.
+  const [isWide, setIsWide] = useState(false);
+  const onImgLoad = (e) => {
+    const { naturalWidth: w, naturalHeight: h } = e.currentTarget;
+    if (w && h) setIsWide(w / h >= WIDE_RATIO);
+  };
+
+  // Una captura apaisada siempre se encuadra por arriba. `cardFit` sigue
+  // aplicando al resto —logos cuadrados con `contain` sobre fondo blanco— y al
+  // modal de detalle, que lo lee por su cuenta: por eso no se toca el array.
+  const fit = isWide ? 'top' : (project.cardFit || 'cover');
+  const isTop = fit === 'top';
+
+  const picture = cardSrc && (
+    <img
+      src={cardSrc}
+      alt={`${project.title} — proyecto desarrollado por Geck Codex`}
+      className="scard__img"
+      style={isTop ? undefined : { objectFit: fit, objectPosition: project.imgPos || undefined }}
+      onLoad={onImgLoad}
+      loading="lazy"
+      decoding="async"
+      draggable="false"
+    />
+  );
+
   return (
     <article
       ref={ref}
@@ -182,19 +235,14 @@ const Card = forwardRef(function Card({ project, meta, onOpen, viewMore, variant
       onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.stopPropagation(); onOpen(project); } }}
     >
       <div
-        className="scard__media"
-        style={project.image ? undefined : { background: project.gradient }}
+        className={`scard__media${isTop ? ' scard__media--top' : ''}`}
+        style={
+          cardSrc
+            ? (project.cardBg ? { '--pf-card-bg': project.cardBg } : undefined)
+            : { background: project.gradient }
+        }
       >
-        {project.image && (
-          <img
-            src={project.image}
-            alt={`${project.title} — proyecto desarrollado por Geck Codex`}
-            className="scard__img"
-            loading="lazy"
-            decoding="async"
-            draggable="false"
-          />
-        )}
+        {isTop ? <div className="scard__shot">{picture}</div> : picture}
         <div className="scard__veil" />
 
         <div className="scard__top">
@@ -306,8 +354,8 @@ function useScrew({ enabled, count, refs, trackRef, railRef, hudNum, hudTitle, h
 }
 
 /* ─── MAIN ──────────────────────────────────────────────────────────────── */
-export default function PortfolioSection() {
-  const { t } = useLanguage();
+export default function PortfolioSection({ lang }) {
+  const { t } = useLanguage(lang);
   const catMeta = Object.fromEntries(
     Object.entries(CAT_COLORS).map(([key, colors]) => [key, { ...colors, label: t.portfolio.catLabels[key] }])
   );
@@ -454,7 +502,7 @@ export default function PortfolioSection() {
 
       <AnimatePresence>
         {selected && (
-          <Detail key={selected.id} project={selected} onClose={() => setSelected(null)} catMeta={catMeta} strings={t.portfolio} />
+          <Detail key={selected.id} project={selected} onClose={() => setSelected(null)} catMeta={catMeta} strings={t.portfolio} lang={lang} />
         )}
       </AnimatePresence>
 
@@ -617,15 +665,22 @@ export default function PortfolioSection() {
         .scard--helix .scard__cap { opacity: 0; transition: opacity .35s var(--expo); }
         .scard--helix.is-active .scard__cap { opacity: 1; }
 
-        /* ── TARJETA (visual común) ────────────────────────────────────── */
+        /* ── TARJETA (visual común) ──────────────────────────────────────
+         * El fondo de la tarjeta va INVERTIDO respecto al tema: en modo
+         * oscuro es blanco y en modo claro es la misma tinta del modo
+         * oscuro. Asi la rejilla del portafolio siempre contrasta contra la
+         * pagina y los logos con transparencia se leen en ambos modos. */
+        :root { --pf-card-bg: #1F1F1E; }
+        :root[data-theme="dark"] { --pf-card-bg: #FFFFFF; }
+
         .scard__media {
           position: relative;
           width: 100%;
           height: 100%;
           overflow: hidden;
           border-radius: 18px;
-          background: #1b1a17;
-          border: 1px solid rgba(255,255,255,0.07);
+          background: var(--pf-card-bg);
+          border: 1px solid var(--border, rgba(255,255,255,0.07));
         }
         .scard__img {
           position: absolute; inset: 0;
@@ -633,6 +688,28 @@ export default function PortfolioSection() {
           object-fit: cover; object-position: center;
           display: block;
         }
+        /* ── encuadre por arriba (capturas de web apaisadas) ─────────── */
+        .scard__media--top { background: var(--pf-card-bg); }
+        /* La franja no fija su altura: la toma de la imagen, que se pinta a
+           ancho completo y proporción real. Así se ve el encabezado entero del
+           sitio —sin recortar los lados— y el degradado lo cose con el fondo. */
+        .scard__shot {
+          position: absolute; top: 0; left: 0; right: 0;
+          overflow: hidden;
+          z-index: 0;
+        }
+        .scard__shot .scard__img {
+          position: relative; inset: auto;
+          width: 100%; height: auto;
+          object-fit: fill;
+        }
+        .scard__shot::after {
+          content: '';
+          position: absolute; inset: 0;
+          pointer-events: none;
+          background: linear-gradient(to bottom, transparent 42%, var(--pf-card-bg) 100%);
+        }
+
         .scard__veil {
           position: absolute; inset: 0;
           background: linear-gradient(to top, rgba(8,7,5,0.92) 0%, rgba(8,7,5,0.35) 42%, rgba(8,7,5,0) 70%);

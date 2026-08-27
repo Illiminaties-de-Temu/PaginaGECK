@@ -1,0 +1,41 @@
+---
+import Layout from '@/layouts/MainLayout.astro';
+import PortfolioSection, { PROJECTS_STATIC } from '@/components/portafolio/Portafoliosection.jsx';
+import { translations } from '@/i18n/translations';
+import { portfolioSchema, SITE_URL } from '@/data/seo';
+import { PAGE_META } from '@/i18n/seo-meta';
+import { localizedUrl } from '@/i18n/routes';
+import type { Locale } from '@/i18n/routes';
+
+interface Props {
+  lang: Locale;
+}
+
+const { lang } = Astro.props;
+const meta = PAGE_META.portfolio[lang];
+const url = localizedUrl('portfolio', lang, SITE_URL);
+
+const copy = translations[lang].portfolio.projects;
+const portfolio = portfolioSchema(
+  PROJECTS_STATIC.map((p) => ({
+    name: p.title,
+    description: copy[p.id]?.desc ?? copy[p.id]?.tagline ?? p.title,
+    url: p.link,
+    // Solo imágenes propias: las de stock no representan el proyecto y no
+    // aportan nada como dato estructurado.
+    image: p.image?.startsWith('/') ? `${SITE_URL}${p.image}` : undefined,
+  })),
+);
+---
+
+<Layout
+  title={meta.title}
+  description={meta.description}
+  canonical={url}
+  breadcrumbs={[{ name: meta.breadcrumb!, url }]}
+  schema={[portfolio]}
+  lang={lang}
+  pageKey="portfolio"
+>
+  <PortfolioSection client:visible lang={lang} />
+</Layout>

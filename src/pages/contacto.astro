@@ -1,20 +1,10 @@
-<!-- contacto.astro -->
 ---
-import Layout from '@/layouts/MainLayout.astro';
-import Contact from '@/components/contacto/Contact';
-import FaqSection from '@/components/FaqSection.jsx';
-import { contactPageSchema, SITE_URL } from '@/data/seo';
+/**
+ * Versión en español, servida desde la raíz sin prefijo de idioma.
+ * El contenido vive en la plantilla; aquí solo se elige el idioma.
+ * Las variantes en inglés y portugués las genera `src/pages/[...path].astro`.
+ */
+import Contact from '@/page-templates/Contact.astro';
 ---
 
-<Layout
-  title="Contacto: Cotiza tu Proyecto Digital | Geck Codex"
-  description="Contáctanos por WhatsApp, correo o Instagram. Respuesta en menos de 24 horas y consultoría inicial sin costo para tu proyecto web, app o de inteligencia artificial."
-  canonical={`${SITE_URL}/contacto/`}
-  ogTitle="Cotiza tu proyecto — respuesta en menos de 24 h"
-  ogDescription="Escríbenos por WhatsApp, correo o formulario. Consultoría inicial sin costo para tu proyecto web, app o de inteligencia artificial."
-  breadcrumbs={[{ name: 'Contacto', url: `${SITE_URL}/contacto/` }]}
-  schema={[contactPageSchema()]}
->
-  <Contact client:visible />
-  <FaqSection client:visible />
-</Layout>
+<Contact lang="es" />

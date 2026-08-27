@@ -47,7 +47,7 @@ Gobierno Municipal de Hidalgo del Parral, Restaurante Las Chikis, Capital Transp
 - **Mando** — Bot que conecta WhatsApp/Telegram con la base de datos del negocio para consultas en lenguaje natural sobre ventas, inventario y métricas.
 - **Mi Caja** — Punto de venta (POS) accesible para restaurantes, carnicerías, abarrotes y fondas.
 - **FleetTrack** — App móvil de gestión de flotillas: rastreo en tiempo real, control documental y comunicación con operadores.
-- **SpendWise** — App de control de gastos personales con presupuestos y alertas.
+- **Ganova App** — App móvil para el control integral de ranchos ganaderos: animales, dietas, gastos y métricas productivas.
 - **GymHub** — Plataforma de gestión de gimnasios y membresías.
 - **GeckCRM** — CRM para negocios locales.
 
@@ -81,3 +81,23 @@ Sí. Trabaja tanto con negocios locales de Parral y Chihuahua como con empresas 
 - [Contacto](https://geckcodex.com/contacto/) — Formulario, WhatsApp, correo e Instagram.
 - [Privacidad](https://geckcodex.com/privacidad/) — Aviso de privacidad.
 - [Términos](https://geckcodex.com/terminos/) — Términos y condiciones.
+
+## Versiones en otros idiomas
+
+El sitio se publica en tres idiomas, cada uno con su propia URL. El español vive
+en la raíz; inglés y portugués llevan prefijo. Las páginas legales existen solo
+en español porque se rigen por la ley mexicana.
+
+**English**
+- [Home](https://geckcodex.com/en/) — Overview, featured projects, specialties and clients.
+- [Services](https://geckcodex.com/en/services/) — The ten services in detail and how the process works.
+- [Portfolio](https://geckcodex.com/en/portfolio/) — Real projects by category (landing, mobile, web, software and AI).
+- [About](https://geckcodex.com/en/about/) — Team, mission, vision, tech stack and process.
+- [Contact](https://geckcodex.com/en/contact/) — Form, WhatsApp, email and Instagram.
+
+**Português**
+- [Início](https://geckcodex.com/pt/) — Apresentação, projetos em destaque, especialidades e clientes.
+- [Serviços](https://geckcodex.com/pt/servicos/) — Os dez serviços em detalhe e o processo de trabalho.
+- [Portfólio](https://geckcodex.com/pt/portfolio/) — Projetos reais por categoria (landing, móvel, web, software e IA).
+- [Sobre nós](https://geckcodex.com/pt/sobre-nos/) — Equipe, missão, visão, stack tecnológico e processo.
+- [Contato](https://geckcodex.com/pt/contato/) — Formulário, WhatsApp, e-mail e Instagram.

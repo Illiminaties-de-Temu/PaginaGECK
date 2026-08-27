@@ -5,7 +5,9 @@ import Navbar from '@/components/Navbar.jsx';
 import Analytics from '@/components/Analytics.astro';
 import '@/styles/global.css';
 
-import { ORGANIZATION_SCHEMA, WEBSITE_SCHEMA, breadcrumbSchema, BUSINESS } from '@/data/seo';
+import { ORGANIZATION_SCHEMA, WEBSITE_SCHEMA, breadcrumbSchema, BUSINESS, SITE_URL } from '@/data/seo';
+import { LOCALE_META, alternatesFor, DEFAULT_LOCALE } from '@/i18n/routes';
+import type { Locale, PageKey } from '@/i18n/routes';
 
 interface Props {
   title?: string;
@@ -14,6 +16,14 @@ interface Props {
   canonical?: string;
   noindex?: boolean;
   type?: 'website' | 'article';
+  /** Idioma de ESTA página. Determina <html lang>, og:locale y el hreflang propio. */
+  lang?: Locale;
+  /**
+   * Página del mapa de rutas, para emitir hreflang recíproco hacia sus otras
+   * variantes. Se omite en las páginas que solo existen en español (legales):
+   * sin variantes, declarar alternates sería mentir.
+   */
+  pageKey?: PageKey;
   /** Migas de pan de la página → genera BreadcrumbList. Omitir en la home. */
   breadcrumbs?: { name: string; url: string }[];
   /** JSON-LD adicional específico de la página (Service, FAQPage, ItemList…). */
@@ -37,7 +47,21 @@ const {
   schema = [],
   ogTitle,
   ogDescription,
+  lang = DEFAULT_LOCALE,
+  pageKey,
 } = Astro.props;
+
+// ── Idioma y variantes ──────────────────────────────────────────────────
+// El hreflang solo se emite si la página existe en varios idiomas. Declararlo
+// apuntando a URLs que no existen es peor que no declararlo: Google descarta
+// el grupo entero cuando los enlaces no son recíprocos.
+const localeMeta = LOCALE_META[lang];
+const alternates = pageKey ? alternatesFor(pageKey, SITE_URL) : [];
+const alternateOgLocales = pageKey
+  ? Object.entries(LOCALE_META)
+      .filter(([code]) => code !== lang)
+      .map(([, meta]) => meta.ogLocale)
+  : [];
 
 const siteName = 'Geck Codex';
 const twitterHandle = '@geckcodex';
@@ -60,7 +84,7 @@ const jsonLdGraph = [
 ];
 ---
 
-<html lang="es-MX">
+<html lang={localeMeta.htmlLang}>
   <head>
     <meta charset="UTF-8" />
 
@@ -155,6 +179,15 @@ const jsonLdGraph = [
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
+
+    <!-- ═══════════════════════════════════════
+         HREFLANG — variantes de idioma de esta misma página.
+         Recíproco: cada variante lista a todas, incluida a sí misma.
+         x-default apunta al español, el mercado principal.
+    ═══════════════════════════════════════ -->
+    {alternates.map((alt) => (
+      <link rel="alternate" hreflang={alt.hreflang} href={alt.href} />
+    ))}
     {noindex && <meta name="robots" content="noindex, nofollow" />}
     {!noindex && <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />}
 
@@ -170,11 +203,10 @@ const jsonLdGraph = [
     <meta property="og:image:type" content="image/jpeg" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt" content="Geck Codex — desarrollo web, apps móviles e inteligencia artificial en Parral, Chihuahua" />
+    <meta property="og:image:alt" content="Geck Codex — software que hace crecer tu negocio: desarrollo web, apps móviles e inteligencia artificial en Parral, Chihuahua" />
     <meta property="og:site_name" content={siteName} />
-    <meta property="og:locale" content="es_MX" />
-    <meta property="og:locale:alternate" content="en_US" />
-    <meta property="og:locale:alternate" content="pt_BR" />
+    <meta property="og:locale" content={localeMeta.ogLocale} />
+    {alternateOgLocales.map((l) => <meta property="og:locale:alternate" content={l} />)}
 
     <!-- ═══════════════════════════════════════
          TWITTER CARD
@@ -185,7 +217,7 @@ const jsonLdGraph = [
     <meta name="twitter:title" content={socialTitle} />
     <meta name="twitter:description" content={socialDescription} />
     <meta name="twitter:image" content={image} />
-    <meta name="twitter:image:alt" content="Geck Codex — desarrollo web, apps móviles e inteligencia artificial en Parral, Chihuahua" />
+    <meta name="twitter:image:alt" content="Geck Codex — software que hace crecer tu negocio: desarrollo web, apps móviles e inteligencia artificial en Parral, Chihuahua" />
 
     <!-- ═══════════════════════════════════════
          FAVICON Y ICONOS
@@ -317,12 +349,12 @@ const jsonLdGraph = [
       })();
     </script>
 
-    <Navbar client:load />
+    <Navbar client:load lang={lang} />
     
     <main>
       <slot />
     </main>
     
-    <Footer client:visible />
+    <Footer client:visible lang={lang} />
   </body>
 </html>

@@ -10,8 +10,8 @@ const REACH = [
 ];
 const EASE = [0.16, 1, 0.3, 1];
 
-export default function AboutHero() {
-  const { t } = useLanguage();
+export default function AboutHero({ lang }) {
+  const { t } = useLanguage(lang);
   const heroRef = useRef(null);
   const mapRef = useRef(null);
   const flownRef = useRef(false);
@@ -226,6 +226,12 @@ export default function AboutHero() {
 
         .about-hero__map-wrapper {
           position: relative;
+          /* Contexto de apilamiento propio. Leaflet pinta sus capas en z-index
+             400 y la tarjeta de ubicación en 500; sin aislar, esos valores
+             compiten en la raíz y tapan el menú del navbar (z-index 59). No
+             basta con el transform del parallax: cuando el scroll lo deja en
+             cero, Framer emite transform:none y el contexto desaparece. */
+          isolation: isolate;
           width: 100%;
           height: 75vh;
           border-radius: 40px;

@@ -85,82 +85,99 @@ const sharp = (await import('sharp')).default;
 // La ubicación va explícita: la vista previa es de las pocas superficies
 // donde la señal local viaja fuera del sitio (WhatsApp, grupos, DMs).
 const EYEBROW = 'PARRAL · CHIHUAHUA · MÉXICO';
-const TITLE = 'Geck Codex';
-const TAGLINE = 'Tecnología de primer nivel, para todos.';
-const CHIPS = ['Desarrollo Web', 'Apps Móviles', 'Inteligencia Artificial'];
+const TITLE_1 = 'Software que hace';
+const TITLE_2A = 'crecer tu ';
+const TITLE_2B = 'negocio';           // la palabra-acento, la única en champagne
+const SUB_1 = 'Desarrollo web, apps móviles, e-commerce';
+const SUB_2 = 'e inteligencia artificial a la medida.';
+const BRAND = 'GECK CODEX';
 const DOMAIN = 'geckcodex.com';
+const METRICS = [
+  ['+16', 'PROYECTOS'],
+  ['100%', 'A LA MEDIDA'],
+  ['24/7', 'SOPORTE'],
+];
 
+// Tokens vivos de src/styles/global.css. El oro es acento FUNCIONAL: va en la
+// palabra-acento del titular, los datos y la URL — nunca en el título entero.
 const C = {
-  navyDark: '#0B1D33',
-  navyMid: '#0b1f49',
-  gold: '#D4AF37',
-  goldLight: '#F4E4BC',
+  navy: '#0D1625',
+  gold: '#C3AD85',
+  goldLight: '#D8C6A4',
+  bronze: '#957952',
+  ivory: '#F5F1E8',
 };
 
 /* ── 3. Composición ──────────────────────────────────────────────── */
 
 const W = 1200;
 const H = 630;
-const COL = 525; // inicio de la columna de texto
+const PANEL = 424;          // ancho del bloque champagne de la izquierda
+const COL = PANEL + 58;     // inicio de la columna de texto
+const RIGHT = W - 58;       // margen derecho de la columna
 const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
-// Sin medición real de texto: el ancho de las píldoras se estima por el
-// número de caracteres. Inter a 22px promedia ~0.55em de avance.
-const chipWidth = (text) => Math.round(text.length * 22 * 0.55) + 40;
-
-const chips = CHIPS.map((text, i) => {
-  const y = 322 + i * 56;
+// Sin medición real de texto: las columnas de métricas se colocan a mano en
+// vez de fluir, para que no se encimen si cambia una cifra.
+const metrics = METRICS.map(([k, v], i) => {
+  const x = COL + i * 132;
   return `
-    <rect x="${COL}" y="${y}" width="${chipWidth(text)}" height="44" rx="8"
-          fill="rgba(212,175,55,0.10)" stroke="${C.gold}" stroke-opacity="0.55" stroke-width="1.5"/>
-    <text x="${COL + 20}" y="${y + 29}" font-family="Inter" font-size="22" font-weight="500"
-          fill="${C.goldLight}">${esc(text)}</text>`;
+    <text x="${x}" y="472" font-family="Space Grotesk" font-size="27" font-weight="700"
+          fill="${C.gold}">${esc(k)}</text>
+    <text x="${x}" y="500" font-family="Inter" font-size="14" font-weight="500"
+          letter-spacing="1.1" fill="${C.ivory}" opacity="0.5">${esc(v)}</text>`;
 }).join('');
 
 const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}">
   <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="${C.navyMid}"/>
-      <stop offset="55%" stop-color="${C.navyDark}"/>
-      <stop offset="100%" stop-color="#071426"/>
+    <linearGradient id="panel" x1="0" y1="0" x2="0.55" y2="1">
+      <stop offset="0%" stop-color="${C.goldLight}"/>
+      <stop offset="46%" stop-color="${C.gold}"/>
+      <stop offset="100%" stop-color="${C.bronze}"/>
     </linearGradient>
     <radialGradient id="glow" cx="0.5" cy="0.5" r="0.5">
-      <stop offset="0%" stop-color="${C.gold}" stop-opacity="0.20"/>
+      <stop offset="0%" stop-color="${C.gold}" stop-opacity="0.14"/>
       <stop offset="100%" stop-color="${C.gold}" stop-opacity="0"/>
     </radialGradient>
   </defs>
 
-  <rect width="${W}" height="${H}" fill="url(#bg)"/>
-  <circle cx="240" cy="315" r="290" fill="url(#glow)"/>
+  <rect width="${W}" height="${H}" fill="${C.navy}"/>
+  <circle cx="${W}" cy="0" r="520" fill="url(#glow)"/>
+  <rect width="${PANEL}" height="${H}" fill="url(#panel)"/>
 
-  <!-- filetes dorados superior e inferior -->
-  <rect x="0" y="0" width="${W}" height="4" fill="${C.gold}"/>
-  <rect x="0" y="${H - 4}" width="${W}" height="4" fill="${C.gold}"/>
+  <!-- marca dentro del panel; el logo se compone encima como bitmap -->
+  <text x="${PANEL / 2}" y="446" text-anchor="middle" font-family="Space Grotesk"
+        font-size="26" font-weight="700" letter-spacing="3.1" fill="${C.navy}">${esc(BRAND)}</text>
 
-  <!-- separador entre logo y texto -->
-  <rect x="476" y="70" width="1.5" height="490" fill="${C.gold}" opacity="0.30"/>
+  <text x="${COL}" y="148" font-family="Inter" font-size="15" font-weight="500"
+        letter-spacing="3.9" fill="${C.ivory}" opacity="0.52">${esc(EYEBROW)}</text>
 
-  <text x="${COL}" y="128" font-family="Inter" font-size="18" font-weight="600"
-        letter-spacing="3.2" fill="${C.gold}" opacity="0.95">${esc(EYEBROW)}</text>
+  <text x="${COL}" y="212" font-family="Space Grotesk" font-size="54" font-weight="700"
+        fill="${C.ivory}">${esc(TITLE_1)}</text>
+  <text x="${COL}" y="271" font-family="Space Grotesk" font-size="54" font-weight="700"
+        fill="${C.ivory}">${esc(TITLE_2A)}<tspan fill="${C.gold}">${esc(TITLE_2B)}</tspan></text>
 
-  <text x="${COL}" y="212" font-family="Space Grotesk" font-size="72" font-weight="700"
-        fill="${C.gold}">${esc(TITLE)}</text>
-  <rect x="${COL}" y="232" width="186" height="3" fill="${C.gold}" opacity="0.85"/>
+  <text x="${COL}" y="335" font-family="Inter" font-size="22" font-weight="400"
+        fill="${C.ivory}" opacity="0.66">${esc(SUB_1)}</text>
+  <text x="${COL}" y="368" font-family="Inter" font-size="22" font-weight="400"
+        fill="${C.ivory}" opacity="0.66">${esc(SUB_2)}</text>
 
-  <text x="${COL}" y="288" font-family="Inter" font-size="26" font-weight="400"
-        fill="${C.goldLight}">${esc(TAGLINE)}</text>
+  <rect x="${COL}" y="418" width="${RIGHT - COL}" height="1" fill="${C.gold}" opacity="0.24"/>
 
-  ${chips}
+  ${metrics}
 
-  <text x="${COL}" y="558" font-family="Inter" font-size="22" font-weight="500"
-        fill="${C.goldLight}" opacity="0.72">${esc(DOMAIN)}</text>
+  <text x="${RIGHT}" y="592" text-anchor="end" font-family="Inter" font-size="19"
+        font-weight="600" fill="${C.gold}">${esc(DOMAIN)}</text>
 </svg>`;
 
+const LOGO = 194;
 const logo = await sharp(join(outDir, 'logo new sin fondo.png'))
-  .resize(300, 282, { fit: 'inside' })
+  .resize(LOGO, LOGO, { fit: 'inside' })
   .toBuffer();
 
-const base = sharp(Buffer.from(svg)).composite([{ input: logo, left: 90, top: 174 }]);
+const base = sharp(Buffer.from(svg)).composite([
+  { input: logo, left: Math.round((PANEL - LOGO) / 2), top: 196 },
+]);
 
 await base.clone().jpeg({ quality: 90, chromaSubsampling: '4:4:4' }).toFile(join(outDir, 'og-image.jpg'));
 await base.clone().webp({ quality: 90 }).toFile(join(outDir, 'og-image.webp'));

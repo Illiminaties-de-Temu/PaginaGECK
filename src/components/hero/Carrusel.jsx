@@ -30,8 +30,8 @@ const FOCUS_ZOOM = 1.85;  // zoom al enfocar un nodo (hover/clic)
 const initialsOf = (name) =>
   name.split(' ').filter(Boolean).slice(0, 2).map((w) => w[0]).join('').toUpperCase();
 
-export default function ClientGraph() {
-  const { t } = useLanguage();
+export default function ClientGraph({ lang }) {
+  const { t } = useLanguage(lang);
   const [activeId, setActiveId] = useState(null);
 
   const viewportRef = useRef(null);

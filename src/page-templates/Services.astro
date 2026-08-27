@@ -1,0 +1,34 @@
+---
+import Layout from '@/layouts/MainLayout.astro';
+import ServicesSection from '@/components/servicios/ServicesSection.jsx';
+import { translations } from '@/i18n/translations';
+import { serviceListSchema, SITE_URL } from '@/data/seo';
+import { PAGE_META } from '@/i18n/seo-meta';
+import { localizedUrl } from '@/i18n/routes';
+import type { Locale } from '@/i18n/routes';
+
+interface Props {
+  lang: Locale;
+}
+
+const { lang } = Astro.props;
+const meta = PAGE_META.services[lang];
+const url = localizedUrl('services', lang, SITE_URL);
+
+const items = Object.values(translations[lang].services.items);
+const services = serviceListSchema(
+  items.map((s) => ({ name: s.name, description: s.description })),
+);
+---
+
+<Layout
+  title={meta.title}
+  description={meta.description}
+  canonical={url}
+  breadcrumbs={[{ name: meta.breadcrumb!, url }]}
+  schema={[services]}
+  lang={lang}
+  pageKey="services"
+>
+  <ServicesSection client:visible lang={lang} />
+</Layout>

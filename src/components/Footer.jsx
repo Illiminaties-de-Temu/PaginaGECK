@@ -1,6 +1,7 @@
 import { useState, useMemo, useEffect, useRef } from "react";
 import { Github, Instagram, Facebook, ArrowUp } from "lucide-react";
 import { useLanguage } from "../hooks/useLanguage";
+import { localizedPath } from '../i18n/routes';
 
 // --- DISPERSIÓN DE TEXTO (mismo patrón que el logo del Navbar) ---
 function DisperseFooterText({ text, isHovered }) {
@@ -34,8 +35,8 @@ function DisperseFooterText({ text, isHovered }) {
   );
 }
 
-export default function GeckFooter() {
-  const { t } = useLanguage();
+export default function GeckFooter({ lang }) {
+  const { t } = useLanguage(lang);
   const [hoveredIcon, setHoveredIcon] = useState(null);
   const [atBottom, setAtBottom] = useState(false);
   const footerRef = useRef(null);
@@ -109,11 +110,11 @@ export default function GeckFooter() {
           <nav className="footer-col" aria-label={t.footer.navTitle}>
             <p className="footer-col__title">{t.footer.navTitle}</p>
             <ul className="footer-list">
-              <li><a href="/">{t.nav.home}</a></li>
-              <li><a href="/servicios/">{t.nav.services}</a></li>
-              <li><a href="/portafolio/">{t.nav.portfolio}</a></li>
-              <li><a href="/nosotros/">{t.nav.about}</a></li>
-              <li><a href="/contacto/">{t.nav.contact}</a></li>
+              <li><a href={localizedPath("home", lang)}>{t.nav.home}</a></li>
+              <li><a href={localizedPath("services", lang)}>{t.nav.services}</a></li>
+              <li><a href={localizedPath("portfolio", lang)}>{t.nav.portfolio}</a></li>
+              <li><a href={localizedPath("about", lang)}>{t.nav.about}</a></li>
+              <li><a href={localizedPath("contact", lang)}>{t.nav.contact}</a></li>
             </ul>
           </nav>
 

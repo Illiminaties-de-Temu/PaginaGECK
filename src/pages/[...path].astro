@@ -1,0 +1,52 @@
+---
+/**
+ * Variantes en inglés y portugués de las páginas comerciales.
+ *
+ * El español no pasa por aquí: vive en `src/pages/*.astro` sin prefijo, porque
+ * esas URLs ya están indexadas y moverlas a `/es/` obligaría a redirigir el
+ * sitio entero. Astro da prioridad a las rutas estáticas sobre esta dinámica,
+ * así que ambas conviven sin pisarse.
+ *
+ * Las páginas legales (privacidad, términos) tampoco: solo existen en español.
+ */
+import Home from '@/page-templates/Home.astro';
+import Services from '@/page-templates/Services.astro';
+import Portfolio from '@/page-templates/Portfolio.astro';
+import About from '@/page-templates/About.astro';
+import Contact from '@/page-templates/Contact.astro';
+import { PREFIXED_LOCALES, SLUGS, localizedPath } from '@/i18n/routes';
+import type { Locale, PageKey } from '@/i18n/routes';
+
+export function getStaticPaths() {
+  // Una ruta por combinación de idioma prefijado y página. El `path` se deriva
+  // del mismo mapa que usan el canonical, el hreflang y los enlaces internos:
+  // una sola fuente de verdad evita que se desincronicen.
+  return PREFIXED_LOCALES.flatMap((locale) =>
+    (Object.keys(SLUGS) as PageKey[]).map((page) => ({
+      // `localizedPath` devuelve "/en/services/"; el parámetro catch-all quiere
+      // "en/services", sin barras en los extremos.
+      params: { path: localizedPath(page, locale).replace(/^\/|\/$/g, '') },
+      props: { page, locale },
+    })),
+  );
+}
+
+interface Props {
+  page: PageKey;
+  locale: Locale;
+}
+
+const { page, locale } = Astro.props;
+
+const TEMPLATES = {
+  home: Home,
+  services: Services,
+  portfolio: Portfolio,
+  about: About,
+  contact: Contact,
+} as const;
+
+const Template = TEMPLATES[page];
+---
+
+<Template lang={locale} />

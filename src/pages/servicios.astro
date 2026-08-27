@@ -1,24 +1,10 @@
-<!-- ══════════════════════════════════════════
-     servicios.astro
-════════════════════════════════════════════ -->
 ---
-import Layout from '@/layouts/MainLayout.astro';
-import ServicesSection from '@/components/servicios/ServicesSection.jsx';
-import { translations } from '@/i18n/translations';
-import { serviceListSchema, SITE_URL } from '@/data/seo';
-
-const items = Object.values(translations.es.services.items);
-const services = serviceListSchema(
-  items.map((s) => ({ name: s.name, description: s.description })),
-);
+/**
+ * Versión en español, servida desde la raíz sin prefijo de idioma.
+ * El contenido vive en la plantilla; aquí solo se elige el idioma.
+ * Las variantes en inglés y portugués las genera `src/pages/[...path].astro`.
+ */
+import Services from '@/page-templates/Services.astro';
 ---
 
-<Layout
-  title="Servicios: Desarrollo Web, Apps, IA y Marketing Digital | Geck Codex"
-  description="Desarrollo web, apps móviles, inteligencia artificial, e-commerce, SaaS, automatización, software a la medida y marketing digital. Cotización sin costo para tu negocio en México."
-  canonical={`${SITE_URL}/servicios/`}
-  breadcrumbs={[{ name: 'Servicios', url: `${SITE_URL}/servicios/` }]}
-  schema={[services]}
->
-  <ServicesSection client:visible />
-</Layout>
+<Services lang="es" />

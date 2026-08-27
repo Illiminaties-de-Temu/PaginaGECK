@@ -1,25 +1,22 @@
-import { useState, useEffect, useLayoutEffect } from 'react';
 import { translations } from '../i18n/translations';
+import { LOCALES, DEFAULT_LOCALE } from '../i18n/routes';
 
-// useLayoutEffect en cliente (corre antes del paint), useEffect en servidor (SSR/SSG no lo ejecuta)
-const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect;
-
-export function useLanguage() {
-  // Siempre arranca con 'es' para que el HTML del servidor coincida con el cliente → sin mismatch
-  const [lang, setLang] = useState('es');
-
-  // Corre sincrónicamente antes del primer paint: lee localStorage y actualiza sin que el usuario vea el flash
-  useIsomorphicLayoutEffect(() => {
-    const stored = localStorage.getItem('geck-language') || 'es';
-    if (stored !== 'es') setLang(stored);
-  }, []);
-
-  // Escucha cambios de idioma desde el Navbar
-  useEffect(() => {
-    const handler = (e) => setLang(e.detail.lang);
-    window.addEventListener('geck-language-change', handler);
-    return () => window.removeEventListener('geck-language-change', handler);
-  }, []);
-
-  return { lang, t: translations[lang] };
+/**
+ * Idioma y textos de la página actual.
+ *
+ * La fuente de verdad es la URL (`/servicios/`, `/en/services/`, `/pt/servicos/`),
+ * no localStorage. Cada página se genera en build ya traducida y el componente
+ * recibe su idioma por prop desde el `.astro` que lo monta.
+ *
+ * Antes el idioma vivía en estado de React y se cambiaba con un evento: eso
+ * dejaba las tres versiones bajo una sola URL, así que Google solo podía indexar
+ * el español y el contenido en inglés y portugués era invisible para el buscador.
+ *
+ * @param {string} [lang] Idioma de la página, inyectado desde Astro.
+ */
+export function useLanguage(lang) {
+  // Un idioma desconocido (o ausente, si algún componente se monta sin la prop)
+  // cae al español en lugar de romper el render con `translations[undefined]`.
+  const locale = LOCALES.includes(lang) ? lang : DEFAULT_LOCALE;
+  return { lang: locale, t: translations[locale] };
 }
