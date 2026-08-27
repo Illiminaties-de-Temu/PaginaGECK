@@ -1,8 +1,9 @@
 import { useEffect, useRef } from 'react';
 import { useLanguage } from '../../hooks/useLanguage';
+import { localizedPath } from '../../i18n/routes';
 
-export default function Header() {
-  const { t } = useLanguage();
+export default function Header({ lang }) {
+  const { t } = useLanguage(lang);
   const containerRef = useRef(null);
   const scrollRef    = useRef(null);
   const rafRef       = useRef(null);
@@ -69,8 +70,8 @@ export default function Header() {
         </p>
 
         <div className="hdr__ctas">
-          <a href="/portafolio/" className="hdr__cta hdr__cta--solid">{t.header.ctaSolid}</a>
-          <a href="/contacto/"   className="hdr__cta hdr__cta--ghost">{t.header.ctaGhost}</a>
+          <a href={localizedPath("portfolio", lang)} className="hdr__cta hdr__cta--solid">{t.header.ctaSolid}</a>
+          <a href={localizedPath("contact", lang)} className="hdr__cta hdr__cta--ghost">{t.header.ctaGhost}</a>
         </div>
 
       </div>

@@ -1,6 +1,7 @@
 import { useRef } from 'react';
 import { motion, useScroll, useSpring, useTransform, useReducedMotion, cubicBezier } from 'framer-motion';
 import { useLanguage } from '../../hooks/useLanguage';
+import { localizedPath } from '../../i18n/routes';
 
 /* Curva de salida suave (la misma del resto del sitio) */
 const EASE_OUT = cubicBezier(0.22, 1, 0.36, 1);
@@ -28,8 +29,8 @@ function MosaicCard({ progress, start, fromX = 0, fromY = 46, area, className, c
   );
 }
 
-export default function AboutTeaser() {
-  const { t } = useLanguage();
+export default function AboutTeaser({ lang }) {
+  const { t } = useLanguage(lang);
   const a = t.aboutTeaser;
   const reduce = useReducedMotion();
   const sectionRef = useRef(null);
@@ -75,7 +76,7 @@ export default function AboutTeaser() {
                 <span className="at-point__text">{p}</span>
               </div>
             ))}
-            <a href="/nosotros/" className="at-card at-card--cta" style={{ gridArea: 'cta' }}>
+            <a href={localizedPath("about", lang)} className="at-card at-card--cta" style={{ gridArea: 'cta' }}>
               <span>{a.cta}</span>
               <Arrow />
             </a>
@@ -122,7 +123,7 @@ export default function AboutTeaser() {
             ))}
 
             <MosaicCard progress={progress} start={0.74} fromX={-40} fromY={30} area="cta" className="at-cta-cell">
-              <a href="/nosotros/" className="at-card at-card--cta">
+              <a href={localizedPath("about", lang)} className="at-card at-card--cta">
                 <span>{a.cta}</span>
                 <Arrow />
               </a>

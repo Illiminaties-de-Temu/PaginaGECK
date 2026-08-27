@@ -38,8 +38,8 @@ function IconList({ techs }) {
   );
 }
 
-export default function TechStack() {
-  const { t } = useLanguage();
+export default function TechStack({ lang }) {
+  const { t } = useLanguage(lang);
   const reduce = useReducedMotion();
   const sectionRef = useRef(null);
   const [active, setActive] = useState(0);

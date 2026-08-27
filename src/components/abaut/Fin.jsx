@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { useLanguage } from '../../hooks/useLanguage';
 
-export default function AboutCTA() {
-  const { t } = useLanguage();
+export default function AboutCTA({ lang }) {
+  const { t } = useLanguage(lang);
   const [isVisible, setIsVisible] = useState(false);
   const [counts, setCounts] = useState({
     projects: 0,

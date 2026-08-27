@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef, forwardRef } from 'react';
 import { useLanguage } from '../../hooks/useLanguage';
+import { localizedPath } from '../../i18n/routes';
 
 /* ─── SERVICIOS (lista plana, una sola hélice) ──────────────────────────
  * cat = índice de categoría (0 Desarrollo · 1 Marketing · 2 Inversión)
@@ -44,35 +45,25 @@ const WA_NUMBERS = { company: '+52 6271745436', agent: '+52 6144864571' };
  * Los servicios sin casos (redes-sociales, inversion) ocultan el bloque. */
 const RELATED_PROJECTS = {
   web: [
-    { title: 'Agend-In',   image: '/assets/image/portafolio/agendin.webp' },
+    { title: 'Agend-In',   image: '/assets/image/portafolio/agendin.jpeg' },
     { title: 'LandingKit', image: '/assets/image/portafolio/landig.webp' },
     { title: 'Mi Caja POS', image: '/assets/image/portafolio/micaja.webp' },
   ],
   mobile: [
     { title: 'Capital Transport', image: '/assets/image/portafolio/capital transpor.webp' },
-    { title: 'SpendWise', image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&q=80&auto=format&fit=crop' },
-  ],
-  ia: [
-    { title: 'SafePosture', image: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=400&q=80&auto=format&fit=crop' },
-    { title: 'EduAI',       image: 'https://images.unsplash.com/photo-1546410531-bb4caa6b424d?w=400&q=80&auto=format&fit=crop' },
+    { title: 'Ganova App', image: '/assets/image/portafolio/ganova.png' },
   ],
   ecommerce: [
     { title: 'Chuchulucos', image: '/assets/image/portafolio/chuchu.webp' },
     { title: 'Mi Caja POS', image: '/assets/image/portafolio/micaja.webp' },
   ],
   saas: [
-    { title: 'GeckCRM', image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&q=80&auto=format&fit=crop' },
+    { title: 'Nuki', image: '/assets/image/portafolio/nuki2.png' },
   ],
   automatizacion: [
-    { title: 'Agend-In', image: '/assets/image/portafolio/agendin.webp' },
-    { title: 'Mando',    image: '/assets/image/portafolio/mando.webp' },
-  ],
-  custom: [
-    { title: 'El Mezquite Control', image: 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=400&q=80&auto=format&fit=crop' },
-    { title: 'GeckCRM',             image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&q=80&auto=format&fit=crop' },
+    { title: 'Agend-In', image: '/assets/image/portafolio/agendin.jpeg' },
   ],
   diseno: [
-    { title: 'Chava Calderón', image: '/assets/image/portafolio/chava.webp' },
     { title: 'Chuchulucos',    image: '/assets/image/portafolio/chuchu.webp' },
   ],
 };
@@ -199,8 +190,8 @@ function useScrew({ enabled, count, refs, trackRef, railRef, hudNum, hudTitle, h
 }
 
 /* ─── MAIN COMPONENT ─────────────────────────────────────────────────── */
-export default function ImprovedServices() {
-  const { t } = useLanguage();
+export default function ImprovedServices({ lang }) {
+  const { t } = useLanguage(lang);
   const services = SERVICES_STATIC.map((s) => ({
     ...s,
     ...t.services.items[s.slug],
@@ -446,6 +437,42 @@ export default function ImprovedServices() {
           </div>
         )}
 
+        {/* ─── DETALLE EN TEXTO ───────────────────────────────────────────
+         * La hélice/carrusel solo pinta nombre y tagline: la descripción y el
+         * "qué incluye" viven dentro del modal, que no existe en el HTML hasta
+         * que alguien hace click. Google y los buscadores con IA nunca los
+         * veían. Este bloque publica ese MISMO contenido (t.services.items) en
+         * HTML estático, con un <h2> por servicio, sin duplicar textos ni
+         * traducciones. */}
+        <section className="svc-detail" id="detalle" aria-labelledby="svc-detail-title">
+          <div className="svc-detail__head">
+            <h2 className="svc-detail__title" id="svc-detail-title">{t.services.detail.title}</h2>
+            <p className="svc-detail__lead">{t.services.detail.subtitle}</p>
+          </div>
+
+          <div className="svc-detail__grid">
+            {services.map((s) => (
+              <article className="svc-detail__item" key={s.slug} id={s.slug}>
+                <span className="svc-detail__cat">{s.catLabel}</span>
+                <h3 className="svc-detail__name">{s.name}</h3>
+                <p className="svc-detail__tagline">{s.tagline}</p>
+                <p className="svc-detail__desc">{s.description}</p>
+                {s.features?.length > 0 && (
+                  <>
+                    <h4 className="svc-detail__feat-title">{t.services.modal.featuresTitle}</h4>
+                    <ul className="svc-detail__feats">
+                      {s.features.map((f) => <li key={f}>{f}</li>)}
+                    </ul>
+                  </>
+                )}
+                <button className="svc-detail__more" onClick={() => handleCardClick(s)}>
+                  {t.services.seeDetails}
+                </button>
+              </article>
+            ))}
+          </div>
+        </section>
+
         {/* ─── MODAL / BOTTOM SHEET ─── */}
         {expandedServiceData && (
           <div className={`modal-container ${isClosing ? 'closing' : ''} ${isMobile ? 'is-mobile' : ''}`}>
@@ -492,7 +519,7 @@ export default function ImprovedServices() {
                     <h3 className="service-modal__section-title">{t.services.modal.relatedTitle}</h3>
                     <div className="service-modal__related-grid">
                       {relatedProjects.map((p, i) => (
-                        <a key={i} href="/portafolio/" className="related-card">
+                        <a key={i} href={localizedPath("portfolio", lang)} className="related-card">
                           <img src={p.image} alt={p.title} loading="lazy" decoding="async" />
                           <div className="related-card__veil" />
                           <span className="related-card__title">{p.title}</span>
@@ -540,7 +567,7 @@ export default function ImprovedServices() {
                       <span>{t.services.modal.waAgent}</span>
                     </button>
                   </div>
-                  <a href="/contacto/" className="service-modal__cta">
+                  <a href={localizedPath("contact", lang)} className="service-modal__cta">
                     <span>{expandedServiceData.id === 9 ? t.services.modal.ctaInversion : t.services.modal.formCta}</span>
                     <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
                       <path d="M4 10H16M16 10L10 4M16 10L10 16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
@@ -713,6 +740,123 @@ export default function ImprovedServices() {
           visibility: hidden;
           cursor: pointer;
         }
+        /* ── DETALLE EN TEXTO (contenido indexable) ───────────────────── */
+        .svc-detail {
+          max-width: 1180px;
+          margin: 0 auto;
+          padding: clamp(3.5rem, 9vh, 7rem) clamp(1.2rem, 4vw, 3rem) clamp(4rem, 10vh, 8rem);
+        }
+        .svc-detail__head { max-width: 46ch; margin-bottom: clamp(2.2rem, 5vh, 3.4rem); }
+        .svc-detail__title {
+          font-family: var(--font-display);
+          font-size: clamp(1.7rem, 3.4vw, 2.5rem);
+          font-weight: 700;
+          line-height: 1.15;
+          color: var(--text);
+          margin: 0 0 0.6rem;
+        }
+        .svc-detail__lead {
+          font-size: clamp(0.95rem, 1.4vw, 1.05rem);
+          line-height: 1.6;
+          color: var(--text-muted);
+          margin: 0;
+        }
+        .svc-detail__grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+          gap: clamp(1.2rem, 2.6vw, 2rem);
+        }
+        .svc-detail__item {
+          display: flex;
+          flex-direction: column;
+          padding: clamp(1.3rem, 2.4vw, 1.8rem);
+          border: 1px solid var(--border);
+          border-radius: 16px;
+          background: var(--surface);
+          scroll-margin-top: 6rem;
+        }
+        .svc-detail__cat {
+          font-size: 0.7rem;
+          font-weight: 600;
+          letter-spacing: 0.09em;
+          text-transform: uppercase;
+          color: var(--accent-text);
+          margin-bottom: 0.7rem;
+        }
+        .svc-detail__name {
+          font-family: var(--font-display);
+          font-size: 1.28rem;
+          font-weight: 700;
+          line-height: 1.2;
+          color: var(--text);
+          margin: 0 0 0.3rem;
+        }
+        .svc-detail__tagline {
+          font-size: 0.9rem;
+          font-weight: 500;
+          color: var(--accent-text);
+          margin: 0 0 0.85rem;
+        }
+        .svc-detail__desc {
+          font-size: 0.94rem;
+          line-height: 1.65;
+          color: var(--text-muted);
+          margin: 0 0 1.15rem;
+        }
+        .svc-detail__feat-title {
+          font-family: var(--font-display);
+          font-size: 0.82rem;
+          font-weight: 600;
+          letter-spacing: 0.04em;
+          text-transform: uppercase;
+          color: var(--text);
+          margin: 0 0 0.6rem;
+        }
+        .svc-detail__feats {
+          list-style: none;
+          padding: 0;
+          margin: 0 0 1.4rem;
+          display: flex;
+          flex-direction: column;
+          gap: 0.45rem;
+        }
+        .svc-detail__feats li {
+          position: relative;
+          padding-left: 1.1rem;
+          font-size: 0.89rem;
+          line-height: 1.5;
+          color: var(--text-muted);
+        }
+        .svc-detail__feats li::before {
+          content: '';
+          position: absolute;
+          left: 0; top: 0.55em;
+          width: 5px; height: 5px;
+          border-radius: 50%;
+          background: var(--accent);
+        }
+        .svc-detail__more {
+          align-self: flex-start;
+          margin-top: auto;
+          padding: 0.55rem 1.05rem;
+          font-family: var(--font-body);
+          font-size: 0.85rem;
+          font-weight: 600;
+          color: var(--accent-text);
+          background: transparent;
+          border: 1px solid var(--border-strong);
+          border-radius: 999px;
+          cursor: pointer;
+          transition: border-color .25s ease, background .25s ease;
+        }
+        .svc-detail__more:hover {
+          border-color: var(--accent);
+          background: var(--surface-2);
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .svc-detail__more { transition: none; }
+        }
+
         .svc-card--helix .svc-card__media {
           transition: box-shadow .35s var(--svc-expo);
           box-shadow: 0 18px 50px rgba(0,0,0,0.5);

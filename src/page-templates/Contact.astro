@@ -1,0 +1,32 @@
+---
+import Layout from '@/layouts/MainLayout.astro';
+import Contact from '@/components/contacto/Contact';
+import FaqSection from '@/components/FaqSection.jsx';
+import { contactPageSchema, SITE_URL } from '@/data/seo';
+import { PAGE_META } from '@/i18n/seo-meta';
+import { localizedUrl } from '@/i18n/routes';
+import type { Locale } from '@/i18n/routes';
+
+interface Props {
+  lang: Locale;
+}
+
+const { lang } = Astro.props;
+const meta = PAGE_META.contact[lang];
+const url = localizedUrl('contact', lang, SITE_URL);
+---
+
+<Layout
+  title={meta.title}
+  description={meta.description}
+  canonical={url}
+  ogTitle={meta.ogTitle}
+  ogDescription={meta.ogDescription}
+  breadcrumbs={[{ name: meta.breadcrumb!, url }]}
+  schema={[contactPageSchema()]}
+  lang={lang}
+  pageKey="contact"
+>
+  <Contact client:visible lang={lang} />
+  <FaqSection client:visible lang={lang} />
+</Layout>

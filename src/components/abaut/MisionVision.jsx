@@ -6,8 +6,8 @@ import { useLanguage } from '../../hooks/useLanguage';
 
 const EASE = [0.22, 1, 0.36, 1];
 
-export default function MisionVision() {
-  const { t } = useLanguage();
+export default function MisionVision({ lang }) {
+  const { t } = useLanguage(lang);
   const m = t.mission;
   const reduce = useReducedMotion();
   const sectionRef = useRef(null);

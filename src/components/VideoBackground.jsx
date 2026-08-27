@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { useLanguage } from '../hooks/useLanguage';
+import { localizedPath } from '../i18n/routes';
 
 /* Logo de Geck Codex en ASCII — telón del hero (reemplaza al video).
  * Ondas de luz diagonales en bucle + iluminación que sigue al cursor. */
@@ -80,8 +81,8 @@ const splitDisplay = (text) => {
   return { lead: words.slice(0, -1).join(' '), key: words[words.length - 1] };
 };
 
-export default function VideoBackground({ children }) {
-  const { t } = useLanguage();
+export default function VideoBackground({ children, lang }) {
+  const { t } = useLanguage(lang);
   const hero = t.heroAscii;
 
   /* ── ASCII carácter por carácter: cada carácter recibe una "fase" tomada de
@@ -261,7 +262,7 @@ export default function VideoBackground({ children }) {
           </p>
 
           {/* Tercio 3 — rodillo: entra desde arriba, sale por abajo */}
-          <a ref={servicesRef} href="/servicios/" className="hero-services" aria-label={`${labels[labelIdx]}: ${services[svcIdx]}`}>
+          <a ref={servicesRef} href={localizedPath("services", lang)} className="hero-services" aria-label={`${labels[labelIdx]}: ${services[svcIdx]}`}>
             <span className="hero-rotator">
               <AnimatePresence initial={false} mode="wait">
                 <motion.span

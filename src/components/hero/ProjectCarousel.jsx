@@ -4,17 +4,15 @@ import {
   useMotionValueEvent, useReducedMotion,
 } from 'framer-motion';
 import { useLanguage } from '../../hooks/useLanguage';
+import { localizedPath } from '../../i18n/routes';
 
 const PROJECTS = [
   { id:1, title:'Chuchulucos',    cat:'landing',  image:'/assets/image/portafolio/chuchu.webp',          link:'https://chuchulucos.geckcodex.com/' },
   { id:2, title:'Agend-In',       cat:'landing',  image:'/assets/image/portafolio/agendin.webp',         link:'https://agend-in.geckcodex.com/' },
   { id:3, title:'LandingKit',     cat:'landing',  image:'/assets/image/portafolio/landig.webp',          link:'https://landig-plantilla.geckcodex.com/' },
-  { id:4, title:'Chava Calderón', cat:'landing',  image:'/assets/image/portafolio/chava.webp',           link:'https://chavacalderon.mx/' },
-  { id:5, title:'Mando',          cat:'landing',  image:'/assets/image/portafolio/mando.webp' },
   { id:6, title:'Mi Caja POS',    cat:'landing',  image:'/assets/image/portafolio/micaja.webp',          link:'https://mi-caja.geckcodex.com/' },
   { id:7, title:'FleetTrack',     cat:'mobile',   image:'/assets/image/portafolio/capital transpor.webp' },
   { id:8, title:'Coronado Gym',   cat:'webapp',   image:'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=480&q=80&auto=format&fit=crop' },
-  { id:9, title:'GeckCRM',        cat:'software', image:'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=480&q=80&auto=format&fit=crop' },
 ];
 
 /* Acentos de categoría dentro de la paleta (oro / bronce), sin arcoíris */
@@ -90,8 +88,8 @@ function WheelSlot({ p, i, progress, catLabels, hovered, onEnter, onLeave, reduc
 }
 
 /* ─── MAIN ───────────────────────────────────────────────────────────── */
-export default function ProjectCarousel() {
-  const { t } = useLanguage();
+export default function ProjectCarousel({ lang }) {
+  const { t } = useLanguage(lang);
   const reduce = useReducedMotion();
   const [active,  setActive]  = useState(null);   // { project, idx }
   const [assembled, setAssembled] = useState(false);
@@ -204,7 +202,7 @@ export default function ProjectCarousel() {
 
           {/* CTA */}
           <motion.div className="pc-cta" style={reduce ? undefined : { opacity: ctaOp }}>
-            <a href="/portafolio/" className="pc-cta__link">
+            <a href={localizedPath("portfolio", lang)} className="pc-cta__link">
               {t.projectCarousel.cta}
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
                 <path d="M5 12h14M12 5l7 7-7 7" />

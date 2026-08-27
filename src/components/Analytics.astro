@@ -2,17 +2,24 @@
 /**
  * Analytics.astro — Google Tag (GA4 + Google Ads).
  *
- * Los IDs viven en variables de entorno, NO en el código: así el sitio se puede
- * construir sin tracking (desarrollo, previews) y los identificadores no quedan
- * fijados en el repositorio. Si no hay IDs configurados, este componente no
- * emite absolutamente nada.
- *
- * Configurar en `.env` (ver `.env.example`):
+ * Los IDs viven en variables de entorno (ver `.env.example`):
  *   PUBLIC_GA4_ID=G-XXXXXXXXXX
  *   PUBLIC_GOOGLE_ADS_ID=AW-XXXXXXXXXX
  *   PUBLIC_ADS_CONVERSION_LABEL=xxxxxxxxxxxxxxxxx   (etiqueta de la conversión "contacto")
+ *
+ * EXCEPCIÓN — el ID de medición de GA4 tiene además un valor por defecto aquí.
+ * No es un secreto: viaja en el HTML de todas las páginas y cualquiera lo lee
+ * en el código fuente del sitio. Fijarlo evita que la analítica dependa de que
+ * la variable esté capturada en el panel del hosting, que es exactamente lo que
+ * mantuvo el sitio sin medir. El valor por defecto SOLO aplica en producción:
+ * en `npm run dev` no se emite nada y localhost no ensucia los datos.
+ *
+ * Los IDs de Google Ads sí siguen siendo solo de entorno: esos cambian por
+ * campaña y no queremos que un build viejo dispare conversiones equivocadas.
  */
-const GA4_ID = import.meta.env.PUBLIC_GA4_ID;
+const GA4_FALLBACK = 'G-NCC4TMJN98';
+
+const GA4_ID = import.meta.env.PUBLIC_GA4_ID || (import.meta.env.PROD ? GA4_FALLBACK : undefined);
 const ADS_ID = import.meta.env.PUBLIC_GOOGLE_ADS_ID;
 const ADS_LABEL = import.meta.env.PUBLIC_ADS_CONVERSION_LABEL;
 

@@ -3,6 +3,7 @@ import { defineConfig } from 'astro/config';
 import react from '@astrojs/react';
 import tailwindcss from '@tailwindcss/vite';
 import sitemap from '@astrojs/sitemap';
+import { alternatesForUrl } from './src/i18n/routes-map.js';
 
 export default defineConfig({
   site: 'https://geckcodex.com', // <--- ¡ASEGÚRATE DE QUE ESTO ESTÉ AQUÍ!
@@ -20,7 +21,20 @@ export default defineConfig({
       filter: (page) => !page.includes('/blog'),
       changefreq: 'monthly',
       lastmod: new Date(),
+      // NO se usa la opción `i18n` del plugin: empareja las variantes por slug
+      // idéntico, y aquí los slugs están traducidos (/servicios/ ↔ /en/services/).
+      // Con ella, el sitemap agrupaba /en/portfolio/ con /pt/portfolio/ —que sí
+      // coinciden— dejando fuera el español, y contradecía el hreflang del <head>.
+      // Los alternates se construyen abajo desde el mismo mapa de rutas que usa
+      // el layout, para que ambas señales digan exactamente lo mismo.
       serialize(item) {
+        // Cada URL se acompaña de sus variantes de idioma. `alternatesForUrl`
+        // devuelve null para las páginas que solo existen en español (legales),
+        // y ahí no se emite ningún alternate: declarar un grupo de una sola
+        // variante no aporta nada y arriesga que Google lo descarte.
+        const links = alternatesForUrl(item.url);
+        if (links) item = { ...item, links };
+
         // Las URLs van CON barra final porque es lo que sirve Netlify: pedir
         // /contacto devuelve un 301 hacia /contacto/. Un sitemap lleno de URLs
         // que redirigen desperdicia presupuesto de rastreo, y si el canonical

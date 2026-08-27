@@ -1,6 +1,7 @@
 import { useState, useEffect, useLayoutEffect, useRef } from "react";
 import { Menu, X, Briefcase, Info, BookOpen, Mail, Layers, ArrowUpRight, Sun, Moon } from "lucide-react";
 import { translations as allTranslations } from "../i18n/translations";
+import { localizedPath, resolvePath, DEFAULT_LOCALE } from "../i18n/routes";
 
 const navTranslations = {
   en: allTranslations.en.nav,
@@ -14,20 +15,11 @@ const languageOptions = [
   { code: "pt", label: "Português", flag: "🇧🇷" },
 ];
 
-export default function GeckNavbar() {
-  const [language, setLanguage] = useState('es');
-
-  useLayoutEffect(() => {
-    const stored = localStorage.getItem('geck-language') || 'es';
-    if (stored !== 'es') setLanguage(stored);
-  }, []);
-
-  // El atributo lang de <html> debe seguir al idioma real de la página: es lo
-  // que usan lectores de pantalla, traductores y rastreadores para saber en qué
-  // idioma está el contenido que están leyendo.
-  useEffect(() => {
-    document.documentElement.lang = { es: 'es-MX', en: 'en', pt: 'pt-BR' }[language] || 'es-MX';
-  }, [language]);
+export default function GeckNavbar({ lang }) {
+  // El idioma lo fija la URL de la página, no un estado de React: cada variante
+  // se genera en build con su propio HTML. El <html lang> ya viene correcto
+  // desde el servidor, así que aquí no hay nada que sincronizar.
+  const language = lang || DEFAULT_LOCALE;
 
   // ── Tema (light/dark). El valor inicial ya lo fijó el script no-flash
   //    del <head> sobre <html data-theme>; aquí solo lo leemos. ──
@@ -113,21 +105,28 @@ export default function GeckNavbar() {
 
   const toggleMenu = () => { if (menuOpen) closeMenu(); else openMenu(); };
 
+  // Cambiar de idioma navega a la MISMA página en la otra lengua. Es lo que
+  // hace que exista una URL por idioma, que es lo único que Google puede
+  // indexar por separado. Si la página actual no tiene variante (las legales
+  // solo existen en español), se va a la home de ese idioma.
   const handleLanguageChange = (code) => {
-    setLanguage(code);
-    localStorage.setItem('geck-language', code);
-    window.dispatchEvent(new CustomEvent('geck-language-change', { detail: { lang: code } }));
+    const current = resolvePath(window.location.pathname);
+    window.location.href = current
+      ? localizedPath(current.page, code)
+      : localizedPath('home', code);
   };
 
   const handleNavLinkClick = () => { if (menuOpen) closeMenu(); };
 
+  // Los enlaces apuntan a la variante del idioma actual: navegar dentro del
+  // sitio nunca debe devolverte al español. El blog solo existe en español.
   const navLinks = [
-    { key: "portfolio", icon: Briefcase, href: "/portafolio/" },
-    { key: "services", icon: Layers, href: "/servicios/" },
-    { key: "about", icon: Info, href: "/nosotros/" },
+    { key: "portfolio", icon: Briefcase, href: localizedPath("portfolio", language) },
+    { key: "services", icon: Layers, href: localizedPath("services", language) },
+    { key: "about", icon: Info, href: localizedPath("about", language) },
     { key: "blog", icon: BookOpen, href: "/blog/" },
     // En móvil el acceso a Contacto vive dentro del menú (no en la barra)
-    ...(isMobile ? [{ key: "contact", icon: Mail, href: "/contacto/" }] : []),
+    ...(isMobile ? [{ key: "contact", icon: Mail, href: localizedPath("contact", language) }] : []),
   ];
 
   return (
@@ -357,7 +356,7 @@ export default function GeckNavbar() {
         >
           {/* Sección Geck Codex — sin contenedor, parte de la página */}
           <a
-            href="/"
+            href={localizedPath("home", language)}
             aria-label="Geck Codex"
             className="nav-logo-link"
             style={{
@@ -373,7 +372,7 @@ export default function GeckNavbar() {
 
           {/* Secciones Contacto + Menú — con contenedor visible y bordes redondeados */}
           <div className="nav-actions" style={{ display: "flex", alignItems: "center", pointerEvents: "auto" }}>
-            <a href="/contacto/" className="nav-pill nav-pill-contact">
+            <a href={localizedPath("contact", language)} className="nav-pill nav-pill-contact">
               <span className="nav-pill-text">{t.contact}</span>
               <span className="nav-pill-icon"><Mail size={20} /></span>
             </a>

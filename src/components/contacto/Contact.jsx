@@ -2,8 +2,8 @@ import { useState, useEffect, useRef } from 'react';
 import { Send, User, Mail, MessageSquare, Instagram } from 'lucide-react';
 import { useLanguage } from '../../hooks/useLanguage';
 
-export default function Contact() {
-  const { t } = useLanguage();
+export default function Contact({ lang }) {
+  const { t } = useLanguage(lang);
   const [formData, setFormData] = useState({ name: '', email: '', message: '' });
   const [submitted, setSubmitted] = useState(false);
   const [loading,   setLoading]   = useState(false);
@@ -159,26 +159,6 @@ export default function Contact() {
         }
         .ct-header.ct-in {
           opacity: 1; transform: translateY(0);
-        }
-
-        .ct-badge {
-          display: inline-flex;
-          align-items: center;
-          gap: 0.5rem;
-          padding: 0.45rem 1.1rem;
-          background: rgba(195,173,133,0.08);
-          border: 1px solid rgba(195,173,133,0.28);
-          border-radius: 50px;
-          color: var(--accent-text);
-          font-size: 0.72rem;
-          font-weight: 700;
-          letter-spacing: 0.22em;
-          text-transform: uppercase;
-          animation: badgePulse 3s ease-in-out infinite;
-        }
-        @keyframes badgePulse {
-          0%,100% { box-shadow: 0 0 0 0 rgba(195,173,133,0.3); }
-          50%      { box-shadow: 0 0 18px 4px rgba(195,173,133,0.12); }
         }
 
         .ct-h1 {
@@ -640,17 +620,10 @@ export default function Contact() {
             ref={headerRef}
             data-reveal="header"
           >
-            <span className="ct-badge">
-              <svg width="13" height="13" viewBox="0 0 20 20" fill="currentColor">
-                <path d="M10 2L12.5 7L18 8L14 12L15 18L10 15L5 18L6 12L2 8L7.5 7L10 2Z"/>
-              </svg>
-              {t.contact.badge}
-            </span>
-
-            <h2 className="ct-h1">
+            <h1 className="ct-h1">
               {t.contact.title}{' '}
               <span>{t.contact.titleSpan}</span>
-            </h2>
+            </h1>
 
             <p className="ct-desc">
               {t.contact.desc}

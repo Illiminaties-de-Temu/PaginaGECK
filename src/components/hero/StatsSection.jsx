@@ -1,6 +1,7 @@
 import { useRef } from 'react';
 import { motion, useScroll, useSpring, useTransform, useReducedMotion, cubicBezier } from 'framer-motion';
 import { useLanguage } from '../../hooks/useLanguage';
+import { localizedPath } from '../../i18n/routes';
 
 const STATS_VALUES = [
   { value: 20,  suffix: '+' },
@@ -38,7 +39,7 @@ function StoryStat({ value, suffix, label, slot, progress }) {
 }
 
 /* ── Clímax: a donde desemboca todo ── */
-function Climax({ headline, cta, progress }) {
+function Climax({ headline, cta, progress, lang }) {
   const opacity = useTransform(progress, [0.80, 0.90], [0, 1]);
   const y       = useTransform(progress, [0.80, 0.92], [70, 0], { ease: EASE });
   const scale   = useTransform(progress, [0.80, 0.92], [0.92, 1], { ease: EASE });
@@ -46,7 +47,7 @@ function Climax({ headline, cta, progress }) {
   return (
     <motion.div className="sty__climax" style={{ opacity, y, scale }}>
       <p className="sty__headline">{headline}</p>
-      <a href="/contacto/" className="sty__btn">
+      <a href={localizedPath("contact", lang)} className="sty__btn">
         {cta}
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
           <path d="M5 12h14M12 5l7 7-7 7" />
@@ -56,8 +57,8 @@ function Climax({ headline, cta, progress }) {
   );
 }
 
-export default function StatsSection() {
-  const { t } = useLanguage();
+export default function StatsSection({ lang }) {
+  const { t } = useLanguage(lang);
   const reduce = useReducedMotion();
   const sectionRef = useRef(null);
   const STATS = STATS_VALUES.map((s, i) => ({ ...s, label: t.stats.items[i].label }));
@@ -86,7 +87,7 @@ export default function StatsSection() {
           </div>
           <div className="sty__climax sty__climax--static">
             <p className="sty__headline">{t.stats.headline}</p>
-            <a href="/contacto/" className="sty__btn">
+            <a href={localizedPath("contact", lang)} className="sty__btn">
               {t.stats.cta}
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M5 12h14M12 5l7 7-7 7" />
@@ -108,7 +109,7 @@ export default function StatsSection() {
             {STATS.map((s, i) => (
               <StoryStat key={i} {...s} slot={SLOTS[i]} progress={progress} />
             ))}
-            <Climax headline={t.stats.headline} cta={t.stats.cta} progress={progress} />
+            <Climax headline={t.stats.headline} cta={t.stats.cta} progress={progress} lang={lang} />
           </div>
         </div>
       </section>

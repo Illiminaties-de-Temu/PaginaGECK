@@ -67,8 +67,8 @@ function StackCard({ s, i, total, progress, isMobile }) {
   );
 }
 
-export default function SpecialtiesShowcase() {
-  const { t } = useLanguage();
+export default function SpecialtiesShowcase({ lang }) {
+  const { t } = useLanguage(lang);
   const SERVICES = SERVICE_MEDIA.map((m, i) => ({ ...m, ...t.specialties.services[i] }));
   const [isMobile, setIsMobile] = useState(false);
   const reduce = useReducedMotion();
