@@ -43,13 +43,19 @@ Gobierno Municipal de Hidalgo del Parral, Restaurante Las Chikis, Capital Transp
 ## Proyectos representativos
 
 - **Chuchulucos** — Landing de alta conversión para marca de botanas artesanales picosas.
-- **Agend-In** — Automatización de citas por WhatsApp y Telegram con asistente virtual personalizable.
-- **Mando** — Bot que conecta WhatsApp/Telegram con la base de datos del negocio para consultas en lenguaje natural sobre ventas, inventario y métricas.
-- **Mi Caja** — Punto de venta (POS) accesible para restaurantes, carnicerías, abarrotes y fondas.
-- **FleetTrack** — App móvil de gestión de flotillas: rastreo en tiempo real, control documental y comunicación con operadores.
+- **Agend-In** — Automatización de citas vía Telegram con asistente virtual personalizable y sitio propio; integración con WhatsApp en desarrollo.
+- **LandingKit** — Plantilla profesional para publicar landings de alta conversión con secciones prearmadas.
+- **Mi Caja POS** — Punto de venta accesible para restaurantes, carnicerías, abarrotes y fondas.
+- **Plantilla Inmobiliaria** — Plantilla para inmobiliarias: fichas de propiedades, galería, formulario y mapa.
+- **Handlove** — Sitio para distribuidor mayorista de guantes de seguridad industrial, con catálogo y solicitudes de cotización.
+- **Capital Transport** — App móvil de gestión de flotillas: rastreo en tiempo real, control documental y comunicación con operadores.
 - **Ganova App** — App móvil para el control integral de ranchos ganaderos: animales, dietas, gastos y métricas productivas.
-- **GymHub** — Plataforma de gestión de gimnasios y membresías.
-- **GeckCRM** — CRM para negocios locales.
+- **Coronado Gym** — Plataforma de gestión de gimnasio: usuarios, rutinas personalizadas, progreso y membresías.
+- **Nuki** — Plataforma de lealtad: los clientes acumulan puntos con cada compra y los canjean por recompensas.
+- **Menús Digitales** — Carta digital por código QR que se actualiza al instante, sin reimprimir nada.
+- **Generador de Gafetes** — App web para producir gafetes gubernamentales con plantillas, base de empleados y PDF automatizado.
+- **Bot Calificador de Leads** — Asistente que atiende 24/7, califica cada conversación y manda al CRM solo a los clientes potenciales.
+- **Bot de Atención al Cliente** — Asistente de restaurante que da seguimiento a peticiones, agenda reservaciones y cotiza eventos a cualquier hora.
 
 ## Tecnologías
 

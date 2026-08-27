@@ -11,7 +11,7 @@ const PROJECTS = [
   { id:2, title:'Agend-In',       cat:'landing',  image:'/assets/image/portafolio/agendin.webp',         link:'https://agend-in.geckcodex.com/' },
   { id:3, title:'LandingKit',     cat:'landing',  image:'/assets/image/portafolio/landig.webp',          link:'https://landig-plantilla.geckcodex.com/' },
   { id:6, title:'Mi Caja POS',    cat:'landing',  image:'/assets/image/portafolio/micaja.webp',          link:'https://mi-caja.geckcodex.com/' },
-  { id:7, title:'FleetTrack',     cat:'mobile',   image:'/assets/image/portafolio/capital transpor.webp' },
+  { id:7, title:'Capital Transport', cat:'mobile',   image:'/assets/image/portafolio/capital transpor.webp' },
   { id:8, title:'Coronado Gym',   cat:'webapp',   image:'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=480&q=80&auto=format&fit=crop' },
 ];
 
