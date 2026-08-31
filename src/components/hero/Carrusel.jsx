@@ -2,27 +2,23 @@ import { useState, useRef, useEffect, useMemo } from 'react';
 import { useLanguage } from '../../hooks/useLanguage';
 
 const CLIENTS_BASE = [
-  { id:1, name:'Gobierno Municipal de Parral',   logo:'assets/image/parral.webp' },
+  { id:1, name:'Gobierno Municipal de Parral',   logo:'assets/image/parral.webp',          bg:'#D8D8D6' },
   { id:2, name:'Las Chikis Restaurante',          logo:'assets/image/laschikis.webp' },
   { id:3, name:'Capital Transport LLP',           logo:'assets/image/CapitalTransport.webp' },
-  { id:4, name:'Instituto Tecnológico de Parral', logo:'assets/image/yec.webp' },
   { id:5, name:'Coronado Gym',                    logo:'assets/image/gym.webp' },
-  /* Placeholders — se reemplazan con logos reales cuando los tengan */
-  { id:6, name:'Cafetería La Esquina',   logo:null, placeholder:true },
-  { id:7, name:'Ferretería El Tornillo', logo:null, placeholder:true },
-  { id:8, name:'Clínica Dental Sonríe',  logo:null, placeholder:true },
-  { id:9, name:'AutoLavado Express',     logo:null, placeholder:true },
+  { id:6, name:'Seguiar',                         logo:'assets/image/seguiar.webp' },
+  { id:7, name:'Restaurante Nómada',              logo:'assets/image/nomada.webp',          bg:'#E1D8D0' },
 ];
 
 /* ── Parámetros de la simulación de fuerzas ── */
-const REST       = 168;   // longitud de reposo de los links (hub → cliente)
-const REPULSION  = 8200;  // cuánto se repelen los nodos
+const REST       = 190;   // longitud de reposo de los links (hub → cliente)
+const REPULSION  = 11500;  // cuánto se repelen los nodos
 const SPRING     = 0.02;  // fuerza de los links
 const CENTER     = 0.003; // empuje suave al centro
 const FRICTION   = 0.85;  // amortiguación
 const WANDER     = 0.42;  // fuerza del vaivén continuo (vida)
-const NODE       = 68;    // diámetro nodo cliente (px)
-const HUB        = 118;   // diámetro hub (px)
+const NODE       = 92;    // diámetro nodo cliente (px)
+const HUB        = 132;   // diámetro hub (px)
 const ZOOM_MIN   = 0.5;
 const ZOOM_MAX   = 2.4;
 const FOCUS_ZOOM = 1.85;  // zoom al enfocar un nodo (hover/clic)
@@ -297,6 +293,7 @@ export default function ClientGraph({ lang }) {
                     (activeId === n.id ? ' is-active' : '') +
                     (dim ? ' is-dim' : '')
                   }
+                  style={n.client?.bg ? { background: n.client.bg } : undefined}
                   onPointerDown={(e) => onNodePointerDown(e, n)}
                   onPointerEnter={() => !isHub && setActiveId(n.id)}
                 >
@@ -387,7 +384,7 @@ export default function ClientGraph({ lang }) {
           display: flex;
           align-items: center;
           justify-content: center;
-          padding: 12px;
+          padding: 10px;
           box-shadow: 0 8px 24px rgba(0,0,0,0.4);
           border: 1.5px solid transparent;
           cursor: grab;
@@ -404,9 +401,9 @@ export default function ClientGraph({ lang }) {
         .og-node.is-dim { opacity: .4; filter: grayscale(.4); }
 
         .og-node__img {
-          max-width: 100%; max-height: 100%;
+          width: 100%; height: 100%;
           object-fit: contain;
-          filter: grayscale(.7) opacity(.85);
+          filter: grayscale(.25) opacity(.95);
           transition: filter .3s ease;
           pointer-events: none;
         }

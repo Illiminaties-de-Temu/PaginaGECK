@@ -2,6 +2,14 @@ import { useState, useEffect, useRef, forwardRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage } from '../../hooks/useLanguage';
 import { localizedPath } from '../../i18n/routes';
+import { PROJECTS_STATIC } from '../../data/projects.js';
+
+// Fondo unico de todas las tarjetas y de los detalles con logo. Se invierte
+// respecto al tema: blanco en modo oscuro, tinta en modo claro (ver
+// --pf-card-bg mas abajo). Un proyecto puede fijar el suyo con `cardBg`
+// —sobreescribe la variable en la tarjeta— cuando su imagen solo se lee sobre
+// un fondo concreto en los dos temas.
+const CARD_BG = 'var(--pf-card-bg)';
 
 /* Acentos de categoría dentro de la paleta oro/bronce (sin arcoíris),
  * consistentes con el ProjectCarousel de la home. */
@@ -12,31 +20,6 @@ const CAT_COLORS = {
   software: { accent: '#B5A079', border: 'rgba(181,160,121,0.35)' },
 };
 
-// Exportado para que portafolio.astro genere el JSON-LD desde los MISMOS
-// proyectos que se pintan en pantalla (una sola fuente de verdad).
-// Fondo unico de todas las tarjetas y de los detalles con logo. Se invierte
-// respecto al tema: blanco en modo oscuro, tinta en modo claro (ver
-// --pf-card-bg mas abajo). Un proyecto puede fijar el suyo con `cardBg`
-// —sobreescribe la variable en la tarjeta— cuando su imagen solo se lee sobre
-// un fondo concreto en los dos temas.
-const CARD_BG = 'var(--pf-card-bg)';
-
-export const PROJECTS_STATIC = [
-  { id: 1,  cat: 'landing',  title: 'Chuchulucos',          tech: ['Astro', 'Tailwind CSS', 'Framer Motion'],                           link: 'https://chuchulucos.geckcodex.com/',        gradient: 'linear-gradient(145deg, #3b0764 0%, #6d28d9 40%, #db2777 100%)', image: '/assets/image/portafolio/chuchu.webp', cardImage: '/assets/image/portafolio/chuchulucos.png', cardFit: 'contain', cardBg: '#141414' },
-  { id: 2,  cat: 'landing',  title: 'Agend-In',              tech: ['Astro', 'React', 'Node.js', 'Tailwind CSS'],                        link: 'https://agend-in.geckcodex.com/',           gradient: 'linear-gradient(145deg, #1e1b4b 0%, #4f46e5 45%, #0ea5e9 100%)', image: '/assets/image/portafolio/agendin.webp', cardImage: '/assets/image/portafolio/agendin.jpeg' },
-  { id: 3,  cat: 'landing',  title: 'LandingKit',            tech: ['Astro', 'React', 'Tailwind CSS'],                                   link: 'https://landig-plantilla.geckcodex.com/',   gradient: 'linear-gradient(145deg, #2e1065 0%, #7c3aed 45%, #c026d3 100%)', image: '/assets/image/portafolio/landig.webp', cardFit: 'contain', imgPos: 'center 38%' },
-  { id: 6,  cat: 'landing',  title: 'Mi Caja POS',           tech: ['Astro', 'React', 'Tailwind CSS'],                                   link: 'https://mi-caja.geckcodex.com/',            gradient: 'linear-gradient(145deg, #1c1917 0%, #92400e 45%, #d97706 100%)', image: '/assets/image/portafolio/micaja.webp', cardImage: '/assets/image/portafolio/mi%20caja.png' },
-  { id: 7,  cat: 'mobile',   title: 'Capital Transport',     tech: ['React Native', 'Node.js', 'Firebase', 'Google Maps API'],                                                              gradient: 'linear-gradient(145deg, #0c1a3d 0%, #1d4ed8 45%, #0ea5e9 100%)', image: '/assets/image/portafolio/capital transpor.webp' },
-  { id: 9,  cat: 'webapp',   title: 'Coronado Gym',          tech: ['React', 'Node.js', 'PostgreSQL', 'Tailwind CSS'],                                                                     gradient: 'linear-gradient(145deg, #0a2e1a 0%, #15803d 45%, #0d9488 100%)', image: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=640&q=80&auto=format&fit=crop' },
-  { id: 11, cat: 'webapp',   title: 'Generador de Gafetes',  tech: ['React', 'Node.js', 'PostgreSQL', 'PDF-lib', 'QR Generator'],                                                         gradient: 'linear-gradient(145deg, #1c1917 0%, #064e3b 45%, #0f766e 100%)', image: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=640&q=80&auto=format&fit=crop' },
-  { id: 17, cat: 'webapp',   title: 'Nuki',                   tech: ['React', 'Node.js', 'PostgreSQL', 'Tailwind CSS'],                                                                    gradient: 'linear-gradient(145deg, #030C1D 0%, #0B1D33 45%, #B8941F 100%)', image: '/assets/image/portafolio/nuki2.png', cardFit: 'contain', cardBg: '#FFFFFF' },
-  { id: 18, cat: 'webapp',   title: 'Menús Digitales',        tech: ['Astro', 'React', 'Tailwind CSS'],                                                                                    gradient: 'linear-gradient(145deg, #1e1e1c 0%, #222220 40%, #D4AF37 100%)', image: '/assets/image/portafolio/menudigital.png', link: 'https://laschikis.vercel.app/?tema=fonda' },
-  { id: 19, cat: 'mobile',   title: 'Ganova App',             tech: ['Flutter', 'Firebase', 'SQLite'],                                                                                     gradient: 'linear-gradient(145deg, #0B1D33 0%, #0c1e3c 45%, #D4AF37 100%)', image: '/assets/image/portafolio/ganova.png' },
-  { id: 21, cat: 'software', title: 'Bot Calificador de Leads', tech: ['Python', 'FastAPI', 'PostgreSQL', 'WhatsApp API'],                                                                  gradient: 'linear-gradient(145deg, #222220 0%, #0B1D33 50%, #D4AF37 100%)', image: '/assets/image/portafolio/seguiar_resized.png', cardFit: 'contain' },
-  { id: 22, cat: 'landing',  title: 'Handlove',               tech: ['Astro', 'Tailwind CSS'],                                            link: 'https://handloves.mx/',                   gradient: 'linear-gradient(145deg, #030C1D 0%, #0D1625 45%, #F4E4BC 100%)', image: '/assets/image/portafolio/handlove.png', cardFit: 'contain' },
-  { id: 23, cat: 'landing',  title: 'Plantilla Inmobiliaria', tech: ['Astro', 'React', 'Tailwind CSS'],                                                                                    gradient: 'linear-gradient(145deg, #0c1e3c 0%, #0B1D33 45%, #B8941F 100%)', image: '/assets/image/portafolio/inmovil.png', link: 'https://inmobil.netlify.app/', cardFit: 'contain', imgPos: 'center 38%' },
-  { id: 24, cat: 'software', title: 'Bot de Atención al Cliente', tech: ['Python', 'FastAPI', 'PostgreSQL', 'WhatsApp API'], gradient: 'linear-gradient(145deg, #1e1e1c 0%, #0B1D33 50%, #B8941F 100%)', image: '/assets/image/portafolio/nomda.jpg' },
-];
 
 /* ─── CONFIG DE LA HÉLICE (el "tornillo") ───────────────────────────────
  * angle   = grados de giro entre tarjeta y tarjeta (paso angular de la rosca)

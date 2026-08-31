@@ -5,15 +5,12 @@ import {
 } from 'framer-motion';
 import { useLanguage } from '../../hooks/useLanguage';
 import { localizedPath } from '../../i18n/routes';
+import { HOME_PROJECT_IDS, projectById } from '../../data/projects.js';
 
-const PROJECTS = [
-  { id:1, title:'Chuchulucos',    cat:'landing',  image:'/assets/image/portafolio/chuchu.webp',          link:'https://chuchulucos.geckcodex.com/' },
-  { id:2, title:'Agend-In',       cat:'landing',  image:'/assets/image/portafolio/agendin.webp',         link:'https://agend-in.geckcodex.com/' },
-  { id:3, title:'LandingKit',     cat:'landing',  image:'/assets/image/portafolio/landig.webp',          link:'https://landig-plantilla.geckcodex.com/' },
-  { id:6, title:'Mi Caja POS',    cat:'landing',  image:'/assets/image/portafolio/micaja.webp',          link:'https://mi-caja.geckcodex.com/' },
-  { id:7, title:'Capital Transport', cat:'mobile',   image:'/assets/image/portafolio/capital transpor.webp' },
-  { id:8, title:'Coronado Gym',   cat:'webapp',   image:'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=480&q=80&auto=format&fit=crop' },
-];
+/* Los proyectos salen de la tabla compartida: la home y /portafolio no pueden
+ * discrepar en nombre, imagen o id (los taglines se resuelven por id contra
+ * `t.projectCarousel.projects`). */
+const PROJECTS = HOME_PROJECT_IDS.map(projectById).filter(Boolean);
 
 /* Acentos de categoría dentro de la paleta (oro / bronce), sin arcoíris */
 const CAT_ACCENT = {
@@ -138,6 +135,7 @@ export default function ProjectCarousel({ lang }) {
   const ap = active?.project;
   const apAccent = ap ? CAT_ACCENT[ap.cat] : null;
   const apTag = ap ? t.projectCarousel.projects[ap.id]?.tagline : null;
+  const apResult = ap ? t.projectCarousel.projects[ap.id]?.result : null;
 
   return (
     <>
@@ -189,6 +187,7 @@ export default function ProjectCarousel({ lang }) {
                 </span>
                 <h3 className="pc-cap__name">{ap.title}</h3>
                 {apTag && <p className="pc-cap__tag">{apTag}</p>}
+                {apResult && <p className="pc-cap__result">{apResult}</p>}
                 {ap.link && (
                   <a href={ap.link} target="_blank" rel="noopener noreferrer" className="pc-cap__live">
                     {t.projectCarousel.liveCta}
@@ -199,6 +198,22 @@ export default function ProjectCarousel({ lang }) {
               <p className="pc-cap__hint">{t.projectCarousel.subtitle}</p>
             )}
           </motion.div>
+
+          {/* Mismo contenido que revela el arco al pasar el cursor, en una lista
+              plana: sin ella, el texto de cada proyecto no existe para quien
+              navega sin mouse ni para los rastreadores. */}
+          <ul className="sr-only">
+            {PROJECTS.map((pr) => {
+              const copy = t.projectCarousel.projects[pr.id] || {};
+              return (
+                <li key={pr.id}>
+                  {pr.title} — {t.projectCarousel.catLabels[pr.cat]}
+                  {copy.tagline ? `. ${copy.tagline}` : ''}
+                  {copy.result ? `. ${copy.result}` : ''}
+                </li>
+              );
+            })}
+          </ul>
 
           {/* CTA */}
           <motion.div className="pc-cta" style={reduce ? undefined : { opacity: ctaOp }}>
@@ -213,6 +228,17 @@ export default function ProjectCarousel({ lang }) {
       </section>
 
       <style>{`
+        /* Resultado del proyecto: la frase que explica qué cambió para el
+           cliente. Va bajo el tagline, con menos peso que el nombre. */
+        .pc-cap__result {
+          font-size: .88rem;
+          line-height: 1.55;
+          color: var(--text-muted);
+          margin: .5rem auto 0;
+          max-width: 52ch;
+          text-wrap: pretty;
+        }
+
         /* ── SECTION ─────────────────────────────────────── */
         .pc-section {
           background: var(--background);

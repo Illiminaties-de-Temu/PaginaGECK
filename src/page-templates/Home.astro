@@ -10,7 +10,8 @@ import Layout from '@/layouts/MainLayout.astro';
 import VideoBackground from '@/components/VideoBackground.jsx';
 import ProjectCarousel from '@/components/hero/ProjectCarousel.jsx';
 import AboutTeaser from '@/components/hero/AboutTeaser.jsx';
-import SpecialtiesShowcase from '@/components/hero/SpecialtiesShowcase.jsx';
+import WhatWeDo from '@/components/hero/WhatWeDo.jsx';
+import Processtimeline from '@/components/abaut/Processtimeline.jsx';
 import Carrusel from '@/components/hero/Carrusel.jsx';
 import StatsSection from '@/components/hero/StatsSection.jsx';
 import FaqSection from '@/components/FaqSection.jsx';
@@ -61,11 +62,23 @@ const services = serviceListSchema(
   <h1 class="sr-only">{meta.h1}</h1>
 
   <div class="home-flow">
+    {/*
+      Orden de lectura de la home: qué hacemos → pruébalo → cómo se trabaja con
+      nosotros → quiénes somos → quién nos contrató → cierre → dudas.
+
+      `WhatWeDo` sustituye a `SpecialtiesShowcase` (tres videos, 4.9 MB en
+      escritorio, 103 palabras genéricas). El componente sigue en el repo por si
+      los videos se reaprovechan en /servicios, pero ya no se monta aquí.
+
+      `Processtimeline` es EL MISMO componente que /nosotros: se monta tal cual,
+      no una copia compacta. Mismo árbol, mismo objeto `t.process`.
+    */}
     <VideoBackground client:visible lang={lang} />
 
+    <WhatWeDo client:visible lang={lang} />
     <ProjectCarousel client:visible lang={lang} />
+    <Processtimeline client:visible lang={lang} />
     <AboutTeaser client:visible lang={lang} />
-    <SpecialtiesShowcase client:visible lang={lang} />
     <Carrusel client:visible lang={lang} />
     <StatsSection client:visible lang={lang} />
     <FaqSection client:visible lang={lang} />
@@ -88,7 +101,7 @@ const services = serviceListSchema(
   /* Las secciones se vuelven transparentes para dejar ver el fondo fijo */
   .home-flow .hero-section,
   .home-flow .pc-section,
-  .home-flow .stk,
+  .home-flow .wwd,
   .home-flow .cc-section,
   .home-flow .st-section {
     background: transparent !important;
