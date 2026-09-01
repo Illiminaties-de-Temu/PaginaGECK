@@ -119,6 +119,39 @@ export const ORGANIZATION_SCHEMA: Record<string, unknown> = {
       name: 'Ciudad Juárez',
       containedInPlace: { '@type': 'State', name: 'Chihuahua' },
     },
+    // Resto de municipios del estado por poblacion. Camargo y Jimenez son
+    // chicos pero estan a menos de una hora de Parral: ahi el servicio puede
+    // ser presencial, no solo remoto.
+    {
+      '@type': 'City',
+      name: 'Cuauhtémoc',
+      containedInPlace: { '@type': 'State', name: 'Chihuahua' },
+    },
+    {
+      '@type': 'City',
+      name: 'Delicias',
+      containedInPlace: { '@type': 'State', name: 'Chihuahua' },
+    },
+    {
+      '@type': 'City',
+      name: 'Nuevo Casas Grandes',
+      containedInPlace: { '@type': 'State', name: 'Chihuahua' },
+    },
+    {
+      '@type': 'City',
+      name: 'Meoqui',
+      containedInPlace: { '@type': 'State', name: 'Chihuahua' },
+    },
+    {
+      '@type': 'City',
+      name: 'Camargo',
+      containedInPlace: { '@type': 'State', name: 'Chihuahua' },
+    },
+    {
+      '@type': 'City',
+      name: 'Jiménez',
+      containedInPlace: { '@type': 'State', name: 'Chihuahua' },
+    },
   ],
   // Radio de servicio presencial; el trabajo remoto queda cubierto por areaServed.
   serviceArea: {
