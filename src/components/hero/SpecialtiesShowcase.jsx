@@ -3,9 +3,9 @@ import { motion, useScroll, useSpring, useTransform, useMotionTemplate, useReduc
 import { useLanguage } from '../../hooks/useLanguage';
 
 const SERVICE_MEDIA = [
-  { id: 'ia',     link: '/servicios#ia',     videoDesktop: '/assets/video/ia.mp4',  videoMobile: '/assets/video/ia-cel.mp4',    poster: '/assets/image/ia-poster.webp' },
+  { id: 'ia',     link: '/servicios#ia',     videoDesktop: '/assets/video/ia.mp4',  videoMobile: '/assets/video/ia-movil.mp4',    poster: '/assets/image/ia-poster.webp' },
   { id: 'web',    link: '/servicios#web',    videoDesktop: '/assets/video/web.mp4', videoMobile: '/assets/video/web-movil.mp4', poster: '/assets/image/web-poster.webp' },
-  { id: 'mobile', link: '/servicios#mobile', videoDesktop: '/assets/video/cel.mp4', videoMobile: '/assets/video/cel.mp4',       poster: '/assets/image/cel-poster.webp' },
+  { id: 'mobile', link: '/servicios#mobile', videoDesktop: '/assets/video/cel.mp4', videoMobile: '/assets/video/cel-movil.mp4',       poster: '/assets/image/cel-poster.webp' },
 ];
 
 /* Offset de empalme entre tarjetas, en vh (mismo valor en CSS: ver --peek) */

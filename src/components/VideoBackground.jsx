@@ -122,6 +122,14 @@ export default function VideoBackground({ children, lang }) {
     return nodes;
   }, []);
 
+  /* El gecko en ASCII son ~11.000 caracteres decorativos. Renderizado en el
+   * HTML estático inflaba la home a 194 KB y ahogaba el texto real de la página
+   * (dos tercios del contenido textual del index eran caracteres de adorno).
+   * Se pinta solo tras hidratar: mismo efecto visual, cero ruido para Google y
+   * los rastreadores de IA. */
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => { setMounted(true); }, []);
+
   /* ── Rotación sincronizada: frase (izq) y servicio (der), rodillos en
    * direcciones opuestas. Un solo contador alimenta ambos índices. ── */
   const reduce = useReducedMotion();
@@ -223,7 +231,9 @@ export default function VideoBackground({ children, lang }) {
       if (labelEl) { labelEl.style.transform = ''; labelEl.style.opacity = ''; }
       if (svcEl) { svcEl.style.transform = ''; svcEl.style.opacity = ''; }
     };
-  }, []);
+    // `mounted`: el ASCII no existe en el primer render, así que el efecto debe
+    // volver a correr cuando aparece (si no, `spot` sería null para siempre).
+  }, [mounted]);
 
   return (
     <>
@@ -232,8 +242,12 @@ export default function VideoBackground({ children, lang }) {
 
         {/* ASCII de fondo — caracteres que se encienden al azar + foco del cursor */}
         <div ref={wrapRef} className="hero-ascii-wrapper">
-          <div className="hero-ascii hero-ascii--chars" aria-hidden="true">{asciiNodes}</div>
-          <pre ref={spotRef} className="hero-ascii hero-ascii--cursor" aria-hidden="true">{ASCII}</pre>
+          {mounted && (
+            <>
+              <div className="hero-ascii hero-ascii--chars" aria-hidden="true">{asciiNodes}</div>
+              <pre ref={spotRef} className="hero-ascii hero-ascii--cursor" aria-hidden="true">{ASCII}</pre>
+            </>
+          )}
         </div>
 
         {/* 3 tercios: frase rotando (izq) · logo ASCII (medio) · servicio rotando (der) */}
