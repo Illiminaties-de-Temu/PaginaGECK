@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect, useRef } from "react";
-import { Github, Instagram, Facebook, ArrowUp } from "lucide-react";
+import { Github, Instagram, Facebook, Linkedin, ArrowUp } from "lucide-react";
 import { useLanguage } from "../hooks/useLanguage";
 import { localizedPath } from '../i18n/routes';
 
@@ -84,6 +84,7 @@ export default function GeckFooter({ lang }) {
     { Icon: Github,    name: 'github',    label: 'GitHub',    url: 'https://github.com/Geck-Codex' },
     { Icon: Instagram, name: 'instagram', label: 'Instagram', url: 'https://www.instagram.com/geckcodex?igsh=MTV5YWY5Nnh4OWQ2Mw==' },
     { Icon: Facebook,  name: 'facebook',  label: 'Facebook',  url: 'https://www.facebook.com/share/1Dt3nBrVgm/' },
+    { Icon: Linkedin,  name: 'linkedin',  label: 'LinkedIn',  url: 'https://www.linkedin.com/in/geckcodex-2647a4417/' },
     // TikTok retirado: apuntaba a '#'. Un perfil enlazado a ningún lado resta
     // confianza y no suma al sameAs del schema. Restaurar cuando exista la URL.
   ];

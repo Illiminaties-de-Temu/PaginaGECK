@@ -79,6 +79,46 @@ export const PAGE_META: Record<PageKey, Record<Locale, PageMeta>> = {
     },
   },
 
+  ecosystem: {
+    es: {
+      title: 'Ecosistema Geck Codex | Menú Digital, POS, Lealtad y CRM',
+      description:
+        'Menú digital, punto de venta, programa de lealtad, CRM y chatbot. Cada módulo cuesta $300 MXN al mes, sin pago de implementación, y juntos se conectan entre sí.',
+      breadcrumb: 'Ecosistema',
+    },
+    en: {
+      title: 'Geck Codex Ecosystem | Digital Menu, POS, Loyalty and CRM',
+      description:
+        'Digital menu, point of sale, loyalty program, CRM and chatbot. Each module costs $300 MXN a month, with no setup fee, and together they connect.',
+      breadcrumb: 'Ecosystem',
+    },
+    pt: {
+      title: 'Ecossistema Geck Codex | Cardápio, PDV, Fidelidade e CRM',
+      description:
+        'Cardápio digital, ponto de venda, programa de fidelidade, CRM e chatbot. Cada módulo custa $300 MXN por mês, sem taxa de implementação, e juntos se conectam.',
+      breadcrumb: 'Ecossistema',
+    },
+  },
+  custom: {
+    es: {
+      title: 'Software a Medida: ERP, CRM y Apps | Geck Codex México',
+      description:
+        'Desarrollo de software a la medida de tu operación: ERP, CRM, apps móviles, automatización e IA. Desde $5,000 MXN, con garantía de por vida en el código.',
+      breadcrumb: 'A medida',
+    },
+    en: {
+      title: 'Custom Software: ERP, CRM and Mobile Apps | Geck Codex',
+      description:
+        'Custom software built around your operation: ERP, CRM, mobile apps, automation and AI. From $5,000 MXN, with a lifetime warranty on the code we write.',
+      breadcrumb: 'Custom built',
+    },
+    pt: {
+      title: 'Software Sob Medida: ERP, CRM e Apps | Geck Codex',
+      description:
+        'Software sob medida para a sua operação: ERP, CRM, apps mobile, automação e IA. A partir de $5,000 MXN, com garantia vitalícia sobre o nosso código.',
+      breadcrumb: 'Sob medida',
+    },
+  },
   portfolio: {
     es: {
       title: 'Portafolio: Proyectos de Apps, Web e IA | Geck Codex',

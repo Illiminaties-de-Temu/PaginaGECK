@@ -1,0 +1,33 @@
+---
+/**
+ * Ecosistema, en cualquiera de los tres idiomas.
+ * Los archivos de `src/pages/` son envoltorios que solo eligen el idioma.
+ */
+import Layout from '@/layouts/MainLayout.astro';
+import EcosystemPage from '@/components/servicios/EcosystemPage.jsx';
+import { SITE_URL } from '@/data/seo';
+import { PAGE_META } from '@/i18n/seo-meta';
+import { localizedUrl } from '@/i18n/routes';
+import type { Locale } from '@/i18n/routes';
+
+interface Props { lang: Locale }
+
+const { lang } = Astro.props;
+const meta = PAGE_META.ecosystem[lang];
+const url = localizedUrl('ecosystem', lang, SITE_URL);
+const parent = PAGE_META.services[lang];
+---
+
+<Layout
+  title={meta.title}
+  description={meta.description}
+  canonical={url}
+  breadcrumbs={[
+    { name: parent.breadcrumb!, url: localizedUrl('services', lang, SITE_URL) },
+    { name: meta.breadcrumb!, url },
+  ]}
+  lang={lang}
+  pageKey="ecosystem"
+>
+  <EcosystemPage client:visible lang={lang} />
+</Layout>

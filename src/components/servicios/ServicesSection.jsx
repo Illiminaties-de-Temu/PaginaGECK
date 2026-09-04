@@ -1,39 +1,15 @@
 import { useState, useEffect, useCallback, useRef, forwardRef } from 'react';
 import { useLanguage } from '../../hooks/useLanguage';
 import { localizedPath } from '../../i18n/routes';
+import ServicesPaths from './ServicesPaths.jsx';
+import ForkCompare from './ForkCompare.jsx';
+import { SERVICES_STATIC } from '../../data/services.js';
+import '../../styles/servicios-paths.css';
 
 /* ─── SERVICIOS (lista plana, una sola hélice) ──────────────────────────
  * cat = índice de categoría (0 Desarrollo · 1 Marketing · 2 Inversión)
  * El badge de categoría se resuelve desde t.services.categories[cat].name */
-const SERVICES_STATIC = [
-  { id: 0, slug: 'web',            cat: 0, image: '/assets/image/servicios/webser.webp'     },
-  { id: 1, slug: 'mobile',         cat: 0, image: '/assets/image/servicios/celser.webp'     },
-  { id: 2, slug: 'ia',             cat: 0, image: '/assets/image/servicios/iaser.webp'      },
-  { id: 3, slug: 'ecommerce',      cat: 0, image: '/assets/image/servicios/ecomersser.webp' },
-  { id: 4, slug: 'saas',           cat: 0, image: '/assets/image/servicios/saasser.webp'    },
-  { id: 5, slug: 'automatizacion', cat: 0, image: '/assets/image/servicios/autoserv.webp'   },
-  { id: 6, slug: 'custom',         cat: 0, image: '/assets/image/servicios/medidaser.webp'  },
-  { id: 7, slug: 'diseno',         cat: 1, image: '/assets/image/servicios/ui-ux.webp'      },
-  { id: 8, slug: 'redes-sociales', cat: 1, image: '/assets/image/servicios/social.webp'     },
-  { id: 9, slug: 'inversion',      cat: 2, image: '/assets/image/servicios/inversion.webp'  },
-];
 
-/* ─── CONFIG DEL CARRUSEL CURVO (cover-flow horizontal) ──────────────────
- * Las tarjetas se colocan sobre un arco y avanzan de IZQUIERDA a DERECHA
- * conforme se hace scroll. La del centro queda al frente; las laterales
- * se inclinan (rotateY) y retroceden (z), creando la curva.
- * spacing = separación horizontal en px entre tarjeta y tarjeta (muy espaciado)
- * angle   = inclinación en grados por tarjeta de distancia al centro
- * radius  = profundidad del arco en px (qué tanto retroceden las laterales)
- * window  = cuántas tarjetas a cada lado del foco se dibujan
- * minScale= escala de la tarjeta más alejada
- * blur    = desenfoque por unidad de distancia (0 = sin blur)
- * focus   = radio (en nº de tarjetas) de la zona nítida alrededor del centro */
-const CONF = {
-  desktop: { angle: 34, spacing: 380, radius: 560, window: 2.8, minScale: 0.6,  blur: 6, focus: 0.6 },
-  mobile:  { angle: 30, spacing: 210, radius: 320, window: 2.2, minScale: 0.7,  blur: 0, focus: 0.55 },
-};
-const SCROLL_PER_CARD = 44; // vh de scroll que avanza el carrusel por servicio
 
 const clamp = (v, lo, hi) => (v < lo ? lo : v > hi ? hi : v);
 
@@ -45,23 +21,23 @@ const WA_NUMBERS = { company: '+52 6271745436', agent: '+52 6144864571' };
  * Los servicios sin casos (redes-sociales, inversion) ocultan el bloque. */
 const RELATED_PROJECTS = {
   web: [
-    { title: 'Agend-In',   image: '/assets/image/portafolio/agendin.jpeg' },
+    { title: 'Agend-In',   image: '/assets/image/portafolio/agendin-card.webp' },
     { title: 'LandingKit', image: '/assets/image/portafolio/landig.webp' },
     { title: 'Mi Caja POS', image: '/assets/image/portafolio/micaja.webp' },
   ],
   mobile: [
     { title: 'Capital Transport', image: '/assets/image/portafolio/capital transpor.webp' },
-    { title: 'Ganova App', image: '/assets/image/portafolio/ganova.png' },
+    { title: 'Ganova App', image: '/assets/image/portafolio/ganova.webp' },
   ],
   ecommerce: [
     { title: 'Chuchulucos', image: '/assets/image/portafolio/chuchu.webp' },
     { title: 'Mi Caja POS', image: '/assets/image/portafolio/micaja.webp' },
   ],
   saas: [
-    { title: 'Nuki', image: '/assets/image/portafolio/nuki2.png' },
+    { title: 'Nuki', image: '/assets/image/portafolio/nuki.webp' },
   ],
   automatizacion: [
-    { title: 'Agend-In', image: '/assets/image/portafolio/agendin.jpeg' },
+    { title: 'Agend-In', image: '/assets/image/portafolio/agendin-card.webp' },
   ],
   diseno: [
     { title: 'Chuchulucos',    image: '/assets/image/portafolio/chuchu.webp' },
@@ -110,86 +86,6 @@ const Card = forwardRef(function Card({ service, onOpen, seeDetails, variant }, 
   );
 });
 
-/* ─── HÉLICE: hook imperativo (sin re-render por frame) ──────────────────
- * Un solo listener de scroll + rAF posiciona las N tarjetas en el cilindro.
- * Se muta el DOM directamente (transform/opacity/zIndex) para no re-renderizar
- * React en cada frame. Cumple el patrón de parallax barato del proyecto.     */
-function useScrew({ enabled, count, refs, trackRef, railRef, hudNum, hudTitle, hudCat, services }) {
-  useEffect(() => {
-    if (!enabled || typeof window === 'undefined') return;
-    let raf = 0;
-    let activeIdx = -1;
-
-    const update = () => {
-      raf = 0;
-      const track = trackRef.current;
-      if (!track) return;
-      const vh = window.innerHeight;
-      const rect = track.getBoundingClientRect();
-      const total = rect.height - vh;
-      const p = total > 0 ? clamp(-rect.top / total, 0, 1) : 0;
-      const head = p * (count - 1);
-      const conf = window.innerWidth < 768 ? CONF.mobile : CONF.desktop;
-
-      for (let i = 0; i < count; i++) {
-        const el = refs.current[i];
-        if (!el) continue;
-        const d = i - head;
-        if (Math.abs(d) > conf.window + 0.6) {
-          if (el.style.visibility !== 'hidden') {
-            el.style.visibility = 'hidden';
-            el.style.opacity = '0';
-            el.style.pointerEvents = 'none';
-          }
-          continue;
-        }
-        const deg = clamp(d * conf.angle, -82, 82);
-        const rad = (deg * Math.PI) / 180;
-        const x = d * conf.spacing;                 // avance horizontal (izq → der)
-        const z = (Math.cos(rad) - 1) * conf.radius; // arco: centro 0, laterales atrás
-        const depth = Math.cos(rad);                 // 1 al frente · →0 a los lados
-        const scale = conf.minScale + (1 - conf.minScale) * depth;
-        const edge = clamp(1 - (Math.abs(d) - (conf.window - 1)), 0, 1);
-        const opacity = clamp(0.12 + 0.88 * depth, 0, 1) * edge;
-
-        el.style.visibility = 'visible';
-        el.style.transform =
-          `translate3d(${x.toFixed(1)}px, 0px, ${z.toFixed(1)}px) rotateY(${deg.toFixed(1)}deg) scale(${scale.toFixed(3)})`;
-        el.style.opacity = opacity.toFixed(3);
-        el.style.zIndex = String(Math.round(200 - Math.abs(d) * 10));
-        // profundidad de campo: zona nítida de ±focus alrededor del centro,
-        // luego el blur entra (y sale) de forma gradual al alejarse
-        const dof = Math.min(Math.max(Math.abs(d) - conf.focus, 0) * conf.blur, 11);
-        el.style.filter = conf.blur ? `blur(${dof.toFixed(1)}px)` : 'none';
-        el.style.pointerEvents = depth > 0.25 ? 'auto' : 'none';
-        el.classList.toggle('is-active', Math.abs(d) < 0.5);
-      }
-
-      if (railRef.current) railRef.current.style.transform = `scaleX(${p.toFixed(4)})`;
-
-      const active = clamp(Math.round(head), 0, count - 1);
-      if (active !== activeIdx) {
-        activeIdx = active;
-        const svc = services[active];
-        if (hudNum.current) hudNum.current.textContent = String(active + 1).padStart(2, '0');
-        if (hudTitle.current) hudTitle.current.textContent = svc.name;
-        if (hudCat.current) hudCat.current.textContent = svc.catLabel;
-      }
-    };
-
-    const onScroll = () => { if (!raf) raf = requestAnimationFrame(update); };
-    update();
-    window.addEventListener('scroll', onScroll, { passive: true });
-    window.addEventListener('resize', onScroll, { passive: true });
-    return () => {
-      window.removeEventListener('scroll', onScroll);
-      window.removeEventListener('resize', onScroll);
-      if (raf) cancelAnimationFrame(raf);
-    };
-  }, [enabled, count, refs, trackRef, railRef, hudNum, hudTitle, hudCat, services]);
-}
-
-/* ─── MAIN COMPONENT ─────────────────────────────────────────────────── */
 export default function ImprovedServices({ lang }) {
   const { t } = useLanguage(lang);
   const services = SERVICES_STATIC.map((s) => ({
@@ -215,58 +111,6 @@ export default function ImprovedServices({ lang }) {
     if (typeof window === 'undefined') return;
     setReduced(window.matchMedia('(prefers-reduced-motion: reduce)').matches);
   }, []);
-
-  const trackRef = useRef(null);
-  const railRef = useRef(null);
-  const cardRefs = useRef([]);
-  const hudNum = useRef(null);
-  const hudTitle = useRef(null);
-  const hudCat = useRef(null);
-
-  /* En móvil el carrusel pasa a ser horizontal (swipe nativo), así que el
-   * tornillo controlado por scroll vertical se desactiva. */
-  useScrew({
-    enabled: !reduced && !isMobile,
-    count: N,
-    refs: cardRefs,
-    trackRef,
-    railRef,
-    hudNum,
-    hudTitle,
-    hudCat,
-    services,
-  });
-
-  /* ── Carrusel horizontal (solo móvil): índice activo según el scroll ── */
-  const [activeSwipe, setActiveSwipe] = useState(0);
-  const swipeRailRef = useRef(null);
-  const swipeRaf = useRef(0);
-
-  const handleSwipeScroll = useCallback(() => {
-    if (swipeRaf.current) return;
-    swipeRaf.current = requestAnimationFrame(() => {
-      swipeRaf.current = 0;
-      const rail = swipeRailRef.current;
-      if (!rail) return;
-      const center = rail.scrollLeft + rail.clientWidth / 2;
-      let best = 0, bestDist = Infinity;
-      for (let i = 0; i < rail.children.length; i++) {
-        const it = rail.children[i];
-        const c = it.offsetLeft + it.offsetWidth / 2;
-        const dist = Math.abs(c - center);
-        if (dist < bestDist) { bestDist = dist; best = i; }
-      }
-      setActiveSwipe(best);
-    });
-  }, []);
-
-  const scrollToSwipe = (i) => {
-    const rail = swipeRailRef.current;
-    if (!rail) return;
-    const it = rail.children[i];
-    if (!it) return;
-    rail.scrollTo({ left: it.offsetLeft - (rail.clientWidth - it.offsetWidth) / 2, behavior: 'smooth' });
-  };
 
   const expandedServiceData = expandedServiceId === null
     ? null
@@ -294,19 +138,6 @@ export default function ImprovedServices({ lang }) {
     };
   }, [expandedServiceId, closeExpanded]);
 
-  useEffect(() => {
-    const handleHashChange = () => {
-      const hash = window.location.hash.replace('#', '');
-      if (hash) {
-        const svc = SERVICES_STATIC.find((s) => s.slug === hash);
-        if (svc) setExpandedServiceId(svc.id);
-      }
-    };
-    handleHashChange();
-    window.addEventListener('hashchange', handleHashChange);
-    return () => window.removeEventListener('hashchange', handleHashChange);
-  }, []);
-
   const handleCardClick = (service) => {
     setExpandedServiceId(service.id);
     window.history.pushState(null, '', `#${service.slug}`);
@@ -326,152 +157,35 @@ export default function ImprovedServices({ lang }) {
 
   return (
     <>
-      <section className="svc-helix">
-        {/* Fondo sticky compartido — gradientes baratos */}
-        <div className="svc-helix__bg" aria-hidden="true">
-          <div className="svc-helix__orb svc-helix__orb--a" />
-          <div className="svc-helix__orb svc-helix__orb--b" />
+      <section className="svc-top">
+        {/* Cabecera de la pagina. La helice 3D que iba aqui se retiro: era
+         * un carrusel de scroll de varias pantallas de alto para ensenar
+         * siete tarjetas que ahora viven, con mas texto y en HTML estatico,
+         * dentro del camino de a medida. Su sitio lo ocupan dos entradas,
+         * porque lo primero que tiene que hacer quien llega es reconocerse
+         * en un camino, no mirar un carrusel. */}
+        <div className="svc-top__head">
+          <span className="paths__eyebrow">{t.services.pretitle}</span>
+          <h1 className="svc-top__title">{t.services.title}</h1>
+          <p className="svc-top__sub">{t.services.subtitle}</p>
         </div>
 
-        {/* Intro — scrollea y desaparece antes del tornillo */}
-        <header className="svc-helix__intro">
-          <span className="svc-helix__pretitle">{t.services.pretitle}</span>
-          <h1 className="svc-helix__h1">{t.services.title}</h1>
-          <p className="svc-helix__lead">{t.services.subtitle}</p>
-          {!reduced && !isMobile && (
-            <span className="svc-helix__hint">
-              {t.services.scrollHint}
-              <svg width="14" height="22" viewBox="0 0 14 22" fill="none" stroke="currentColor" strokeWidth="1.6">
-                <rect x="1" y="1" width="12" height="20" rx="6" />
-                <circle className="svc-helix__hint-dot" cx="7" cy="6" r="1.6" fill="currentColor" stroke="none" />
-              </svg>
-            </span>
-          )}
-        </header>
+        {/* La bifurcacion carga con todo: antes habia ademas una seccion
+         * "Dos caminos" mas abajo repitiendo lo mismo con otras palabras.
+         * Decirlo dos veces no lo hace mas claro, lo hace mas largo.
+         *
+         * Y va cara a cara, no en dos tarjetas sueltas: quien llega aqui esta
+         * comparando, y comparar de memoria entre dos fichas separadas era
+         * trabajo suyo que ahora hace el diseno. */}
+        <ForkCompare fork={t.services.fork} lang={lang} />
+      </section>
 
-        {reduced ? (
-          /* ── FALLBACK estático: grid accesible, sin movimiento ── */
-          <div className="svc-helix__grid">
-            {services.map((s) => (
-              <Card
-                key={s.id}
-                service={s}
-                onOpen={handleCardClick}
-                seeDetails={t.services.seeDetails}
-                variant="static"
-              />
-            ))}
-          </div>
-        ) : isMobile ? (
-          /* ── MÓVIL: carrusel horizontal con scroll-snap (swipe lateral) ── */
-          <div className="svc-swipe">
-            <div className="svc-swipe__rail" ref={swipeRailRef} onScroll={handleSwipeScroll}>
-              {services.map((s) => (
-                <div className="svc-swipe__item" key={s.id}>
-                  <Card
-                    service={s}
-                    onOpen={handleCardClick}
-                    seeDetails={t.services.seeDetails}
-                    variant="swipe"
-                  />
-                </div>
-              ))}
-            </div>
-            <div className="svc-swipe__dots" role="tablist">
-              {services.map((s, i) => (
-                <button
-                  key={s.id}
-                  type="button"
-                  className={`svc-swipe__dot${i === activeSwipe ? ' is-active' : ''}`}
-                  onClick={() => scrollToSwipe(i)}
-                  aria-label={s.name}
-                  aria-selected={i === activeSwipe}
-                />
-              ))}
-            </div>
-          </div>
-        ) : (
-          /* ── TORNILLO: track alto + stage sticky con perspectiva ── */
-          <div
-            className="svc-helix__track"
-            ref={trackRef}
-            style={{ height: `${(N - 1) * SCROLL_PER_CARD + 110}vh` }}
-          >
-            <div className="svc-helix__stage">
-              {/* eje / rosca central */}
-              <div className="svc-helix__axis" aria-hidden="true" />
-
-              {/* halo de foco — resalta la tarjeta del centro */}
-              <div className="svc-helix__focus" aria-hidden="true" />
-
-              {/* HUD: número de servicio + categoría + título */}
-              <div className="svc-helix__hud" aria-hidden="true">
-                <div className="svc-helix__count">
-                  <span className="svc-helix__count-num" ref={hudNum}>01</span>
-                  <span className="svc-helix__count-sep">/</span>
-                  <span className="svc-helix__count-tot">{String(N).padStart(2, '0')}</span>
-                </div>
-                <span className="svc-helix__hud-cat" ref={hudCat}>{first.catLabel}</span>
-                <span className="svc-helix__hud-title" ref={hudTitle}>{first.name}</span>
-              </div>
-
-              {/* riel de progreso */}
-              <div className="svc-helix__rail" aria-hidden="true">
-                <div className="svc-helix__rail-fill" ref={railRef} />
-              </div>
-
-              {/* tarjetas de la hélice */}
-              <div className="svc-helix__cyl">
-                {services.map((s, i) => (
-                  <Card
-                    key={s.id}
-                    ref={(el) => { cardRefs.current[i] = el; }}
-                    service={s}
-                    onOpen={handleCardClick}
-                    seeDetails={t.services.seeDetails}
-                    variant="helix"
-                  />
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* ─── DETALLE EN TEXTO ───────────────────────────────────────────
-         * La hélice/carrusel solo pinta nombre y tagline: la descripción y el
-         * "qué incluye" viven dentro del modal, que no existe en el HTML hasta
-         * que alguien hace click. Google y los buscadores con IA nunca los
-         * veían. Este bloque publica ese MISMO contenido (t.services.items) en
-         * HTML estático, con un <h2> por servicio, sin duplicar textos ni
-         * traducciones. */}
-        <section className="svc-detail" id="detalle" aria-labelledby="svc-detail-title">
-          <div className="svc-detail__head">
-            <h2 className="svc-detail__title" id="svc-detail-title">{t.services.detail.title}</h2>
-            <p className="svc-detail__lead">{t.services.detail.subtitle}</p>
-          </div>
-
-          <div className="svc-detail__grid">
-            {services.map((s) => (
-              <article className="svc-detail__item" key={s.slug} id={s.slug}>
-                <span className="svc-detail__cat">{s.catLabel}</span>
-                <h3 className="svc-detail__name">{s.name}</h3>
-                <p className="svc-detail__tagline">{s.tagline}</p>
-                <p className="svc-detail__desc">{s.description}</p>
-                {s.features?.length > 0 && (
-                  <>
-                    <h4 className="svc-detail__feat-title">{t.services.modal.featuresTitle}</h4>
-                    <ul className="svc-detail__feats">
-                      {s.features.map((f) => <li key={f}>{f}</li>)}
-                    </ul>
-                  </>
-                )}
-                <button className="svc-detail__more" onClick={() => handleCardClick(s)}>
-                  {t.services.seeDetails}
-                </button>
-              </article>
-            ))}
-          </div>
-        </section>
+        {/* ─── LOS DOS CAMINOS ────────────────────────────────────────
+         * Debajo de la helice: bifurcacion, ecosistema, a medida,
+         * mantenimiento y dudas. El detalle por servicio se pasa como hijo
+         * porque su sitio es dentro de "a medida": es el catalogo de lo que
+         * se construye, no una lista suelta al final de la pagina. */}
+        <ServicesPaths t={t.services} contactHref={localizedPath('contact', lang)} />
 
         {/* ─── MODAL / BOTTOM SHEET ─── */}
         {expandedServiceData && (
@@ -502,17 +216,6 @@ export default function ImprovedServices({ lang }) {
 
                 <p className="service-modal__description">{expandedServiceData.description}</p>
 
-                <div className="service-modal__section">
-                  <h3 className="service-modal__section-title">{t.services.modal.featuresTitle}</h3>
-                  <div className="svc-feat">
-                    {expandedServiceData.features.map((feature, index) => (
-                      <div key={index} className="svc-feat__item">
-                        <span className="svc-feat__n">{String(index + 1).padStart(2, '0')}</span>
-                        <span className="svc-feat__t">{feature}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
                 {/* Proyectos relacionados del portafolio */}
                 {relatedProjects.length > 0 && (
                   <div className="service-modal__section">
@@ -529,20 +232,6 @@ export default function ImprovedServices({ lang }) {
                   </div>
                 )}
 
-                {/* Cómo trabajamos */}
-                <div className="service-modal__section">
-                  <h3 className="service-modal__section-title">{t.services.modal.processTitle}</h3>
-                  <div className="svc-proc">
-                    {t.services.modal.processSteps.map((s, i) => (
-                      <div key={i} className="svc-proc__step">
-                        <div className="svc-proc__dot">{String(i + 1).padStart(2, '0')}</div>
-                        <div className="svc-proc__t">{s.title}</div>
-                        <div className="svc-proc__d">{s.desc}</div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
                 {/* CTAs: WhatsApp (empresa + agente) + formulario */}
                 <div className="service-modal__cta-wrapper">
                   <div className="service-modal__cta-row">
@@ -556,16 +245,6 @@ export default function ImprovedServices({ lang }) {
                       </svg>
                       <span>{t.services.modal.waCompany}</span>
                     </button>
-                    <button
-                      type="button"
-                      className="service-modal__wa"
-                      onClick={() => openWhatsApp('agent', expandedServiceData.name)}
-                    >
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
-                      </svg>
-                      <span>{t.services.modal.waAgent}</span>
-                    </button>
                   </div>
                   <a href={localizedPath("contact", lang)} className="service-modal__cta">
                     <span>{expandedServiceData.id === 9 ? t.services.modal.ctaInversion : t.services.modal.formCta}</span>
@@ -578,7 +257,6 @@ export default function ImprovedServices({ lang }) {
             </div>
           </div>
         )}
-      </section>
 
       <style>{`
         /* ─── VARIABLES ──────────────────────────────────────── */

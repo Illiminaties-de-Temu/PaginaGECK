@@ -44,6 +44,11 @@ export const LOCALE_META = {
 export const SLUGS = {
   home: { es: '', en: '', pt: '' },
   services: { es: 'servicios', en: 'services', pt: 'servicos' },
+  // Los dos caminos de servicios, cada uno con pagina propia. Van anidados
+  // bajo el slug de servicios porque son parte de el, y porque una URL como
+  // /servicios/ecosistema/ le dice a Google de que trata sin leer la pagina.
+  ecosystem: { es: 'servicios/ecosistema', en: 'services/ecosystem', pt: 'servicos/ecossistema' },
+  custom:    { es: 'servicios/a-medida',   en: 'services/custom-built', pt: 'servicos/sob-medida' },
   portfolio: { es: 'portafolio', en: 'portfolio', pt: 'portfolio' },
   about: { es: 'nosotros', en: 'about', pt: 'sobre-nos' },
   contact: { es: 'contacto', en: 'contact', pt: 'contato' },
@@ -95,10 +100,18 @@ export function resolvePath(pathname) {
   const isPrefixed = maybeLocale !== undefined && PREFIXED_LOCALES.includes(maybeLocale);
 
   const locale = isPrefixed ? maybeLocale : DEFAULT_LOCALE;
-  const slug = (isPrefixed ? parts[1] : parts[0]) ?? '';
+  // Se unen TODOS los segmentos, no solo el primero: hay slugs anidados
+  // ("servicios/ecosistema") y cortar por el primero devolvia la pagina padre.
+  const slug = (isPrefixed ? parts.slice(1) : parts).join('/');
 
   const page = Object.keys(SLUGS).find((key) => SLUGS[key][locale] === slug);
   return page ? { page, locale } : null;
+}
+
+/** Paginas hijas de otra, para migas de pan. */
+export const PARENT = {
+  ecosystem: 'services',
+  custom: 'services',
 }
 
 /**

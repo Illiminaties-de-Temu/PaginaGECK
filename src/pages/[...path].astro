@@ -11,6 +11,8 @@
  */
 import Home from '@/page-templates/Home.astro';
 import Services from '@/page-templates/Services.astro';
+import Ecosystem from '@/page-templates/Ecosystem.astro';
+import CustomBuild from '@/page-templates/CustomBuild.astro';
 import Portfolio from '@/page-templates/Portfolio.astro';
 import About from '@/page-templates/About.astro';
 import Contact from '@/page-templates/Contact.astro';
@@ -41,6 +43,8 @@ const { page, locale } = Astro.props;
 const TEMPLATES = {
   home: Home,
   services: Services,
+  ecosystem: Ecosystem,
+  custom: CustomBuild,
   portfolio: Portfolio,
   about: About,
   contact: Contact,

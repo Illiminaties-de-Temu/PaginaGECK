@@ -1,15 +1,8 @@
 import { useState, useEffect, useRef, forwardRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { useLanguage } from '../../hooks/useLanguage';
 import { localizedPath } from '../../i18n/routes';
 import { PROJECTS_STATIC } from '../../data/projects.js';
-
-// Fondo unico de todas las tarjetas y de los detalles con logo. Se invierte
-// respecto al tema: blanco en modo oscuro, tinta en modo claro (ver
-// --pf-card-bg mas abajo). Un proyecto puede fijar el suyo con `cardBg`
-// —sobreescribe la variable en la tarjeta— cuando su imagen solo se lee sobre
-// un fondo concreto en los dos temas.
-const CARD_BG = 'var(--pf-card-bg)';
 
 /* Acentos de categoría dentro de la paleta oro/bronce (sin arcoíris),
  * consistentes con el ProjectCarousel de la home. */
@@ -52,6 +45,133 @@ const contentVariants = {
   exit:   { y: 14, opacity: 0, transition: { duration: 0.16 } },
 };
 
+/* ─── GALERIA DE LA FICHA ───────────────────────────────────────────────
+ * Carrusel de capturas del producto por dentro. La caja tiene `aspect-ratio`
+ * fijo, asi que reserva su alto antes de que llegue el primer byte: cambiar de
+ * captura no puede mover nada de sitio. Se descarga la visible y se precarga
+ * solo la siguiente — hojear no espera a la red y nadie paga por capturas que
+ * no llego a mirar.
+ *
+ * Se prefirio a un video: pesa una decima parte, el visitante controla el
+ * ritmo, y no mete un decodificador a trabajar dentro de un modal que ya
+ * tiene un fondo desenfocado detras. */
+function Gallery({ shots, captions, title, strings, stageBg, fit }) {
+  const n = shots.length;
+  const [[i, dir], setAt] = useState([0, 0]);
+  const reduce = useReducedMotion();
+  const touchX = useRef(0);
+
+  const go = (d) => setAt(([p]) => [(p + d + n) % n, d]);
+
+  /* Avance automatico. Se detiene con el raton encima —para poder leer el pie
+     sin que la captura cambie a media frase— y con la pestana en segundo
+     plano, que si no seguiria repintando a espaldas del usuario. `i` esta en
+     las dependencias a proposito: al navegar a mano el turno vuelve a empezar
+     de cero en vez de saltar al instante siguiente. */
+  const [paused, setPaused] = useState(false);
+  useEffect(() => {
+    if (n < 2 || reduce || paused) return;
+    const id = setInterval(() => setAt(([p]) => [(p + 1) % n, 1]), 4200);
+    return () => clearInterval(id);
+  }, [n, reduce, paused, i]);
+
+  useEffect(() => {
+    const onVis = () => setPaused(document.hidden);
+    document.addEventListener('visibilitychange', onVis);
+    return () => document.removeEventListener('visibilitychange', onVis);
+  }, []);
+
+  // Precarga solo la siguiente: hojear no espera a la red, y nadie descarga
+  // capturas que no llego a mirar.
+  useEffect(() => {
+    if (n < 2) return;
+    const img = new Image();
+    img.src = shots[(i + 1) % n];
+  }, [i, n, shots]);
+
+  useEffect(() => {
+    if (n < 2) return;
+    const onKey = (e) => {
+      if (e.key === 'ArrowRight') setAt(([p]) => [(p + 1) % n, 1]);
+      else if (e.key === 'ArrowLeft') setAt(([p]) => [(p - 1 + n) % n, -1]);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [n]);
+
+  /* Con `custom` en AnimatePresence, la captura que se va recibe la direccion
+     NUEVA: una entra por un lado mientras la otra sale por el contrario. */
+  const slide = reduce
+    ? { enter: { opacity: 0 }, center: { opacity: 1 }, exit: { opacity: 0 } }
+    : {
+        enter:  (d) => ({ opacity: 0, x: d * 42 }),
+        center: { opacity: 1, x: 0 },
+        exit:   (d) => ({ opacity: 0, x: d * -42 }),
+      };
+
+  return (
+    <div
+      className="gc-gal"
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+      onTouchStart={(e) => { touchX.current = e.changedTouches[0].clientX; }}
+      onTouchEnd={(e) => {
+        const dx = e.changedTouches[0].clientX - touchX.current;
+        if (n > 1 && Math.abs(dx) > 45) go(dx < 0 ? 1 : -1);
+      }}
+    >
+      {/* La captura no ocupa la tarjeta entera: vive en su franja y el velo la
+          funde con el fondo. Asi el texto nunca se monta sobre el producto y
+          el mockup no se recorta por arriba y por abajo. */}
+      <div className="gc-gal__stage" style={{ background: stageBg }}>
+        <AnimatePresence initial={false} custom={dir}>
+          <motion.img
+            key={i}
+            src={shots[i]}
+            alt={captions[i] ? `${title} — ${captions[i]}` : title}
+            className="gc-gal__img"
+            style={{ objectFit: fit }}
+            draggable="false"
+            decoding="async"
+            variants={slide}
+            custom={dir}
+            initial="enter"
+            animate="center"
+            exit="exit"
+            transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
+          />
+        </AnimatePresence>
+      </div>
+      <div className="gc-gal__veil" aria-hidden="true" />
+
+      {/* Alto reservado: el pie se pinta siempre que haya pies, para que al
+          cambiar de captura no se muevan las miniaturas de debajo. */}
+      {captions.length > 0 && (
+        <p className="gc-gal__cap">{captions[i] || ''}</p>
+      )}
+
+      {/* Miniaturas en vez de puntos: se ve cuantas capturas hay Y que hay en
+          cada una antes de pincharla. */}
+      {n > 1 && (
+        <div className="gc-gal__thumbs" aria-label={strings.detail.gallery}>
+          {shots.map((src, k) => (
+            <button
+              key={k}
+              type="button"
+              aria-current={k === i}
+              aria-label={strings.detail.shotOf(k + 1, n)}
+              className={`gc-gal__thumb${k === i ? ' is-on' : ''}`}
+              onClick={() => setAt([k, k > i ? 1 : -1])}
+            >
+              <img src={src} alt="" loading="lazy" decoding="async" draggable="false" />
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function Detail({ project, onClose, catMeta, strings, lang }) {
   const meta = catMeta[project.cat];
   const [imgFailed, setImgFailed] = useState(false);
@@ -74,19 +194,28 @@ function Detail({ project, onClose, catMeta, strings, lang }) {
     };
   }, [onClose]);
 
-  // `cardFit` describe como encuadrar el logo de la TARJETA. Si el proyecto
-  // tiene `cardImage` propia, el detalle muestra otra imagen (la captura del
-  // sitio) y ese ajuste no le aplica.
-  const useFit = !project.cardImage;
-  const bgStyle = (project.image && !imgFailed)
-    ? {
-        backgroundImage: `url("${project.image}")`,
-        backgroundSize: useFit && project.cardFit === 'contain' ? 'contain' : 'cover',
-        backgroundPosition: project.imgPos || 'center top',
-        backgroundRepeat: 'no-repeat',
-        backgroundColor: useFit && project.cardFit === 'contain' ? (project.cardBg || CARD_BG) : undefined,
-      }
-    : { background: project.gradient };
+  /* Capturas del panel izquierdo. Cuando el proyecto no tiene `gallery` se usa
+     su imagen de portada: antes ocupaba el fondo difuminado de la ficha y
+     repetirla no habria anadido nada, pero con fondo solido queda libre. Asi
+     las catorce fichas tienen la misma forma en vez de partirse en dos
+     formatos segun quien tenga capturas. */
+  const shots = project.gallery || (project.image && !imgFailed ? [project.image] : []);
+
+  /* Los mockups de una galeria son capturas 3:2 con el producto centrado: en
+     el panel entran a `cover` y se ven a tamano completo. La portada suelta de
+     los proyectos sin galeria suele ser un logo o una captura apaisada, que
+     recortada quedaria irreconocible — esa va contenida sobre su propio color. */
+  const hasGallery = Boolean(project.gallery);
+  /* Siempre `cover`: la captura llena su caja y llega hasta los bordes de la
+     pantalla. Con `contain` quedaban franjas vacias y ahi se dibujaba el
+     recuadro de la imagen contra el fondo, por mucho que se afinara el color.
+     Lo que cambia entre mockups no es el encuadre sino el ANCHO de la caja. */
+  const fit = hasGallery ? 'cover' : 'contain';
+  /* Los mockups de galeria ya traen su propio fondo oscuro. Darle color al
+     telon dibujaba una costura vertical donde empieza el panel: dejandolo
+     transparente se ve el fondo del modal y la union desaparece. La portada
+     suelta si necesita telon — se apoya en el gradiente del proyecto. */
+  const stageBg = hasGallery ? 'transparent' : (project.cardBg || project.gradient);
 
   return (
     <motion.div
@@ -100,7 +229,6 @@ function Detail({ project, onClose, catMeta, strings, lang }) {
       aria-label={`Proyecto: ${project.title}`}
       onClick={onClose}
     >
-      <div className="gc-detail__bg" style={bgStyle} />
       <div className="gc-detail__scrim" />
 
       <button className="gc-detail__x" onClick={onClose} aria-label="Cerrar">
@@ -110,60 +238,57 @@ function Detail({ project, onClose, catMeta, strings, lang }) {
       </button>
 
       <motion.div
-        className="gc-detail__wrap"
+        className={`gc-detail__wrap${shots.length ? '' : ' gc-detail__wrap--solo'}`}
         variants={contentVariants}
         initial="hidden"
         animate="show"
         exit="exit"
         onClick={(e) => e.stopPropagation()}
       >
-        <header className="gc-detail__head">
-          <span
-            className="gc-detail__badge"
-            style={{ color: meta.accent, background: meta.accent + '22', borderColor: meta.accent + '55' }}
-          >
+        {shots.length > 0 && (
+          <Gallery
+            shots={shots}
+            captions={project.shots || []}
+            title={project.title}
+            strings={strings}
+            stageBg={stageBg}
+            fit={fit}
+          />
+        )}
+
+        {/* El contenido flota sobre la capa, apoyado en el velo lateral. */}
+        <div className="gc-detail__content">
+          <span className="gc-detail__num" aria-hidden="true">{String(project.id).padStart(2, '0')}</span>
+          <p className="gc-detail__kicker" style={{ color: meta.accent }}>
+            <i style={{ background: meta.accent }} />
             {meta.label}
-          </span>
+          </p>
           <h2 className="gc-detail__title">{project.title}</h2>
           <p className="gc-detail__tagline">{project.tagline}</p>
-        </header>
+          <p className="gc-detail__text">{project.desc}</p>
 
-        <div className="gc-bento">
-          <div className="gc-bento__cell gc-bento__cell--desc">
-            <span className="gc-bento__label">{strings.detail.desc}</span>
-            <p className="gc-bento__body">{project.desc}</p>
+          <div className="gc-detail__chips">
+            {project.tech.map((tch, i) => (
+              <span key={i} className="gc-detail__chip">{tch}</span>
+            ))}
           </div>
-          <div className="gc-bento__cell gc-bento__cell--tech">
-            <span className="gc-bento__label">{strings.detail.stack}</span>
-            <div className="gc-bento__chips">
-              {project.tech.map((tch, i) => (
-                <span
-                  key={i}
-                  className="gc-bento__chip"
-                  style={{ color: meta.accent, borderColor: meta.accent + '55', background: meta.accent + '14' }}
-                >
-                  {tch}
-                </span>
-              ))}
-            </div>
-          </div>
+
+          {project.link ? (
+            <a href={project.link} target="_blank" rel="noopener noreferrer" className="gc-detail__cta">
+              {strings.viewLive}
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                <path d="M7 17L17 7M7 7h10v10" />
+              </svg>
+            </a>
+          ) : (
+            <a href={localizedPath("contact", lang)} className="gc-detail__cta">
+              {strings.contact}
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                <path d="M4 10H16M16 10L10 4M16 10L10 16" />
+              </svg>
+            </a>
+          )}
         </div>
-
-        {project.link ? (
-          <a href={project.link} target="_blank" rel="noopener noreferrer" className="gc-detail__cta">
-            {strings.viewLive}
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-              <path d="M7 17L17 7M7 7h10v10" />
-            </svg>
-          </a>
-        ) : (
-          <a href={localizedPath("contact", lang)} className="gc-detail__cta">
-            {strings.contact}
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-              <path d="M4 10H16M16 10L10 4M16 10L10 16" />
-            </svg>
-          </a>
-        )}
       </motion.div>
     </motion.div>
   );
@@ -805,13 +930,13 @@ export default function PortfolioSection({ lang }) {
         .gc-detail {
           position: fixed; inset: 0; z-index: 3000;
           display: flex; align-items: center; justify-content: center;
-          padding: 1.5rem; overflow-y: auto;
+          padding: 0; overflow-y: auto; overflow-x: hidden;
+          --pf-ground: #1F1F1E;
+          --pf-text: #F1EDE4;
+          --pf-muted: rgba(241,237,228,0.68);
+          --pf-dim: rgba(241,237,228,0.34);
         }
-        .gc-detail__bg {
-          position: fixed; inset: -5%; width: 110%; height: 110%;
-          filter: blur(18px) brightness(0.35) saturate(1.2); transform: scale(1.05); will-change: filter;
-        }
-        .gc-detail__scrim { position: fixed; inset: 0; background: rgba(4,3,1,0.55); }
+        .gc-detail__scrim { position: fixed; inset: 0; background: rgba(4,6,10,0.86); }
         .gc-detail__x {
           position: fixed; top: 1.5rem; right: 1.5rem; z-index: 10;
           width: 40px; height: 40px; border-radius: 50%;
@@ -822,53 +947,148 @@ export default function PortfolioSection({ lang }) {
           cursor: pointer; transition: background .18s, color .18s;
         }
         .gc-detail__x:hover { background: rgba(0,0,0,0.65); color: #fff; }
-        .gc-detail__wrap { position: relative; z-index: 2; width: 100%; max-width: 760px; }
-        .gc-detail__head { text-align: center; margin-bottom: 1.6rem; }
-        .gc-detail__badge {
-          display: inline-flex; align-items: center;
-          padding: 0.24rem 0.88rem; border-radius: 100px; border: 1px solid;
-          font-size: 0.6rem; font-weight: 800; letter-spacing: 0.09em; text-transform: uppercase;
-          margin-bottom: 1rem; backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+
+        /* Una sola superficie: la captura se funde en el fondo por la
+           izquierda y el texto se apoya en esa penumbra. Sin paneles ni
+           costuras — de ahi que no sea una rejilla de dos columnas. */
+        .gc-detail__wrap {
+          position: relative; z-index: 2; width: 100%; max-width: none;
+          height: 100dvh; overflow: hidden;
+          background: var(--pf-ground);
         }
+        /* Sin captura no hay nada que llenar la pantalla: vuelve a ser tarjeta. */
+        .gc-detail__wrap--solo {
+          max-width: 560px; height: auto; margin: auto;
+          border-radius: 20px; border: 1px solid rgba(255,255,255,0.08);
+          box-shadow: 0 40px 100px rgba(0,0,0,0.6);
+        }
+
+        /* ── Capa de la captura ── */
+        .gc-gal { position: absolute; inset: 0; z-index: 0; touch-action: pan-y; }
+        /* La captura vive en la franja derecha, no en toda la tarjeta: asi
+           entra a cover sin recortar el producto por arriba y por abajo. */
+        .gc-gal__stage { position: absolute; top: 0; right: 0; bottom: 0; left: 34%; overflow: hidden; }
+
+        .gc-gal__img { position: absolute; inset: 0; width: 100%; height: 100%; user-select: none; }
+        /* El velo funde esa franja con el fondo y sostiene el texto. */
+        .gc-gal__veil {
+          position: absolute; inset: 0; z-index: 1; pointer-events: none;
+          background: linear-gradient(100deg,
+            var(--pf-ground) 0%, rgba(31,31,30,0.98) 26%, rgba(31,31,30,0.86) 38%,
+            rgba(31,31,30,0.55) 50%, rgba(31,31,30,0.22) 62%,
+            rgba(31,31,30,0.06) 74%, rgba(31,31,30,0) 86%);
+        }
+        /* Pie sobre la captura: como el mockup tiene zonas claras, el texto
+           suelto se perdia encima. Va en una etiqueta con fondo propio. */
+        .gc-gal__cap {
+          position: absolute; right: clamp(1.6rem, 4vw, 4rem); bottom: 7rem; z-index: 4;
+          margin: 0; max-width: 34ch; text-align: right;
+          padding: 0.5rem 0.8rem; border-radius: 9px;
+          background: rgba(6,8,12,0.72);
+          backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+          font-size: 0.75rem; line-height: 1.5; color: var(--pf-text);
+        }
+        .gc-gal__thumbs {
+          position: absolute; right: clamp(1.6rem, 4vw, 4rem); bottom: clamp(1.5rem, 3vw, 3rem);
+          z-index: 4; display: flex; gap: 0.5rem;
+        }
+        .gc-gal__thumb {
+          width: 92px; height: 62px; padding: 0; border-radius: 9px; overflow: hidden; cursor: pointer;
+          border: 1px solid rgba(255,255,255,0.22); background: none; opacity: 0.5;
+          transition: opacity .2s, border-color .2s, transform .2s;
+        }
+        .gc-gal__thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .gc-gal__thumb:hover { opacity: 0.85; transform: translateY(-2px); }
+        .gc-gal__thumb.is-on { opacity: 1; border-color: var(--sc-gold); box-shadow: 0 0 0 2px rgba(212,175,55,0.35); }
+
+        /* ── Contenido ── */
+        .gc-detail__content {
+          position: relative; z-index: 3; height: 100%; width: 53%; min-width: 0;
+          display: flex; flex-direction: column; justify-content: center; gap: 1.05rem;
+          /* El margen crece con la pantalla: en un monitor ancho, el texto
+             pegado al borde izquierdo se lee como un error de maquetacion. */
+          padding: clamp(1.8rem, 3.4vw, 3.2rem) clamp(1.8rem, 3.4vw, 3.2rem)
+                   clamp(1.8rem, 3.4vw, 3.2rem) clamp(2rem, 7vw, 8rem);
+          overflow-y: auto; overscroll-behavior: contain;
+        }
+        .gc-detail__num {
+          position: absolute; top: clamp(1.8rem, 3.4vw, 3.2rem); left: clamp(2rem, 7vw, 8rem);
+          font-size: 0.66rem; font-weight: 700; letter-spacing: 0.14em;
+          color: var(--pf-dim); font-variant-numeric: tabular-nums;
+        }
+        .gc-detail__kicker {
+          display: flex; align-items: center; gap: 0.6rem; margin: 0;
+          font-size: 0.6rem; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase;
+        }
+        .gc-detail__kicker i { display: block; width: 26px; height: 2px; flex: none; }
         .gc-detail__title {
-          font-size: clamp(2.2rem, 6vw, 3.4rem); font-weight: 900; color: #fff;
-          margin: 0 0 0.5rem; text-shadow: 0 2px 24px rgba(0,0,0,0.6); line-height: 1.05;
+          font-size: clamp(2.3rem, 4.4vw, 3.8rem); font-weight: 700; color: var(--pf-text);
+          margin: 0; line-height: 0.96; letter-spacing: -0.035em;
         }
         .gc-detail__tagline {
-          font-size: 0.76rem; color: rgba(255,255,255,0.5);
-          text-transform: uppercase; letter-spacing: 0.13em; margin: 0;
+          margin: 0; font-size: 0.72rem; font-weight: 700;
+          letter-spacing: 0.16em; text-transform: uppercase; color: var(--pf-dim);
         }
-        .gc-bento { display: grid; grid-template-columns: 3fr 2fr; gap: 0.8rem; margin-bottom: 1rem; }
-        .gc-bento__cell {
-          background: rgba(0,0,0,0.36);
-          backdrop-filter: blur(20px) saturate(140%); -webkit-backdrop-filter: blur(20px) saturate(140%);
-          border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 1.3rem 1.35rem;
+        .gc-detail__text {
+          margin: 0.35rem 0 0; font-size: 0.9rem; line-height: 1.78;
+          color: var(--pf-muted); max-width: 44ch; overflow-wrap: break-word;
         }
-        .gc-bento__label {
-          display: block; font-size: 0.58rem; font-weight: 800; text-transform: uppercase;
-          letter-spacing: 0.13em; color: rgba(255,255,255,0.35); margin-bottom: 0.65rem;
+        .gc-detail__chips { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+        .gc-detail__chip {
+          padding: 0.28rem 0.7rem; border-radius: 7px; font-size: 0.66rem; font-weight: 600;
+          color: var(--pf-muted); border: 1px solid rgba(255,255,255,0.16);
+          background: rgba(255,255,255,0.05);
         }
-        .gc-bento__body { font-size: 0.86rem; line-height: 1.74; color: rgba(255,255,255,0.82); margin: 0; }
-        .gc-bento__chips { display: flex; flex-wrap: wrap; gap: 0.36rem; }
-        .gc-bento__chip { padding: 0.24rem 0.65rem; border-radius: 8px; border: 1px solid; font-size: 0.66rem; font-weight: 600; }
         .gc-detail__cta {
-          display: flex; align-items: center; justify-content: center; gap: 0.52rem;
-          width: 100%; padding: 1rem 2rem; border-radius: 100px;
-          background: rgba(0,0,0,0.3);
-          backdrop-filter: blur(20px) saturate(140%); -webkit-backdrop-filter: blur(20px) saturate(140%);
-          border: 1px solid rgba(195,173,133,0.38); color: var(--sc-gold);
-          font-weight: 800; font-size: 0.88rem; text-decoration: none;
-          transition: background .2s, border-color .2s, box-shadow .2s, transform .2s var(--expo);
-          box-shadow: 0 4px 20px rgba(195,173,133,0.08);
+          align-self: flex-start; margin-top: 0.6rem;
+          display: inline-flex; align-items: center; gap: 0.55rem;
+          padding: 0.95rem 1.9rem; border-radius: 100px;
+          background: var(--sc-gold); color: #12140F;
+          font-weight: 800; font-size: 0.85rem; text-decoration: none;
+          transition: filter .2s, transform .2s;
         }
-        .gc-detail__cta:hover {
-          background: rgba(195,173,133,0.13); border-color: rgba(195,173,133,0.65);
-          box-shadow: 0 8px 30px rgba(195,173,133,0.22); transform: scale(1.014);
-        }
+        .gc-detail__cta:hover { filter: brightness(1.08); transform: translateY(-1px); }
 
         /* ── RESPONSIVE ────────────────────────────────────────────────── */
         @media (max-width: 1024px) {
           .screw__hud { max-width: 180px; left: clamp(0.8rem, 3vw, 2rem); }
+          /* Apilado. La capa deja de estar superpuesta y pasa a ser una
+             columna: si el pie y las miniaturas siguieran en flujo dentro de
+             una capa absoluta, se dibujarian ENCIMA de la captura. */
+          .gc-detail { padding: 1.5rem; }
+          .gc-detail__wrap {
+            max-width: 560px; height: auto; max-height: 88vh;
+            display: flex; flex-direction: column; overflow-y: auto;
+            border-radius: 20px; border: 1px solid rgba(255,255,255,0.08);
+            box-shadow: 0 40px 100px rgba(0,0,0,0.6);
+          }
+          .gc-gal {
+            position: relative; inset: auto; flex: none;
+            display: flex; flex-direction: column; gap: 0.75rem;
+            padding: 0 0 0.2rem;
+          }
+          .gc-gal__stage { position: relative; inset: auto; left: 0; height: 52vh; min-height: 320px; flex: none; }
+          /* El velo se limita al alto de la captura y funde hacia abajo, que
+             es por donde ahora sigue el contenido. */
+          .gc-gal__veil {
+            top: 0; bottom: auto; height: 52vh; min-height: 320px;
+            background: linear-gradient(to bottom,
+              rgba(31,31,30,0) 38%, rgba(31,31,30,0.25) 58%, rgba(31,31,30,0.62) 76%,
+              rgba(31,31,30,0.9) 92%, var(--pf-ground) 100%);
+          }
+          .gc-gal__cap {
+            position: static; margin: 0 1.3rem; max-width: none; text-align: left;
+            padding: 0; background: none; backdrop-filter: none; -webkit-backdrop-filter: none;
+            font-size: 0.78rem; color: var(--pf-muted);
+          }
+          .gc-gal__thumbs { position: static; margin: 0 1.3rem; }
+          .gc-gal__thumb { width: 72px; height: 48px; }
+          .gc-detail__content {
+            width: 100%; height: auto; justify-content: flex-start; overflow: visible;
+            padding-top: 1.1rem;
+          }
+          .gc-detail__num { display: none; }
+          .gc-detail__text { max-width: none; }
         }
         @media (max-width: 768px) {
           .screw__intro { padding: 5rem 1rem 1.5rem; }
@@ -883,17 +1103,24 @@ export default function PortfolioSection({ lang }) {
           .screw__count-num { font-size: 2.4rem; }
           .screw__hud-title { font-size: 1.1rem; }
           .screw__rail { height: 30vh; right: 0.7rem; }
-          .gc-bento { grid-template-columns: 1fr; }
-          .gc-detail { padding: 1.25rem 0.9rem; align-items: center; }
-          .gc-detail__head { margin-bottom: 1.2rem; }
-          .gc-detail__title { font-size: 1.9rem; }
-          .gc-detail__wrap { max-width: 100%; }
+          .gc-detail { padding: 0.9rem 0.7rem; align-items: flex-start; }
+          .gc-detail__wrap { max-width: 100%; max-height: 94vh; border-radius: 16px; box-shadow: none; }
+          .gc-detail__x { top: 0.9rem; right: 0.9rem; width: 36px; height: 36px; }
+          /* En el telefono la captura es lo primero y ocupa media pantalla:
+             el texto viene despues, al desplazar. */
+          .gc-gal__stage, .gc-gal__veil { height: 50vh; min-height: 300px; }
+          .gc-gal { gap: 0.6rem; }
+          .gc-gal__thumb { width: 64px; height: 44px; }
+          .gc-detail__content { padding: 1rem 1.3rem 1.6rem; gap: 0.85rem; }
+          .gc-detail__title { font-size: clamp(2rem, 9vw, 2.6rem); }
+          .gc-detail__cta { width: 100%; justify-content: center; }
         }
 
         /* ── REDUCED MOTION ────────────────────────────────────────────── */
         @media (prefers-reduced-motion: reduce) {
           .scard--static .scard__media,
-          .gc-detail, .gc-detail__wrap, .gc-detail__cta { transition: none !important; }
+          .gc-detail, .gc-detail__wrap, .gc-detail__cta,
+          .gc-gal__thumb { transition: none !important; }
           .scard__live, .screw__hint-dot { animation: none !important; opacity: 1; }
         }
       `}</style>

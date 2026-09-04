@@ -9,7 +9,7 @@ export default function MobileSection() {
       poster="/assets/image/cel-poster.jpg"
       title="Desarrollo Móvil"
       description="Apps móviles nativas y multiplataforma que tus usuarios amarán y usarán todos los días"
-      link="/servicios#mobile"
+      link="/servicios/a-medida/#mobile"
       buttonText="Explorar Móvil"
     />
   );

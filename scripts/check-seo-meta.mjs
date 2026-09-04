@@ -74,7 +74,11 @@ function check(page, locale, field, raw) {
 
 // Un checker que no encuentra nada pasaría siempre: si el formato del archivo
 // cambia y el recorrido deja de reconocerlo, esto lo convierte en un fallo.
-const EXPECTED = 30;
+// Se deriva del mapa de rutas en vez de fijarlo a mano: al anadir una pagina
+// el numero cambia solo, y el checker sigue detectando que el formato del
+// archivo dejo de reconocerse (que es para lo que existe).
+const { SLUGS, LOCALES } = await import('../src/i18n/routes-map.js');
+const EXPECTED = Object.keys(SLUGS).length * LOCALES.length * 2;
 if (checked !== EXPECTED) {
   console.error(
     `✗ Se revisaron ${checked} metas y se esperaban ${EXPECTED}.\n` +
