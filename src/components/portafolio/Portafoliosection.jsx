@@ -14,10 +14,10 @@ const CARD_BG = 'var(--pf-card-bg)';
 /* Acentos de categoría dentro de la paleta oro/bronce (sin arcoíris),
  * consistentes con el ProjectCarousel de la home. */
 const CAT_COLORS = {
-  landing:  { accent: '#C3AD85', border: 'rgba(195,173,133,0.35)' },
-  mobile:   { accent: '#D9C49A', border: 'rgba(217,196,154,0.35)' },
-  webapp:   { accent: '#957952', border: 'rgba(149,121,82,0.35)'  },
-  software: { accent: '#B5A079', border: 'rgba(181,160,121,0.35)' },
+  landing:  { accent: '#C3AD85', chip: '#E0CFA9', border: 'rgba(195,173,133,0.35)' },
+  mobile:   { accent: '#D9C49A', chip: '#E8D9B4', border: 'rgba(217,196,154,0.35)' },
+  webapp:   { accent: '#957952', chip: '#D2B98C', border: 'rgba(149,121,82,0.35)'  },
+  software: { accent: '#B5A079', chip: '#D8C6A0', border: 'rgba(181,160,121,0.35)' },
 };
 
 
@@ -229,7 +229,7 @@ const Card = forwardRef(function Card({ project, meta, onOpen, viewMore, variant
         <div className="scard__veil" />
 
         <div className="scard__top">
-          <span className="scard__tag" style={{ color: meta.accent, borderColor: meta.accent + '66' }}>
+          <span className="scard__tag" style={{ color: meta.chip, borderColor: meta.chip + '55' }}>
             {meta.label}
           </span>
           {project.link && <span className="scard__live" aria-hidden="true" />}
@@ -706,7 +706,7 @@ export default function PortfolioSection({ lang }) {
         .scard__tag {
           display: inline-flex; align-items: center;
           padding: 0.22rem 0.6rem; border-radius: 7px;
-          border: 1px solid; background: rgba(8,7,5,0.55);
+          border: 1px solid; background: rgba(8,7,5,0.86);
           font-size: 0.56rem; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase;
         }
         .scard__live {
