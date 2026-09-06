@@ -140,8 +140,11 @@ export default function GeckFooter({ lang }) {
           <div className="footer-col">
             <p className="footer-col__title">{t.footer.legalTitle}</p>
             <ul className="footer-list">
-              <li><a href="/privacidad/">{t.footer.privacy}</a></li>
-              <li><a href="/terminos/">{t.footer.terms}</a></li>
+              {/* Por ruta localizada y no fijas: cuando estaban escritas a
+                  mano, el pie de /en/ y /pt/ mandaba a las versiones en
+                  español y el visitante caía en un documento que no leía. */}
+              <li><a href={localizedPath('privacy', lang)}>{t.footer.privacy}</a></li>
+              <li><a href={localizedPath('terms', lang)}>{t.footer.terms}</a></li>
             </ul>
           </div>
         </div>

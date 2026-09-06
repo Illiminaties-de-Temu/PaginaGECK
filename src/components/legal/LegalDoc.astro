@@ -8,9 +8,11 @@ interface Props {
   heading: string;
   intro: string;
   updated: string;
+  /** La etiqueta se recibe ya traducida: el documento existe en tres idiomas. */
+  updatedLabel?: string;
 }
 
-const { heading, intro, updated } = Astro.props;
+const { heading, intro, updated, updatedLabel = 'Última actualización:' } = Astro.props;
 ---
 
 <section class="legal">
@@ -18,7 +20,7 @@ const { heading, intro, updated } = Astro.props;
     <p class="legal__eyebrow">Geck Codex</p>
     <h1 class="legal__title">{heading}</h1>
     <p class="legal__intro">{intro}</p>
-    <p class="legal__updated">Última actualización: {updated}</p>
+    <p class="legal__updated">{updatedLabel} {updated}</p>
 
     <div class="legal__body">
       <slot />

@@ -190,4 +190,50 @@ export const PAGE_META: Record<PageKey, Record<Locale, PageMeta>> = {
       breadcrumb: 'Contato',
     },
   },
+
+  /* Las legales llevan meta propia pero no se optimizan para buscar: nadie
+     llega a un aviso de privacidad desde Google. El title y la description
+     existen para que la pestaña y la vista previa sean legibles, y porque
+     Google Ads revisa estas dos páginas a mano antes de aprobar una campaña. */
+  privacy: {
+    es: {
+      title: 'Aviso de Privacidad y Datos Personales | Geck Codex',
+      description:
+        'Aviso de privacidad de Geck Codex: qué datos personales recabamos en este sitio, para qué los usamos, con quién se comparten y cómo ejercer tus derechos ARCO.',
+      breadcrumb: 'Aviso de Privacidad',
+    },
+    en: {
+      title: 'Privacy Notice and Personal Data | Geck Codex',
+      description:
+        'Geck Codex privacy notice: what personal data we collect on this site, what we use it for, who it is shared with, and how to exercise your data rights.',
+      breadcrumb: 'Privacy Notice',
+    },
+    pt: {
+      title: 'Aviso de Privacidade e Dados Pessoais | Geck Codex',
+      description:
+        'Aviso de privacidade da Geck Codex: quais dados pessoais coletamos neste site, para que os usamos, com quem são compartilhados e como exercer seus direitos.',
+      breadcrumb: 'Aviso de Privacidade',
+    },
+  },
+
+  terms: {
+    es: {
+      title: 'Términos y Condiciones de Uso | Geck Codex',
+      description:
+        'Términos y condiciones de uso de geckcodex.com y de la contratación de servicios de desarrollo de software: cotizaciones, propiedad intelectual y ley aplicable.',
+      breadcrumb: 'Términos y Condiciones',
+    },
+    en: {
+      title: 'Terms and Conditions of Use | Geck Codex',
+      description:
+        'Terms and conditions for using geckcodex.com and for hiring software development services: quotes, intellectual property, liability and governing law.',
+      breadcrumb: 'Terms and Conditions',
+    },
+    pt: {
+      title: 'Termos e Condições de Uso do Site | Geck Codex',
+      description:
+        'Termos e condições de uso do geckcodex.com e da contratação de serviços de desenvolvimento de software: orçamentos, propriedade intelectual e lei aplicável.',
+      breadcrumb: 'Termos e Condições',
+    },
+  },
 };

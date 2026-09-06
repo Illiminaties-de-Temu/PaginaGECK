@@ -52,12 +52,13 @@ export const SLUGS = {
   portfolio: { es: 'portafolio', en: 'portfolio', pt: 'portfolio' },
   about: { es: 'nosotros', en: 'about', pt: 'sobre-nos' },
   contact: { es: 'contacto', en: 'contact', pt: 'contato' },
-};
-
-/** Las legales solo tienen forma en español. */
-export const ES_ONLY_SLUGS = {
-  privacy: 'privacidad',
-  terms: 'terminos',
+  // Las legales SI son multiidioma. Estuvieron solo en español y el pie de
+  // pagina de /en/ y /pt/ apuntaba igualmente a ellas: un visitante en ingles
+  // hacia clic en "Privacy" y caia en un documento en español. El texto es una
+  // traduccion del documento mexicano —misma ley, mismos tribunales—, no un
+  // documento redactado para otra jurisdiccion.
+  privacy: { es: 'privacidad', en: 'privacy', pt: 'privacidade' },
+  terms: { es: 'terminos', en: 'terms', pt: 'termos' },
 };
 
 /**
