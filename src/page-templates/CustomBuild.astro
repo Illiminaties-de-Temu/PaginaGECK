@@ -1,0 +1,53 @@
+---
+/**
+ * Desarrollo a medida, en cualquiera de los tres idiomas.
+ *
+ * Lleva el JSON-LD de los siete servicios y de los diez paquetes: es la
+ * pagina donde vive ese contenido ahora, asi que es la que debe declararlo.
+ */
+import Layout from '@/layouts/MainLayout.astro';
+import CustomPage from '@/components/servicios/CustomPage.jsx';
+import { translations } from '@/i18n/translations';
+import { packageListSchema, serviceListSchema, SITE_URL } from '@/data/seo';
+import { PAGE_META } from '@/i18n/seo-meta';
+import { localizedUrl } from '@/i18n/routes';
+import { ENTERPRISE, PACKAGES } from '@/data/packages.js';
+import type { Locale } from '@/i18n/routes';
+
+interface Props { lang: Locale }
+
+const { lang } = Astro.props;
+const meta = PAGE_META.custom[lang];
+const url = localizedUrl('custom', lang, SITE_URL);
+const parent = PAGE_META.services[lang];
+
+const items = Object.values(translations[lang].services.items);
+const services = serviceListSchema(
+  items.map((s) => ({ name: s.name, description: s.description })),
+);
+
+/* Los diez paquetes, en el mismo orden en que los lista la pagina. Salen del
+   dato y de las traducciones, no de una copia escrita aparte: una lista
+   paralela se desincroniza al primer cambio de precio o de nombre. */
+const pkgCopy = translations[lang].services.custom.packages;
+const pkgIds = [...PACKAGES.map((p) => p.id), ENTERPRISE.shop.id, ENTERPRISE.base.id];
+const packages = packageListSchema(
+  pkgIds.map((id) => ({ name: pkgCopy[id].name, description: `${pkgCopy[id].d} ${pkgCopy[id].limit}` })),
+  'custom-packages',
+);
+---
+
+<Layout
+  title={meta.title}
+  description={meta.description}
+  canonical={url}
+  breadcrumbs={[
+    { name: parent.breadcrumb!, url: localizedUrl('services', lang, SITE_URL) },
+    { name: meta.breadcrumb!, url },
+  ]}
+  schema={[services, packages]}
+  lang={lang}
+  pageKey="custom"
+>
+  <CustomPage client:visible lang={lang} />
+</Layout>

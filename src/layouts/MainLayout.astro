@@ -19,9 +19,9 @@ interface Props {
   /** Idioma de ESTA página. Determina <html lang>, og:locale y el hreflang propio. */
   lang?: Locale;
   /**
-   * Página del mapa de rutas, para emitir hreflang recíproco hacia sus otras
-   * variantes. Se omite en las páginas que solo existen en español (legales):
-   * sin variantes, declarar alternates sería mentir.
+   * Página del mapa de rutas. Emite el hreflang recíproco hacia sus otras
+   * variantes y viaja al nav y al pie para que sus enlaces de idioma lleven a
+   * ESTA misma página en los otros dos, no a la portada.
    */
   pageKey?: PageKey;
   /** Migas de pan de la página → genera BreadcrumbList. Omitir en la home. */
@@ -350,12 +350,15 @@ const jsonLdGraph = [
       })();
     </script>
 
-    <Navbar client:load lang={lang} />
+    <Navbar client:load lang={lang} pageKey={pageKey} />
     
     <main>
       <slot />
     </main>
     
-    <Footer client:visible lang={lang} />
+    {/* `pageKey` viaja al pie para que los enlaces de idioma apunten a ESTA
+        misma página en los otros dos, igual que el hreflang del head. Sin él
+        mandarían a la portada y el visitante perdería dónde estaba. */}
+    <Footer client:visible lang={lang} pageKey={pageKey} />
   </body>
 </html>

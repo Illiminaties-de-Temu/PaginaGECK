@@ -92,7 +92,7 @@ export default function AboutTeaser({ lang }) {
       <section ref={sectionRef} className="at-section">
         <div className="at-sticky">
           <div className="at-grid">
-            <MosaicCard progress={progress} start={0.0} fromX={-40} fromY={0} area="badge" className="at-badge">
+            <MosaicCard progress={progress} start={0.1} fromX={-40} fromY={0} area="badge" className="at-badge">
               <span className="at-badge__dot" />
               {a.eyebrow}
             </MosaicCard>
@@ -103,7 +103,7 @@ export default function AboutTeaser({ lang }) {
               </h2>
             </MosaicCard>
 
-            <MosaicCard progress={progress} start={0.26} fromX={50} fromY={20} area="parral" className="at-card at-card--parral">
+            <MosaicCard progress={progress} start={0.45} fromX={50} fromY={20} area="parral" className="at-card at-card--parral">
               <span className="at-card__kicker">{a.fromCity}</span>
               <p className="at-card__body">{a.body}</p>
             </MosaicCard>
@@ -112,7 +112,7 @@ export default function AboutTeaser({ lang }) {
               <MosaicCard
                 key={i}
                 progress={progress}
-                start={0.42 + i * 0.1}
+                start={0.45}
                 fromY={56}
                 area={`p${i + 1}`}
                 className="at-card at-card--point"
@@ -122,7 +122,7 @@ export default function AboutTeaser({ lang }) {
               </MosaicCard>
             ))}
 
-            <MosaicCard progress={progress} start={0.74} fromX={-40} fromY={30} area="cta" className="at-cta-cell">
+            <MosaicCard progress={progress} start={0.45} fromX={-40} fromY={30} area="cta" className="at-cta-cell">
               <a href={localizedPath("about", lang)} className="at-card at-card--cta">
                 <span>{a.cta}</span>
                 <Arrow />
@@ -140,7 +140,7 @@ const styles = `
   /* ── Scrollytelling: sección alta, mosaico fijo (sticky) que se va llenando ── */
   .at-section {
     background: transparent;
-    height: 320vh;
+    height: 200vh;
     position: relative;
   }
   .at-sticky {
@@ -227,9 +227,7 @@ const styles = `
   /* Tarjeta del título — navy de fondo, foco visual principal */
   .at-card--title {
     overflow: hidden;
-    background:
-      radial-gradient(120% 120% at 100% 0%, rgba(195, 173, 133, 0.18) 0%, rgba(195, 173, 133, 0) 45%),
-      var(--navy);
+    background: var(--navy);
     border-color: var(--navy);
     justify-content: flex-end;
     box-shadow: 0 22px 60px -28px rgba(13, 22, 37, 0.85);

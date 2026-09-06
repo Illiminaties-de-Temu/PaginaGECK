@@ -15,7 +15,7 @@ const languageOptions = [
   { code: "pt", label: "Português", flag: "🇧🇷" },
 ];
 
-export default function GeckNavbar({ lang }) {
+export default function GeckNavbar({ lang, pageKey }) {
   // El idioma lo fija la URL de la página, no un estado de React: cada variante
   // se genera en build con su propio HTML. El <html lang> ya viene correcto
   // desde el servidor, así que aquí no hay nada que sincronizar.
@@ -109,11 +109,17 @@ export default function GeckNavbar({ lang }) {
   // hace que exista una URL por idioma, que es lo único que Google puede
   // indexar por separado. Si la página actual no tiene variante (las legales
   // solo existen en español), se va a la home de ese idioma.
-  const handleLanguageChange = (code) => {
-    const current = resolvePath(window.location.pathname);
-    window.location.href = current
-      ? localizedPath(current.page, code)
-      : localizedPath('home', code);
+  // Se resuelve durante el render y no dentro de un onClick, para que el
+  // destino viva en el atributo href y no en un manejador de eventos.
+  // `pageKey` llega del servidor; window.location es solo el respaldo para
+  // cuando el nav se monta sin saber en que pagina esta.
+  const languageHref = (code) => {
+    const key =
+      pageKey ??
+      (typeof window !== 'undefined'
+        ? resolvePath(window.location.pathname)?.page
+        : null);
+    return localizedPath(key ?? 'home', code);
   };
 
   const handleNavLinkClick = () => { if (menuOpen) closeMenu(); };
@@ -427,15 +433,20 @@ export default function GeckNavbar({ lang }) {
               <div className="mr-control">
                 <span className="mr-control__label">{t.language}</span>
                 <div className="mr-seg">
+                  {/* Enlaces, no botones. Un <button> que navega no se puede
+                      abrir en pestana nueva, no se copia con clic derecho y
+                      ningun rastreador lo sigue. El destino se calcula aqui
+                      mismo en el render en vez de dentro del onClick. */}
                   {languageOptions.map((opt) => (
-                    <button
+                    <a
                       key={opt.code}
-                      onClick={() => handleLanguageChange(opt.code)}
+                      href={languageHref(opt.code)}
                       className={`mr-seg__btn ${language === opt.code ? "active" : ""}`}
                       aria-label={opt.label}
+                      aria-current={language === opt.code ? "true" : undefined}
                     >
                       {opt.code.toUpperCase()}
-                    </button>
+                    </a>
                   ))}
                 </div>
               </div>

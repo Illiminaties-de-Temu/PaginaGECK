@@ -1,0 +1,86 @@
+---
+/**
+ * Plantilla de los documentos legales, para los tres idiomas.
+ *
+ * El texto vive en `src/i18n/legal.js` y aquí solo se pinta: antes cada
+ * documento era HTML suelto dentro de su propia página en español, así que
+ * añadir inglés y portugués habría significado seis archivos casi idénticos
+ * donde cualquier corrección se hace cinco veces y se olvida en la sexta.
+ *
+ * Los datos de contacto se inyectan aquí desde `data/seo.ts` en lugar de estar
+ * escritos en el texto: un teléfono repetido a mano en seis documentos es un
+ * teléfono que algún día estará desactualizado en cinco de ellos.
+ */
+import Layout from '@/layouts/MainLayout.astro';
+import LegalDoc from '@/components/legal/LegalDoc.astro';
+import { BUSINESS, SITE_URL } from '@/data/seo';
+import { PAGE_META } from '@/i18n/seo-meta';
+import { localizedUrl } from '@/i18n/routes';
+import type { Locale } from '@/i18n/routes';
+import { LEGAL, LEGAL_UPDATED, LEGAL_UPDATED_LABEL } from '@/i18n/legal.js';
+
+interface Props {
+  doc: 'privacy' | 'terms';
+  lang: Locale;
+}
+
+const { doc, lang } = Astro.props;
+
+const meta = PAGE_META[doc][lang];
+const url = localizedUrl(doc, lang, SITE_URL);
+const copy = LEGAL[doc][lang];
+
+/* Las marcas del texto se resuelven una sola vez, aquí. `url` apunta al
+   documento en el idioma que se está pintando: enviar a un lector en portugués
+   al aviso en español sería repetir el problema que esto viene a corregir. */
+const FILL: Record<string, string> = {
+  '{email}': BUSINESS.email,
+  '{city}': BUSINESS.city,
+  '{region}': BUSINESS.region,
+  '{phone}': BUSINESS.phoneDisplay,
+  '{url}': url,
+  '{privacyUrl}': localizedUrl('privacy', lang, SITE_URL),
+};
+
+const fill = (text: string) =>
+  Object.entries(FILL).reduce((acc, [k, v]) => acc.split(k).join(v), text);
+
+const legalSchema = {
+  '@type': 'WebPage',
+  '@id': `${url}#webpage`,
+  url,
+  name: meta.title,
+  description: meta.description,
+  inLanguage: lang,
+  isPartOf: { '@id': `${SITE_URL}/#website` },
+  publisher: { '@id': `${SITE_URL}/#organization` },
+};
+---
+
+<Layout
+  title={meta.title}
+  description={meta.description}
+  canonical={url}
+  breadcrumbs={[{ name: meta.breadcrumb!, url }]}
+  schema={[legalSchema]}
+  lang={lang}
+  pageKey={doc}
+>
+  <LegalDoc
+    heading={copy.heading}
+    intro={fill(copy.intro)}
+    updated={LEGAL_UPDATED[lang]}
+    updatedLabel={LEGAL_UPDATED_LABEL[lang]}
+  >
+    {copy.sections.map((section: any) => (
+      <>
+        <h2>{section.h2}</h2>
+        {section.blocks.map((block: any) => (
+          block.h3 ? <h3>{block.h3}</h3>
+          : block.ul ? <ul>{block.ul.map((li: string) => <li set:html={fill(li)} />)}</ul>
+          : <p set:html={fill(block.p)} />
+        ))}
+      </>
+    ))}
+  </LegalDoc>
+</Layout>

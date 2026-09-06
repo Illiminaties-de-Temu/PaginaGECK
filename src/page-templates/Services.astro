@@ -2,7 +2,7 @@
 import Layout from '@/layouts/MainLayout.astro';
 import ServicesSection from '@/components/servicios/ServicesSection.jsx';
 import { translations } from '@/i18n/translations';
-import { serviceListSchema, SITE_URL } from '@/data/seo';
+import { faqSchema, serviceListSchema, SITE_URL } from '@/data/seo';
 import { PAGE_META } from '@/i18n/seo-meta';
 import { localizedUrl } from '@/i18n/routes';
 import type { Locale } from '@/i18n/routes';
@@ -19,6 +19,12 @@ const items = Object.values(translations[lang].services.items);
 const services = serviceListSchema(
   items.map((s) => ({ name: s.name, description: s.description })),
 );
+/* Las dudas de contratacion, tambien como datos: son las preguntas que un
+   buscador generativo responde citando a quien las tenga escritas. */
+const faq = faqSchema(
+  translations[lang].services.hiring.items.map((i) => ({ question: i.q, answer: i.a })),
+  'hiring-faq',
+);
 ---
 
 <Layout
@@ -26,7 +32,7 @@ const services = serviceListSchema(
   description={meta.description}
   canonical={url}
   breadcrumbs={[{ name: meta.breadcrumb!, url }]}
-  schema={[services]}
+  schema={[services, faq]}
   lang={lang}
   pageKey="services"
 >

@@ -1,0 +1,31 @@
+# ═══════════════════════════════════════════════════════════
+#  netlify.toml — configuracion de despliegue de geckcodex.com
+# ═══════════════════════════════════════════════════════════
+
+# Sin seccion [build] a proposito: el comando y la carpeta publicada ya
+# viven en el panel de Netlify, y declararlos aqui los sobreescribe. Si el
+# dia de mañana no coincidieran, este archivo ganaria en silencio y el
+# despliegue se romperia sin que nada apunte al porque.
+
+# ── El sitio vive en UNA sola direccion ──────────────────
+#
+# Netlify no apaga el subdominio que regala cuando conectas un dominio
+# propio: geckcodex.netlify.app seguia sirviendo el sitio entero, con el
+# mismo contenido y las mismas 27 URLs. Para un buscador eso es el mismo
+# sitio publicado dos veces, y aunque el canonical del head apunta al
+# dominio real, un canonical es una sugerencia que se puede ignorar —
+# ademas de que rastrear la copia gasta presupuesto que este dominio, aun
+# sin autoridad, no tiene de sobra.
+#
+# El 301 no admite interpretacion: quien llegue por el subdominio acaba
+# en el dominio, sea persona o robot.
+#
+# `force = true` es lo que hace que la regla gane sobre el archivo que ya
+# existe en esa ruta; sin eso Netlify sirve el estatico y nunca redirige.
+# `:splat` arrastra la ruta completa, para que /en/privacy/ caiga en su
+# equivalente y no en la portada.
+[[redirects]]
+  from = "https://geckcodex.netlify.app/*"
+  to = "https://geckcodex.com/:splat"
+  status = 301
+  force = true

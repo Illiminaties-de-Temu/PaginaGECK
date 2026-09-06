@@ -1,0 +1,779 @@
+/**
+ * Estilos de las tres paginas de servicios: el hub (/servicios/), el
+ * ecosistema y el desarrollo a medida.
+ *
+ * Todo sale de los tokens de `global.css`: --surface, --border, --accent,
+ * radio 16 y la pastilla de 50px del CTA son los mismos que ya usa la
+ * seccion. No se introduce ni un color nuevo, para que esta parte no parezca
+ * pegada de otro sitio.
+ */
+
+.paths {
+  --pt-gap: clamp(3.5rem, 8vw, 6rem);
+  overflow-x: clip;
+  max-width: 1160px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 clamp(1.1rem, 4vw, 2rem);
+}
+
+.paths__sec { padding: var(--pt-gap) 0; }
+/* El ecosistema pide mas ancho: el diagrama es lo que se viene a usar y en
+   1160px los modulos quedaban apretados. El texto no se estira con el: la
+   cabecera y las listas mantienen su medida de lectura. */
+.paths--wide { max-width: 1400px; }
+
+/* ── Cabeceras ── */
+.paths__head { text-align: center; max-width: 720px; margin: 0 auto; }
+.paths__eyebrow {
+  display: inline-block; padding: 0.4rem 1.1rem; border-radius: 50px;
+  border: 1px solid var(--gold-border, rgba(88, 74, 28, 0.35));
+  color: var(--accent-text); font-size: 0.64rem; font-weight: 800;
+  letter-spacing: 0.18em; text-transform: uppercase;
+}
+.paths__title {
+  font-family: var(--font-display);
+  font-size: clamp(1.9rem, 4.4vw, 3rem); font-weight: 700;
+  letter-spacing: -0.025em; line-height: 1.08; margin: 1.2rem 0 0;
+  white-space: pre-line; /* el titulo trae su propio salto de linea */
+}
+.paths__lead { color: var(--text-muted); margin: 0.9rem auto 0; font-size: 1rem; max-width: 62ch; }
+
+/* ── Tarjeta base: el mismo tratamiento que .svc-detail__item ── */
+.paths__card {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 16px;
+  padding: clamp(1.4rem, 2.6vw, 2rem);
+  transition: border-color 0.24s ease, transform 0.24s ease;
+}
+.paths__card:hover { border-color: var(--gold-border, rgba(88, 74, 28, 0.35)); transform: translateY(-3px); }
+.paths__k {
+  display: block; font-size: 0.62rem; font-weight: 800; letter-spacing: 0.16em;
+  text-transform: uppercase; color: var(--accent-text); margin: 0 0 0.7rem;
+}
+.paths__card-desc { color: var(--text-muted); font-size: 0.94rem; margin: 0; }
+
+
+.paths__excl {
+  margin: 1.2rem 0 0; padding: 0; list-style: none;
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 0.7rem 2rem;
+}
+.paths__excl li { display: flex; gap: 0.7rem; font-size: 0.88rem; color: var(--text-muted); }
+.paths__excl li::before { content: "—"; color: var(--border-strong); flex: none; }
+
+
+/* ── Planes ── */
+.paths__plans { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.2rem; margin-top: 2.6rem; }
+.paths__plan-name {
+  display: block; font-size: 0.62rem; font-weight: 800; letter-spacing: 0.16em;
+  text-transform: uppercase; color: var(--text-muted);
+}
+.paths__plan-price {
+  display: block; font-family: var(--font-display); font-size: 2.1rem; font-weight: 700;
+  color: var(--accent-text); margin-top: 0.5rem; letter-spacing: -0.03em;
+}
+.paths__plan-per { display: block; font-size: 0.8rem; color: var(--text-muted); }
+.paths__plan-feats { margin: 1.1rem 0 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 0.5rem; }
+.paths__plan-feats li { font-size: 0.86rem; color: var(--text-muted); display: flex; gap: 0.6rem; }
+.paths__plan-feats li::before { content: "·"; color: var(--accent); flex: none; }
+
+/* ── Dudas ── */
+.paths__faq { max-width: 780px; margin: 2.2rem auto 0; }
+.paths__faq details { border-bottom: 1px solid var(--border); padding: 1.15rem 0; }
+.paths__faq summary {
+  cursor: pointer; font-weight: 600; font-size: 1rem; list-style: none;
+  display: flex; justify-content: space-between; gap: 1rem;
+}
+.paths__faq summary::-webkit-details-marker { display: none; }
+.paths__faq summary::after { content: "+"; color: var(--accent); font-weight: 700; }
+.paths__faq details[open] summary::after { content: "\2212"; }
+.paths__faq p { margin: 0.7rem 0 0; color: var(--text-muted); font-size: 0.92rem; max-width: 64ch; }
+
+
+/* ════════ Selector del ecosistema ════════ */
+.eco { margin-top: 2.4rem; }
+
+.eco__link { stroke: var(--border); stroke-width: 1.5; transition: stroke 0.3s, stroke-width 0.3s; }
+.eco__link.is-on { stroke: var(--accent); stroke-width: 2.2; }
+
+.eco__node rect { fill: var(--surface); stroke: var(--border); stroke-width: 1; transition: fill 0.22s, stroke 0.22s; }
+.eco__node { cursor: pointer; }
+.eco__node:hover rect { stroke: var(--gold-border, rgba(88, 74, 28, 0.35)); }
+.eco__node.is-on rect {
+  fill: color-mix(in srgb, var(--accent) 10%, var(--surface));
+  stroke: var(--accent); stroke-width: 1.6;
+}
+.eco__node:focus-visible rect { stroke: var(--accent); stroke-width: 2.4; outline: none; }
+.eco__node.is-soon { cursor: not-allowed; opacity: 0.42; }
+.eco__nm {
+  fill: var(--text-muted); font-family: var(--font-display);
+  font-size: 15px; font-weight: 600; letter-spacing: -0.01em; transition: fill 0.22s;
+}
+.eco__pr { fill: var(--text-muted); font-family: var(--font-body); font-size: 11px; opacity: 0.8; }
+.eco__node.is-on .eco__nm { fill: var(--text); }
+.eco__node.is-on .eco__pr { fill: var(--accent-text); opacity: 1; }
+
+/* Misma pastilla que el CTA que ya vive en el modal de servicios. */
+/* La accion principal va en solido. Con borde dorado y fondo transparente
+   se leia como un enlace secundario, que es justo lo contrario de lo que
+   tiene que parecer el boton que pide la cotizacion. */
+.eco__cta {
+  display: inline-flex; align-items: center; justify-content: center; gap: 0.75rem;
+  background: var(--accent); color: var(--on-accent, #1F1F1E);
+  padding: 1.05rem 2.4rem; border-radius: 50px; font-weight: 800; font-size: 0.92rem;
+  border: 1px solid var(--accent); text-decoration: none; cursor: pointer;
+  transition: transform 0.16s ease, filter 0.2s ease;
+}
+.eco__cta:hover { transform: translateY(-2px); filter: brightness(1.08); }
+/* La variante fantasma queda para lo secundario —ir al otro camino— para que
+   no compita con la principal cuando las dos estan en pantalla. */
+.eco__cta--ghost {
+  background: transparent; color: var(--accent-text);
+  border-color: var(--gold-border, rgba(88, 74, 28, 0.35));
+}
+.eco__cta--ghost:hover { filter: none; border-color: var(--accent); }
+.eco__note { font-size: 0.8rem; color: var(--text-muted); margin: 1rem 0 0; }
+
+@media (prefers-reduced-motion: reduce) {
+  .paths__card:hover, .eco__cta:hover { transform: none; }
+}
+
+/* ════════ Entrada de la pagina: dos caminos, sin carrusel ════════ */
+.svc-top { max-width: 1160px; margin: 0 auto; padding: clamp(6rem, 12vh, 9rem) clamp(1.1rem, 4vw, 2rem) 0; }
+.svc-top__head { text-align: center; max-width: 720px; margin: 0 auto; }
+.svc-top__title {
+  font-family: var(--font-display); font-size: clamp(2.2rem, 5.4vw, 3.6rem);
+  font-weight: 700; letter-spacing: -0.03em; line-height: 1.05; margin: 1.2rem 0 0;
+}
+.svc-top__sub { color: var(--text-muted); margin: 0.9rem auto 0; font-size: 1.02rem; }
+
+
+/* ════════ Combos ════════ */
+
+/* El valor por separado tachado: ancla el ahorro sin tener que explicarlo. */
+
+/* ════════ Alcance por modulo y puerta a medida ════════ */
+
+@media (prefers-reduced-motion: reduce) {
+}
+
+
+/* ════════ Paginas propias de cada camino ════════ */
+/* La primera seccion no lleva el aire de arriba: ya lo pone el navbar. */
+.paths__sec--first { padding-top: clamp(6rem, 12vh, 8.5rem); }
+
+
+
+/* Puente al otro camino: quien acaba una pagina y ve que no era la suya
+   deberia poder cruzar sin volver atras. */
+.paths__bridge {
+  text-align: center; background: var(--surface); border: 1px solid var(--border);
+  border-radius: 16px; padding: clamp(1.8rem, 4vw, 2.8rem);
+  margin: 0 0 clamp(3.5rem, 8vw, 6rem);
+}
+.paths__bridge .paths__k { margin-bottom: 0.5rem; }
+.paths__bridge-title {
+  font-family: var(--font-display); font-size: clamp(1.4rem, 3vw, 1.9rem);
+  font-weight: 700; letter-spacing: -0.02em; margin: 0 0 0.6rem;
+}
+.paths__bridge .paths__card-desc { max-width: 52ch; margin: 0 auto 1.5rem; }
+
+/* ════════ Selector de piezas (a medida) ════════ */
+/* Un solo panel que cambia, en lugar de seis tarjetas. Y nunca dos precios a
+   la vez: las piezas sueltas suman menos que el combinado que las junta, asi
+   que puestas lado a lado el ahorro se lee como una mentira. */
+
+.pkgp { margin-top: 2.4rem; }
+.pkgp__hint { text-align: center; font-size: 0.86rem; color: var(--text-muted); margin: 0 0 1.4rem; }
+.pkgp__switches { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.7rem; }
+.pkgp__sw {
+  padding: 0.72rem 1.9rem; border-radius: 50px; cursor: pointer;
+  border: 1px solid var(--border-strong); background: transparent; color: var(--text);
+  font-family: var(--font-display); font-size: 0.95rem; font-weight: 600; letter-spacing: -0.01em;
+  transition: background .2s ease, color .2s ease, border-color .2s ease;
+}
+.pkgp__sw:hover { border-color: var(--accent); }
+.pkgp__sw.is-on { background: var(--accent); border-color: var(--accent); color: var(--on-accent, #1F1F1E); }
+.pkgp__sw:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+/* Sin caja: filete arriba y abajo, como el resto de la pagina. */
+.pkgp__panel {
+  margin-top: 2.4rem; padding: 2.2rem 0.2rem;
+  border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
+  display: grid; grid-template-columns: 1fr; gap: 1.6rem; align-items: start;
+}
+/* min-width:0 para que una descripcion larga no ensanche la rejilla y
+   empuje el precio fuera. */
+.pkgp__body { min-width: 0; }
+.pkgp__name {
+  font-family: var(--font-display); font-size: clamp(1.5rem, 3vw, 2.1rem);
+  font-weight: 700; letter-spacing: -0.025em; margin: 0 0 0.5rem;
+}
+.pkgp__desc { color: var(--text-muted); margin: 0; max-width: 52ch; }
+.pkgp__limit {
+  margin: 0.9rem 0 0; padding-top: 0.8rem; border-top: 1px solid var(--border);
+  font-size: 0.78rem; color: var(--text-muted); max-width: 52ch;
+}
+.pkgp__cta { margin-top: 1.5rem; }
+
+.pkgp__money { display: flex; flex-direction: column; gap: 0.3rem; }
+.pkgp__was { font-size: 0.8rem; color: var(--text-muted); }
+.pkgp__price {
+  font-family: var(--font-display); font-size: clamp(2.2rem, 5vw, 3.2rem);
+  font-weight: 700; color: var(--accent-text); letter-spacing: -0.03em;
+  line-height: 1; margin: 0;
+}
+.pkgp__from { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.06em;
+  text-transform: uppercase; color: var(--text-muted); }
+.pkgp__save { font-size: 0.78rem; font-weight: 700; color: var(--accent-text); }
+
+@media (min-width: 820px) {
+  .pkgp__panel { grid-template-columns: minmax(0, 1fr) auto; gap: 3rem; }
+  /* El precio a la derecha y alineado a la derecha: mismo trato que los
+     rangos de mas abajo, para que las dos secciones no se peleen. */
+  .pkgp__money { text-align: right; align-items: flex-end; }
+}
+@media (max-width: 819px) {
+  .pkgp__panel { grid-template-columns: 1fr; }
+  .pkgp__money { order: -1; }
+}
+
+/* ════════ Configurador: diagrama + resumen al lado ════════ */
+/* Alto minimo para que la caja no quede achaparrada junto al panel, con el
+   dibujo centrado dentro. No persigue la altura del resumen: con seis modulos
+   elegidos ese crece mucho y el diagrama quedaria nadando en hueco. */
+
+/* ════════ El aparato: diagrama + lateral + franja de alcance ════════ */
+.eco__rig {
+  margin-top: 2rem; background: var(--surface-2);
+  border: 1px solid var(--border); border-radius: 16px; overflow: hidden;
+}
+/* El diagrama se lleva el ancho: es lo que vende. El lateral solo carga con
+   lo que cambia al pulsar, asi que le basta una columna estrecha. */
+.eco__rig-main { display: grid; grid-template-columns: minmax(0, 1fr) 330px; }
+.eco__stage {
+  display: flex; align-items: center; justify-content: center;
+  padding: clamp(1.6rem, 3.6vw, 3rem); overflow-x: auto;
+}
+.eco__stage svg { display: block; width: 100%; height: auto; min-width: 520px; }
+
+.eco__side {
+  border-left: 1px solid var(--border); background: var(--surface);
+  padding: clamp(1.6rem, 3vw, 2.2rem);
+  display: flex; flex-direction: column; gap: 1.4rem;
+}
+.eco__fig { display: flex; flex-direction: column; }
+.eco__fig-k { font-size: 0.56rem; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-muted); }
+.eco__fig-v {
+  font-family: var(--font-display); font-size: 1.7rem; font-weight: 700;
+  letter-spacing: -0.02em; font-variant-numeric: tabular-nums; line-height: 1.15;
+}
+.eco__fig-v.is-accent { color: var(--accent-text); }
+.eco__fig-s { font-size: 0.7rem; color: var(--text-muted); }
+
+.eco__block { border-top: 1px solid var(--border); padding-top: 0.95rem; }
+.eco__block-title {
+  font-size: 0.56rem; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--text-muted); margin: 0 0 0.7rem;
+}
+.eco__empty { margin: 0; font-size: 0.82rem; color: var(--text-muted); }
+.eco__wires-list { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 0.6rem; }
+.eco__wires-list li { font-size: 0.82rem; color: var(--text); display: flex; gap: 0.6rem; align-items: baseline; }
+.eco__wires-list li::before {
+  content: ""; width: 12px; height: 1px; background: var(--accent);
+  flex: none; transform: translateY(-4px);
+}
+.eco__wires-list em { font-style: normal; color: var(--text-muted); }
+
+/* Franja inferior a todo lo ancho: en la columna estrecha esto era una lista
+   larga que empujaba el boton fuera de pantalla. */
+.eco__scopes { border-top: 1px solid var(--border); padding: clamp(1.6rem, 3vw, 2.2rem); }
+.eco__scopes-list {
+  margin: 0; padding: 0; list-style: none;
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem 2.6rem;
+}
+.eco__scopes-list li { font-size: 0.84rem; color: var(--text-muted); }
+.eco__scopes-list b { color: var(--text); font-weight: 600; margin-right: 0.3rem; }
+
+.eco__rig-foot {
+  border-top: 1px solid var(--border); padding: clamp(1.6rem, 3vw, 2.2rem);
+  display: flex; justify-content: center;
+}
+
+/* El puente al otro camino vive FUERA de la caja: dentro competia con el
+   boton de cotizar. */
+
+@media (max-width: 900px) {
+  /* Apilado: el diagrama arriba y el lateral debajo, sin borde a la izquierda. */
+  .eco__rig-main { grid-template-columns: 1fr; }
+  .eco__side { border-left: 0; border-top: 1px solid var(--border); }
+}
+
+/* ── Barra de mandos: los atajos, dentro del aparato ── */
+.eco__rig-top {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
+  gap: 1.2rem 2rem; padding: clamp(1.4rem, 2.6vw, 1.9rem) clamp(1.6rem, 3vw, 2.2rem);
+  border-bottom: 1px solid var(--border); background: var(--surface);
+}
+.eco__rig-top-head { min-width: 0; }
+.eco__rig-top-title {
+  font-family: var(--font-display); font-size: 1.1rem; font-weight: 600;
+  letter-spacing: -0.015em; margin: 0;
+}
+.eco__rig-top-hint { margin: 0.3rem 0 0; font-size: 0.82rem; color: var(--text-muted); max-width: 46ch; }
+
+.eco__presets { display: flex; flex-wrap: wrap; gap: 0.6rem; }
+/* Pastillas con peso: son el punto de partida, no una fila de filtros. */
+.eco__chip {
+  display: inline-flex; align-items: center; gap: 0.55rem;
+  padding: 0.7rem 1.15rem; border-radius: 50px;
+  border: 1px solid var(--border-strong); background: var(--surface-2);
+  color: var(--text); font: inherit; font-size: 0.88rem; font-weight: 600;
+  cursor: pointer; transition: border-color 0.2s, background 0.2s, transform 0.2s;
+}
+.eco__chip:hover { border-color: var(--accent); transform: translateY(-2px); }
+.eco__chip.is-on {
+  border-color: var(--accent); color: var(--accent-text);
+  background: color-mix(in srgb, var(--accent) 16%, transparent);
+}
+/* Cuantas piezas enciende: evita pulsarlo a ciegas. */
+.eco__chip-n {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 1.35em; height: 1.35em; padding: 0 0.3em; border-radius: 50px;
+  background: var(--border); color: var(--text-muted);
+  font-size: 0.72rem; font-weight: 700; font-variant-numeric: tabular-nums;
+}
+.eco__chip.is-on .eco__chip-n { background: var(--accent); color: var(--on-accent, #1F1F1E); }
+
+@media (max-width: 700px) {
+  .eco__rig-top { flex-direction: column; align-items: stretch; }
+}
+
+/* Alcance con la captura del producto al lado. */
+.eco__scope { display: flex; gap: 0.9rem; align-items: flex-start; }
+.eco__scope-shot {
+  flex: none; width: 76px; height: 56px; border-radius: 10px; overflow: hidden;
+  background: var(--surface-2); border: 1px solid var(--border);
+}
+.eco__scope-shot img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.eco__scope-txt { display: block; min-width: 0; }
+.eco__scope-txt b { display: block; color: var(--text); font-weight: 600; margin-bottom: 0.15rem; }
+
+/* ════════ A medida: romper el muro de recuadros ════════ */
+/* Par en contraste: una dice que si y la otra que no, y se ve. */
+
+/* Catalogo con imagen, y el primero al doble de ancho. */
+
+@media (min-width: 900px) {
+  /* El destacado ocupa dos columnas y enseña la captura en horizontal. */
+}
+
+/* Proceso: linea de tiempo con la linea de verdad, no cinco cajas. */
+/* La linea une los pasos y se corta en el ultimo. */
+
+@media (max-width: 700px) {
+}
+@media (prefers-reduced-motion: reduce) {
+}
+.paths__cat-tagline { color: var(--accent-text); font-size: 0.82rem; font-weight: 600; margin: 0 0 0.7rem; }
+
+/* Los seis productos siempre a la vista; los elegidos, destacados. */
+.eco__scope { opacity: 0.55; transition: opacity 0.22s; }
+.eco__scope.is-on { opacity: 1; }
+.eco__scope.is-on .eco__scope-shot { border-color: var(--accent); }
+.eco__scope.is-on .eco__scope-txt b { color: var(--accent-text); }
+@media (prefers-reduced-motion: reduce) { .eco__scope { transition: none; } }
+
+/* ════════ Catálogo: franjas alternadas, no rejilla ════════ */
+.paths__svcs { display: flex; flex-direction: column; gap: clamp(1rem, 3vw, 2.5rem); margin-top: 1rem; }
+/* La tarjeta reserva su franja; lo que se anima es el envoltorio de dentro,
+   para que el ancla (#web, #ia...) y el scroll-margin no se muevan. */
+.paths__svc { min-height: 58vh; display: flex; align-items: center; scroll-margin-top: 6rem; }
+.paths__svc-in {
+  width: 100%; display: grid; grid-template-columns: 1fr; gap: clamp(1.4rem, 3vw, 2.6rem);
+  align-items: center; transform-origin: center center;
+  transition: opacity .45s ease, transform .45s ease, filter .45s ease;
+}
+.paths__svc-shot {
+  border-radius: 18px; overflow: hidden; background: var(--surface-2);
+  border: 1px solid var(--border); aspect-ratio: 4 / 3;
+}
+.paths__svc-shot img {
+  width: 100%; height: 100%; object-fit: cover; display: block;
+  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.paths__svc:hover .paths__svc-shot img { transform: scale(1.04); }
+.paths__svc-body { min-width: 0; }
+/* Numero de orden: lo que hacia el HUD de la helice — situar en la serie. */
+.paths__svc-n {
+  display: flex; align-items: baseline; gap: 0.45rem; margin-bottom: 1rem;
+  font-family: var(--font-display); font-size: 2.4rem; font-weight: 700;
+  color: var(--accent-text); letter-spacing: -0.03em; line-height: 1;
+}
+.paths__svc-n i {
+  font-style: normal; font-size: 0.78rem; font-weight: 600;
+  color: var(--text-muted); letter-spacing: 0.04em;
+}
+.paths__svc-title {
+  font-family: var(--font-display); font-size: clamp(1.6rem, 3.2vw, 2.3rem);
+  font-weight: 700; letter-spacing: -0.025em; margin: 0.4rem 0 0.4rem;
+}
+.paths__svc .paths__card-desc { font-size: 0.97rem; max-width: 52ch; }
+
+@media (min-width: 860px) {
+  .paths__svc-in { grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: clamp(2.4rem, 5vw, 4.5rem); }
+  /* El lado alterna: sin eso siete franjas seguidas vuelven a ser un muro,
+     solo que en vertical. */
+  .paths__svc:nth-child(even) .paths__svc-shot { order: 2; }
+}
+/* Sin movimiento: todo nitido, quieto y opaco. El efecto ni se monta. */
+@media (prefers-reduced-motion: reduce) {
+  .paths__svc-shot img, .paths__svc-in { transition: none !important; }
+  .paths__svc:hover .paths__svc-shot img { transform: none; }
+  .paths__svc-in { opacity: 1 !important; transform: none !important; filter: none !important; }
+}
+@media (max-width: 820px) { .paths__svc { min-height: auto; padding: 1.4rem 0; } }
+
+/* ── Marcador del catalogo ── */
+.svcf__hud {
+  position: sticky; top: 5.4rem; z-index: 5; margin-top: 2.4rem;
+  padding: 1rem 0 1.3rem; display: flex; align-items: baseline; gap: 1rem;
+  background: linear-gradient(var(--background) 68%, transparent);
+}
+.svcf__hud-n {
+  font-family: var(--font-display); font-size: 2rem; font-weight: 700;
+  color: var(--accent-text); letter-spacing: -0.03em; line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.svcf__hud-n i { font-style: normal; font-size: 0.7rem; font-weight: 600; color: var(--text-muted); margin-left: 0.3rem; }
+.svcf__hud-t { font-family: var(--font-display); font-size: 1rem; font-weight: 600; }
+.svcf__hud-bar { flex: 1; height: 2px; background: var(--border); align-self: center; position: relative; }
+.svcf__hud-bar span {
+  position: absolute; inset: 0 auto 0 0; background: var(--accent);
+  width: 14%; transition: width .3s ease;
+}
+@media (max-width: 820px) { .svcf__hud { display: none; } }
+
+/* ════════ Cierre: garantía, acción y puente en un bloque ════════ */
+/* El cierre ya NO es un marco pintado con las piezas moviendose dentro.
+   Cada pieza carga su propio fondo, su borde y las esquinas que le tocan, y
+   viaja entera desde fuera de la pagina. El recuadro grande no existe hasta
+   que las tres llegan: se arma solo. Los -1px de los encuentros funden los
+   bordes vecinos para que no se vea la costura doble. */
+.paths__close {
+  margin: clamp(3rem, 7vw, 5rem) 0 clamp(3.5rem, 8vw, 6rem);
+}
+.paths__close-main {
+  display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+}
+.paths__close-warranty,
+.paths__close-act {
+  padding: clamp(1.8rem, 3.4vw, 2.8rem);
+  border: 1px solid var(--gold-border, rgba(88, 74, 28, 0.35));
+}
+.paths__close-warranty {
+  background: var(--surface);
+  border-radius: 18px 0 0 0;
+}
+/* La accion va sobre el acento: es lo unico que se pide en toda la pagina. */
+.paths__close-act {
+  margin-left: -1px;
+  border-radius: 0 18px 0 0;
+  background: color-mix(in srgb, var(--accent) 8%, var(--surface));
+  display: flex; flex-direction: column; align-items: flex-start; gap: 0.7rem;
+}
+.paths__close-title {
+  font-family: var(--font-display); font-size: clamp(1.35rem, 2.6vw, 1.8rem);
+  font-weight: 700; letter-spacing: -0.02em; margin: 0.7rem 0 0;
+}
+.paths__close-act .paths__close-title { margin-top: 0; }
+.paths__close-desc { color: var(--text-muted); font-size: 0.93rem; margin: 0.6rem 0 0; max-width: 52ch; }
+.paths__close-act .eco__cta { margin-top: 0.6rem; }
+
+/* El puente: una franja, no una sección. Quien llegó al camino equivocado
+   solo necesita una salida, no otra pantalla completa. */
+.paths__close-bridge {
+  margin-top: -1px;
+  border: 1px solid var(--gold-border, rgba(88, 74, 28, 0.35));
+  border-radius: 0 0 18px 18px; background: var(--surface-2);
+  padding: clamp(1.1rem, 2.4vw, 1.5rem) clamp(1.8rem, 3.4vw, 2.8rem);
+  display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.4rem 1.2rem;
+}
+.paths__close-bridge-t { font-weight: 700; font-size: 0.92rem; }
+.paths__close-bridge-d { color: var(--text-muted); font-size: 0.87rem; flex: 1 1 300px; }
+.paths__close-bridge-cta {
+  color: var(--accent-text); font-weight: 700; font-size: 0.88rem;
+  text-decoration: none; white-space: nowrap;
+}
+.paths__close-bridge-cta:hover { text-decoration: underline; }
+
+@media (max-width: 820px) {
+  .paths__close-main { grid-template-columns: 1fr; }
+  .paths__close-warranty { border-radius: 18px 18px 0 0; }
+  .paths__close-act { margin: -1px 0 0; border-radius: 0; }
+}
+
+/* Restaurado: lo usa el cierre del hub (/servicios/) y una limpieza anterior
+   se lo llevo por error. */
+.paths__final { text-align: center; padding: var(--pt-gap) 0; }
+.paths__final .paths__lead { margin-bottom: 2rem; }
+
+/* ════════ Rangos: fichas, no otra tabla ════════ */
+
+/* Las exclusiones son letra pequeña por naturaleza: panel aparte y tipografía
+   menor, para que no compitan con los precios de arriba. */
+
+/* ════════ Rangos: el precio como titular ════════ */
+/* Sin borde ni separador: la jerarquia la da el tamano del numero, no una
+   linea que vuelva a encajonar cada fila. */
+/* Envoltorio del texto: es un <span> con hijos en bloque, asi que necesita
+   serlo tambien o el navegador decide por su cuenta. */
+
+/* Las exclusiones son letra pequeña al pie: sin panel que las convierta en
+   otro bloque más. */
+.paths__fine { margin-top: 2.6rem; }
+.paths__fine-title {
+  font-size: 0.62rem; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--text-muted); margin: 0 0 1rem;
+}
+.paths__fine .paths__excl { margin: 0; }
+.paths__fine .paths__excl li { font-size: 0.85rem; }
+
+
+/* ════════ El acto de los paquetes ════════ */
+/* La seccion se clava y el scroll trae cada pieza en su compas. El alto del
+   recorrido es lo que se "gasta" en contarlo: 300vh = dos pantallas de
+   avance mas una de reposo, que es donde se juega con los interruptores.
+
+   La clase is-on la pone el componente al montar. Sin ella —movil, pantalla
+   baja, movimiento reducido, o antes de hidratar— esto es una seccion normal
+   en flujo, con todo a la vista. */
+.pact { position: relative; padding: clamp(3rem, 7vw, 5rem) 0; }
+.pact__stage { display: flex; flex-direction: column; }
+.pact__lead { margin: 0 auto; }
+
+.pact.is-on {
+  height: 300vh; padding: 0;
+}
+.pact.is-on .pact__stage {
+  position: sticky; top: 0; min-height: 100vh;
+  justify-content: center; gap: 0.4rem; padding: 4rem 0 2rem;
+}
+/* En la escena todo se aprieta: tiene que caber una pantalla completa. */
+.pact.is-on .paths__head { margin-bottom: 0.2rem; }
+.pact.is-on .pkgp { margin-top: 1.4rem; }
+.pact.is-on .pkgp__panel { margin-top: 1.6rem; padding: 1.6rem 0.2rem; }
+.pact.is-on .paths__fine { margin-top: 1.6rem; }
+
+
+/* El interruptor de nivel no es una pieza mas: va detras de un separador y
+   con el borde acentuado para que la fila se lea como "cuatro piezas, y
+   aparte, el nivel". Encendido usa el mismo relleno que las demas: sigue
+   siendo el mismo control. */
+.pkgp__sw--tier { position: relative; margin-left: 1.5rem; border-style: dashed; }
+.pkgp__sw--tier::before {
+  content: ""; position: absolute; left: -0.85rem; top: 50%;
+  width: 1px; height: 1.5rem; transform: translateY(-50%);
+  background: var(--border);
+}
+.pkgp__sw--tier.is-on { border-style: solid; }
+.pkgp__tier-hint {
+  overflow: hidden; text-align: center; margin: 0 auto;
+  font-size: 0.82rem; color: var(--text-muted); max-width: 56ch;
+}
+/* El margen va dentro para que la altura animada arranque en cero limpio. */
+.pkgp__tier-hint::before { content: ""; display: block; height: 1rem; }
+
+@media (max-width: 560px) {
+  /* En una columna estrecha el separador vertical se queda a medio aire. */
+  .pkgp__sw--tier { margin-left: 0; }
+  .pkgp__sw--tier::before { display: none; }
+}
+
+/* ════════ La bifurcacion, cara a cara (ForkCompare) ════════
+ *
+ * Dos columnas que comparten las filas: el precio de un camino queda a la
+ * altura del precio del otro, y la diferencia se lee sin buscarla. La
+ * alineacion la sostiene `subgrid` — cada columna hereda las filas del grid
+ * de fuera, asi que una celda que crece a dos lineas empuja a su pareja del
+ * otro lado. Donde no haya subgrid las columnas siguen siendo legibles, solo
+ * que cada una con sus propias alturas.
+ *
+ * El foco no se pinta, se reparte: al pasar el cursor cambia el reparto de
+ * columnas del grid y la tarjeta mirada se lleva el ancho de la otra. Donde
+ * el navegador no interpole `grid-template-columns` el cambio es instantaneo
+ * en vez de suave, que sigue siendo la lectura correcta.
+ */
+.svcx { margin-top: clamp(2.4rem, 5vw, 3.6rem); }
+.svcx__hint {
+  text-align: center; font-size: 0.82rem; color: var(--text-muted);
+  margin: 0 0 1.4rem;
+}
+.svcx__grid {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-rows: auto repeat(5, auto) auto;
+  gap: 0 1.1rem;
+  transition: grid-template-columns 0.42s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.svcx__grid.on-eco    { grid-template-columns: auto minmax(0, 1.55fr) minmax(0, 0.75fr); }
+.svcx__grid.on-custom { grid-template-columns: auto minmax(0, 0.75fr) minmax(0, 1.55fr); }
+
+.svcx__labels, .svcx__col { display: grid; grid-row: 1 / -1; grid-template-rows: subgrid; }
+
+/* Las etiquetas viven fuera de las columnas para no repetirse a los dos
+   lados: son el eje sobre el que se compara. */
+.svcx__lbl {
+  display: flex; align-items: center; justify-content: flex-end;
+  text-align: right; padding: 0.9rem 0;
+  font-size: 0.6rem; font-weight: 800; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--text-muted);
+}
+.svcx__lbl--head, .svcx__lbl--foot { padding: 0; }
+
+.svcx__col {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 16px;
+  color: inherit; text-decoration: none; cursor: pointer;
+  transition: border-color 0.32s ease, transform 0.32s ease, opacity 0.32s ease, box-shadow 0.32s ease;
+}
+.svcx__col:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+/* El camino que estas mirando se levanta; el otro se aparta sin irse. */
+.svcx__col.is-up {
+  border-color: var(--accent); transform: translateY(-6px);
+  box-shadow: 0 18px 48px -22px rgba(0, 0, 0, 0.6);
+}
+.svcx__col.is-dim { opacity: 0.42; transform: scale(0.98); }
+
+.svcx__cell {
+  display: flex; align-items: center; min-height: 3.2rem;
+  padding: 0.9rem clamp(1.2rem, 2.4vw, 1.8rem);
+  border-top: 1px solid var(--border);
+}
+.svcx__cell--head {
+  display: block; border-top: 0;
+  padding: clamp(1.5rem, 3vw, 2.2rem) clamp(1.2rem, 2.4vw, 1.8rem) clamp(1.2rem, 2.4vw, 1.6rem);
+}
+.svcx__k {
+  display: block; font-size: 0.62rem; font-weight: 800; letter-spacing: 0.16em;
+  text-transform: uppercase; color: var(--accent-text);
+}
+.svcx__t {
+  display: block; font-family: var(--font-display);
+  margin-block: 0;
+  font-size: clamp(1.35rem, 2.6vw, 1.7rem);
+  font-weight: 700; letter-spacing: -0.02em; margin: 0.55rem 0 0;
+  transition: font-size 0.32s ease;
+}
+.svcx__col.is-up .svcx__t { font-size: clamp(1.5rem, 3vw, 2rem); }
+.svcx__d { display: block; color: var(--text-muted); font-size: 0.92rem; margin: 0.6rem 0 0; }
+.svcx__v { font-size: 0.92rem; font-weight: 600; }
+.svcx__cell--foot { padding-top: 1.2rem; padding-bottom: clamp(1.4rem, 2.6vw, 1.8rem); }
+/* El pie es la promesa del enlace, no el enlace: la tarjeta entera lo es. */
+.svcx__go { color: var(--accent-text); font-weight: 700; }
+.svcx__col.is-up .svcx__go { text-decoration: underline; }
+
+/* En movil no hay hover ni eje de etiquetas: dos tarjetas, una debajo de
+   otra, cada celda dice de que dato habla, y se toca la que se quiere. */
+@media (max-width: 860px) {
+  .svcx__hint { display: none; }
+  .svcx__grid { display: block; }
+  .svcx__labels { display: none; }
+  .svcx__col { display: block; margin-bottom: 1.2rem; }
+  .svcx__col.is-dim, .svcx__col.is-up {
+    opacity: 1; transform: none; box-shadow: none;
+  }
+  .svcx__col.is-up .svcx__t { font-size: clamp(1.35rem, 2.6vw, 1.7rem); }
+  .svcx__cell { justify-content: space-between; gap: 1.2rem; }
+  .svcx__cell::before {
+    content: attr(data-k);
+    font-size: 0.6rem; font-weight: 800; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--text-muted); flex: none;
+  }
+  .svcx__v { text-align: right; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .svcx__grid, .svcx__col, .svcx__t { transition: none; }
+  .svcx__col.is-up { transform: none; }
+  .svcx__col.is-dim { transform: none; }
+}
+
+
+/* ════════ Dudas de contratacion (HiringFaq) ════════
+   Cabecera a un lado y lista al otro: leyendo la quinta respuesta sigues
+   viendo de que seccion son. En una columna el titulo se habria ido arriba
+   hace rato. */
+.hfaq { display: grid; gap: clamp(1.8rem, 4vw, 3.4rem); align-items: start; }
+.hfaq__head { text-align: center; }
+.hfaq__lead { margin-inline: auto; }
+
+.hfaq__list { list-style: none; margin: 0; padding: 0; }
+.hfaq__item { border-bottom: 1px solid var(--border); }
+.hfaq__item:first-child { border-top: 1px solid var(--border); }
+
+.hfaq__q {
+  width: 100%; display: flex; align-items: center; gap: 1rem;
+  background: none; border: 0; padding: 1.25rem 0; cursor: pointer;
+  font: inherit; color: var(--text); text-align: left;
+  transition: color 0.22s ease;
+}
+.hfaq__q:hover { color: var(--accent-text); }
+.hfaq__q:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+/* El numero ordena la lectura y da a la fila algo fijo por donde empezar. */
+.hfaq__n {
+  flex: none; font-size: 0.7rem; font-weight: 800; letter-spacing: 0.08em;
+  color: var(--text-muted); font-variant-numeric: tabular-nums;
+  transition: color 0.22s ease;
+}
+.hfaq__item.is-on .hfaq__n { color: var(--accent-text); }
+.hfaq__q-t {
+  flex: 1; font-family: var(--font-display); font-weight: 700;
+  font-size: clamp(1rem, 1.9vw, 1.15rem); letter-spacing: -0.01em; line-height: 1.3;
+}
+
+/* El icono: dos trazos cruzados; al abrir, el vertical desaparece girando y
+   queda el menos. */
+.hfaq__ico { position: relative; flex: none; width: 14px; height: 14px; }
+.hfaq__ico-bar {
+  position: absolute; inset: 50% 0 auto; height: 1.5px; margin-top: -0.75px;
+  background: var(--accent); transition: transform 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.hfaq__ico-bar--v { transform: rotate(90deg); }
+.hfaq__item.is-on .hfaq__ico-bar--v { transform: rotate(0deg); }
+
+.hfaq__a { overflow: hidden; }
+.hfaq__a-t {
+  margin: 0; padding: 0 2.4rem 1.5rem 2.6rem;
+  color: var(--text-muted); font-size: 0.94rem; line-height: 1.65; max-width: 68ch;
+}
+
+@media (min-width: 900px) {
+  .hfaq { grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.4fr); }
+  .hfaq__head { text-align: left; position: sticky; top: clamp(6rem, 14vh, 8rem); }
+  .hfaq__lead { margin-inline: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hfaq__ico-bar { transition: none; }
+}
+
+/* ── Los diez paquetes en lista, plegados ──
+   Discreta a proposito: esta para que la pagina se pueda leer entera sin
+   tocar el selector, no para competir con el. */
+.pkgall { margin-top: clamp(2rem, 4vw, 3rem); border-top: 1px solid var(--border); }
+.pkgall__sum {
+  list-style: none; cursor: pointer; padding: 1.1rem 0;
+  font-size: 0.84rem; font-weight: 700; color: var(--text-muted);
+  display: flex; align-items: center; gap: 0.6rem;
+  transition: color 0.22s ease;
+}
+.pkgall__sum::-webkit-details-marker { display: none; }
+.pkgall__sum::after { content: "+"; color: var(--accent); font-weight: 800; }
+.pkgall[open] .pkgall__sum::after { content: "\2212"; }
+.pkgall__sum:hover { color: var(--accent-text); }
+.pkgall__list {
+  list-style: none; margin: 0 0 1.6rem; padding: 0;
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); gap: 1.4rem 2rem;
+}
+.pkgall__n { font-size: 0.95rem; font-weight: 700; margin: 0; }
+.pkgall__d { font-size: 0.86rem; color: var(--text-muted); margin: 0.35rem 0 0; }
+.pkgall__l { font-size: 0.78rem; color: var(--text-muted); opacity: 0.8; margin: 0.35rem 0 0; }

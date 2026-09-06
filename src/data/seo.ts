@@ -1,3 +1,5 @@
+import { TEAM } from './team.js';
+
 /* ══════════════════════════════════════════════════════════════════
    seo.ts — Fuente única de verdad para datos estructurados (JSON-LD)
 
@@ -31,10 +33,11 @@ export const BUSINESS = {
   instagram: 'https://www.instagram.com/geckcodex/',
   github: 'https://github.com/Geck-Codex',
   facebook: 'https://www.facebook.com/share/1Dt3nBrVgm/',
+  linkedin: 'https://www.linkedin.com/in/geckcodex-2647a4417/',
 } as const;
 
 /** Perfiles externos que confirman la identidad de la entidad (sameAs). */
-const SAME_AS = [BUSINESS.instagram, BUSINESS.facebook, BUSINESS.github];
+const SAME_AS = [BUSINESS.instagram, BUSINESS.facebook, BUSINESS.linkedin, BUSINESS.github];
 
 /* ─────────────────────────────────────────────────────────────────
    Entidad principal — ProfessionalService es un subtipo de
@@ -119,6 +122,39 @@ export const ORGANIZATION_SCHEMA: Record<string, unknown> = {
       name: 'Ciudad Juárez',
       containedInPlace: { '@type': 'State', name: 'Chihuahua' },
     },
+    // Resto de municipios del estado por poblacion. Camargo y Jimenez son
+    // chicos pero estan a menos de una hora de Parral: ahi el servicio puede
+    // ser presencial, no solo remoto.
+    {
+      '@type': 'City',
+      name: 'Cuauhtémoc',
+      containedInPlace: { '@type': 'State', name: 'Chihuahua' },
+    },
+    {
+      '@type': 'City',
+      name: 'Delicias',
+      containedInPlace: { '@type': 'State', name: 'Chihuahua' },
+    },
+    {
+      '@type': 'City',
+      name: 'Nuevo Casas Grandes',
+      containedInPlace: { '@type': 'State', name: 'Chihuahua' },
+    },
+    {
+      '@type': 'City',
+      name: 'Meoqui',
+      containedInPlace: { '@type': 'State', name: 'Chihuahua' },
+    },
+    {
+      '@type': 'City',
+      name: 'Camargo',
+      containedInPlace: { '@type': 'State', name: 'Chihuahua' },
+    },
+    {
+      '@type': 'City',
+      name: 'Jiménez',
+      containedInPlace: { '@type': 'State', name: 'Chihuahua' },
+    },
   ],
   // Radio de servicio presencial; el trabajo remoto queda cubierto por areaServed.
   serviceArea: {
@@ -131,6 +167,13 @@ export const ORGANIZATION_SCHEMA: Record<string, unknown> = {
     geoRadius: 500000,
   },
   sameAs: SAME_AS,
+  /* Las personas se declaran por referencia y no incrustadas: el nodo completo
+     de cada una vive en /nosotros (About.astro), con su foto y su puesto. Aquí
+     solo se cierra la relación en el sentido que faltaba — cada Person ya
+     apuntaba a la organización con worksFor, pero la organización no apuntaba
+     de vuelta, y un grafo enlazado en un solo sentido se recorre a medias. */
+  founder: TEAM.filter((m) => m.founder && m.name).map((m) => ({ '@id': `${SITE_URL}/#person-${m.id}` })),
+  employee: TEAM.filter((m) => m.name).map((m) => ({ '@id': `${SITE_URL}/#person-${m.id}` })),
   knowsLanguage: ['es-MX', 'en-US', 'pt-BR'],
   knowsAbout: [
     'Desarrollo Web',
@@ -160,9 +203,6 @@ export const ORGANIZATION_SCHEMA: Record<string, unknown> = {
       'SaaS y Plataformas',
       'Automatización de procesos',
       'Software a Medida',
-      'Diseño UI/UX',
-      'Social Media y Marketing Digital',
-      'Venture Studio',
     ].map((name) => ({
       '@type': 'Offer',
       itemOffered: { '@type': 'Service', name, provider: { '@id': `${SITE_URL}/#organization` } },
@@ -206,10 +246,12 @@ export interface FaqItem {
  * FAQPage — el formato que los motores generativos citan con más frecuencia,
  * porque cada par pregunta/respuesta es una unidad extraíble por sí sola.
  */
-export function faqSchema(items: FaqItem[]): Record<string, unknown> {
+export function faqSchema(items: FaqItem[], id = 'faq'): Record<string, unknown> {
   return {
     '@type': 'FAQPage',
-    '@id': `${SITE_URL}/#faq`,
+    /* El ancla la elige quien llama: dos paginas con FAQ distinta no pueden
+       compartir @id, o en el grafo son la misma entidad y una pisa a la otra. */
+    '@id': `${SITE_URL}/#${id}`,
     mainEntity: items.map((f) => ({
       '@type': 'Question',
       name: f.question,
@@ -247,6 +289,41 @@ export function serviceListSchema(services: ServiceItem[]): Record<string, unkno
           serviceUrl: `${SITE_URL}/contacto/`,
           servicePhone: { '@type': 'ContactPoint', telephone: BUSINESS.phone },
         },
+      },
+    })),
+  };
+}
+
+export interface PackageItem {
+  name: string;
+  description: string;
+}
+
+/**
+ * Los paquetes de referencia del desarrollo a medida.
+ *
+ * Va SIN `offers`: los precios se ven en la pagina, pero publicarlos como
+ * dato estructurado es otra cosa —los vuelve citables por buscadores y
+ * asistentes, y eso es una decision comercial, no tecnica—. El dia que se
+ * decida, cada item admite:
+ *
+ *   offers: { '@type': 'Offer', price: '19500', priceCurrency: 'MXN' }
+ *
+ * y para los rangos, un `AggregateOffer` con lowPrice/highPrice.
+ */
+export function packageListSchema(items: PackageItem[], id = 'packages'): Record<string, unknown> {
+  return {
+    '@type': 'ItemList',
+    '@id': `${SITE_URL}/#${id}`,
+    name: 'Paquetes de desarrollo a medida de Geck Codex',
+    itemListElement: items.map((p, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      item: {
+        '@type': 'Service',
+        name: p.name,
+        description: p.description,
+        provider: { '@id': `${SITE_URL}/#organization` },
       },
     })),
   };

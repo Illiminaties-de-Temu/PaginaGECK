@@ -9,7 +9,7 @@ export default function IASection() {
       poster="/assets/image/ia-poster.jpg"
       title="IA & Automatización"
       description="Desarrollamos soluciones de inteligencia artificial y visión por computadora que transforman tu negocio"
-      link="/servicios#ia"
+      link="/servicios/a-medida/#ia"
       buttonText="Explorar IA"
     />
   );

@@ -7,13 +7,18 @@
  * sitio entero. Astro da prioridad a las rutas estáticas sobre esta dinámica,
  * así que ambas conviven sin pisarse.
  *
- * Las páginas legales (privacidad, términos) tampoco: solo existen en español.
+ * Las legales SÍ pasan por aquí desde que se tradujeron: el pie de página de
+ * /en/ y /pt/ enlazaba a las versiones en español, así que un visitante en
+ * inglés aterrizaba en un documento que no podía leer.
  */
 import Home from '@/page-templates/Home.astro';
 import Services from '@/page-templates/Services.astro';
+import Ecosystem from '@/page-templates/Ecosystem.astro';
+import CustomBuild from '@/page-templates/CustomBuild.astro';
 import Portfolio from '@/page-templates/Portfolio.astro';
 import About from '@/page-templates/About.astro';
 import Contact from '@/page-templates/Contact.astro';
+import Legal from '@/page-templates/Legal.astro';
 import { PREFIXED_LOCALES, SLUGS, localizedPath } from '@/i18n/routes';
 import type { Locale, PageKey } from '@/i18n/routes';
 
@@ -41,12 +46,20 @@ const { page, locale } = Astro.props;
 const TEMPLATES = {
   home: Home,
   services: Services,
+  ecosystem: Ecosystem,
+  custom: CustomBuild,
   portfolio: Portfolio,
   about: About,
   contact: Contact,
 } as const;
 
-const Template = TEMPLATES[page];
+const Template = TEMPLATES[page as keyof typeof TEMPLATES];
 ---
 
-<Template lang={locale} />
+{
+  /* Las dos legales comparten plantilla y se distinguen por `doc`; el resto
+     tiene una plantilla propia por página. */
+  page === 'privacy' || page === 'terms'
+    ? <Legal doc={page} lang={locale} />
+    : <Template lang={locale} />
+}

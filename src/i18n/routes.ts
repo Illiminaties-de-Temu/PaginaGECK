@@ -13,10 +13,10 @@ export const LOCALES = map.LOCALES as readonly ['es', 'en', 'pt'];
 export type Locale = (typeof LOCALES)[number];
 
 /** Páginas que existen en los tres idiomas. */
-export type PageKey = 'home' | 'services' | 'portfolio' | 'about' | 'contact';
-
-/** Páginas que existen solo en español (legales bajo ley mexicana). */
-export type EsOnlyPageKey = 'privacy' | 'terms';
+export type PageKey =
+  | 'home' | 'services' | 'ecosystem' | 'custom'
+  | 'portfolio' | 'about' | 'contact'
+  | 'privacy' | 'terms';
 
 export const DEFAULT_LOCALE = map.DEFAULT_LOCALE as Locale;
 export const PREFIXED_LOCALES = map.PREFIXED_LOCALES as Locale[];
@@ -27,7 +27,9 @@ export const LOCALE_META = map.LOCALE_META as Record<
 >;
 
 export const SLUGS = map.SLUGS as Record<PageKey, Record<Locale, string>>;
-export const ES_ONLY_SLUGS = map.ES_ONLY_SLUGS as Record<EsOnlyPageKey, string>;
+
+/** Pagina padre de cada hija, para construir migas de pan. */
+export const PARENT = map.PARENT as Partial<Record<PageKey, PageKey>>;
 
 export const localizedPath = map.localizedPath as (page: PageKey, locale: Locale) => string;
 

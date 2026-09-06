@@ -92,6 +92,7 @@ export default function VideoBackground({ children, lang }) {
    * Como las fases cubren todo [0,1), siempre hay alguna zona encendida. */
   const asciiNodes = useMemo(() => {
     const D = 6;            // duración del ciclo (debe coincidir con la del CSS)
+    const STEP = 0.25;      // cuantización del retardo, en segundos
     const cellsX = 3;       // nº de manchas a lo ancho
     const cellsY = 4;       // nº de manchas a lo alto
     const lines = ASCII.split('\n');
@@ -101,32 +102,56 @@ export default function VideoBackground({ children, lang }) {
     const nodes = [];
     lines.forEach((line, r) => {
       const rn = r / Math.max(rowsN - 1, 1);
+      /* Un <span> por carácter eran 1.121 elementos animando opacidad a la vez.
+       * El ruido hace que los vecinos compartan casi la misma fase, así que se
+       * cuantiza el retardo a pasos de STEP y los caracteres contiguos que caen
+       * en el mismo paso viajan dentro de UN solo span. Los espacios no pintan
+       * glifo, así que se pegan al tramo vivo en vez de partirlo. Mismo efecto
+       * a la vista, ~3× menos nodos que animar y repintar. */
+      let run = '';
+      let runDelay = null;
+      let key = 0;
+
+      const flush = () => {
+        if (!run) return;
+        if (runDelay === null) {
+          nodes.push(run);    // tramo de solo espacios: texto plano, sin span
+        } else {
+          nodes.push(
+            <span
+              key={`${r}-${key++}`}
+              className="ascii-ch"
+              style={{ animationDelay: `-${runDelay}s` }}
+            >
+              {run}
+            </span>
+          );
+        }
+        run = '';
+        runDelay = null;
+      };
+
       Array.from(line).forEach((chr, c) => {
-        if (chr === ' ') { nodes.push(' '); return; }
+        if (chr === ' ') { run += ' '; return; }
         const cn = c / Math.max(colsN - 1, 1);
-        let phase = valueNoise(cn * cellsX, rn * cellsY);
-        phase = (phase + rnd(r * 92821 + c * 53 + 7) * 0.03) % 1;
-        const delay = (phase * D).toFixed(2);
-        nodes.push(
-          <span
-            key={`${r}-${c}`}
-            className="ascii-ch"
-            style={{ animationDelay: `-${delay}s` }}
-          >
-            {chr}
-          </span>
-        );
+        const phase = valueNoise(cn * cellsX, rn * cellsY);
+        const delay = (Math.round((phase * D) / STEP) * STEP).toFixed(2);
+        if (runDelay !== null && delay !== runDelay) flush();
+        runDelay = delay;
+        run += chr;
       });
+      flush();
       nodes.push('\n');
     });
     return nodes;
   }, []);
 
-  /* El gecko en ASCII son ~11.000 caracteres decorativos. Renderizado en el
-   * HTML estático inflaba la home a 194 KB y ahogaba el texto real de la página
-   * (dos tercios del contenido textual del index eran caracteres de adorno).
-   * Se pinta solo tras hidratar: mismo efecto visual, cero ruido para Google y
-   * los rastreadores de IA. */
+  /* Lo que inflaba la home no era el dibujo (2,9 KB de texto) sino el millar de
+   * <span style="animation-delay"> que lo envolvían. Así que se separan las dos
+   * capas: el <pre> plano SÍ va en el HTML del servidor —el hero es el elemento
+   * LCP y esperar a que React hidrate para pintarlo era la razón de que tardara
+   * una eternidad en aparecer— y la capa animada carácter a carácter lo
+   * sustituye en cuanto hay hidratación. */
   const [mounted, setMounted] = useState(false);
   useEffect(() => { setMounted(true); }, []);
 
@@ -174,6 +199,31 @@ export default function VideoBackground({ children, lang }) {
     const cur = { ...targ };
     let raf = 0;
 
+    /* Caja del logo SIN el parallax aplicado. Medirla dentro del bucle era leer
+     * el layout justo después de escribirlo (thrashing): el navegador tenía que
+     * recalcular la página entera en cada fotograma. Se mide aquí y el
+     * desplazamiento del parallax, que ya conocemos, se suma a mano. */
+    let box = { left: 0, top: 0, width: 1, height: 1 };
+    let secBox = { left: 0, top: 0, width: 1, height: 1 };
+    const measure = () => {
+      const prev = wrap.style.transform;
+      wrap.style.transform = 'none';
+      const r = spot.getBoundingClientRect();
+      const sr = section.getBoundingClientRect();
+      wrap.style.transform = prev;
+      if (r.width && r.height) box = { left: r.left, top: r.top, width: r.width, height: r.height };
+      if (sr.width && sr.height) secBox = { left: sr.left, top: sr.top, width: sr.width, height: sr.height };
+    };
+
+    let visible = false;
+    let running = false;
+    const startLoop = () => {
+      if (running || !visible) return;
+      running = true;
+      raf = requestAnimationFrame(frame);
+    };
+    const stopLoop = () => { running = false; cancelAnimationFrame(raf); };
+
     const frame = () => {
       cur.nx = lerp(cur.nx, targ.nx, 0.09);
       cur.ny = lerp(cur.ny, targ.ny, 0.09);
@@ -181,47 +231,64 @@ export default function VideoBackground({ children, lang }) {
       cur.py = lerp(cur.py, targ.py, 0.2);
       cur.on = lerp(cur.on, targ.on, 0.12);
 
+      const dx = -cur.nx * 55;
+      const dy = -cur.ny * 45;
+
       /* Foco: posición relativa a la capa del logo (centrada) */
-      const r = spot.getBoundingClientRect();
-      wrap.style.setProperty('--mx', (((cur.px - r.left) / r.width) * 100).toFixed(2) + '%');
-      wrap.style.setProperty('--my', (((cur.py - r.top) / r.height) * 100).toFixed(2) + '%');
+      wrap.style.setProperty('--mx', (((cur.px - (box.left + dx)) / box.width) * 100).toFixed(2) + '%');
+      wrap.style.setProperty('--my', (((cur.py - (box.top + dy)) / box.height) * 100).toFixed(2) + '%');
       wrap.style.setProperty('--spotO', cur.on.toFixed(3));
 
       /* Hero ESTÁTICO: no hay salida por scroll. El gecko y los textos se quedan
        * fijos (solo parallax sutil del mouse). El hero ya no se desvanece ni se
        * desplaza al hacer scroll; simplemente se sale de pantalla con la página. */
-      wrap.style.transform = `translate(${(-cur.nx * 55).toFixed(1)}px, ${(-cur.ny * 45).toFixed(1)}px)`;
+      wrap.style.transform = `translate(${dx.toFixed(1)}px, ${dy.toFixed(1)}px)`;
       if (content) content.style.transform = `translate(${(cur.nx * 26).toFixed(1)}px, ${(cur.ny * 20).toFixed(1)}px)`;
 
+      /* Quieto = nada que animar. Sin esta salida el bucle seguía reescribiendo
+       * la máscara radial 60 veces por segundo con el ratón parado, y cada
+       * escritura obliga a repintar el logo entero. */
+      const settled =
+        Math.abs(cur.nx - targ.nx) < 0.001 && Math.abs(cur.ny - targ.ny) < 0.001 &&
+        Math.abs(cur.px - targ.px) < 0.3   && Math.abs(cur.py - targ.py) < 0.3 &&
+        Math.abs(cur.on - targ.on) < 0.002;
+      if (settled) { running = false; return; }
       if (running) raf = requestAnimationFrame(frame);
     };
 
+    /* Sin getBoundingClientRect aquí: el mousemove se dispara decenas de veces
+     * por segundo y cada lectura forzaba un recálculo de layout completo. */
     const onMove = (e) => {
-      const r = section.getBoundingClientRect();
-      targ.nx = ((e.clientX - r.left) / r.width) * 2 - 1;
-      targ.ny = ((e.clientY - r.top) / r.height) * 2 - 1;
+      targ.nx = ((e.clientX - secBox.left) / secBox.width) * 2 - 1;
+      targ.ny = ((e.clientY - secBox.top) / secBox.height) * 2 - 1;
       targ.px = e.clientX;
       targ.py = e.clientY;
       targ.on = 1;
+      startLoop();
     };
-    const onLeave = () => { targ.on = 0; targ.nx = 0; targ.ny = 0; };
+    const onLeave = () => { targ.on = 0; targ.nx = 0; targ.ny = 0; startLoop(); };
 
     section.addEventListener('mousemove', onMove);
     section.addEventListener('mouseleave', onLeave);
 
-    // El loop hace getBoundingClientRect + escrituras de estilo cada frame.
-    // Una vez que el hero sale de pantalla no hay nada que animar → lo paramos.
-    let running = false;
-    const startLoop = () => { if (!running) { running = true; raf = requestAnimationFrame(frame); } };
-    const stopLoop = () => { running = false; cancelAnimationFrame(raf); };
+    // Una vez que el hero sale de pantalla no hay nada que animar → ni arranca.
     const io = new IntersectionObserver(
-      ([e]) => { e.isIntersecting ? startLoop() : stopLoop(); },
+      ([e]) => {
+        visible = e.isIntersecting;
+        if (visible) { measure(); startLoop(); } else stopLoop();
+      },
       { rootMargin: '100px' }
     );
     io.observe(section);
 
+    const onResize = () => { measure(); startLoop(); };
+    addEventListener('resize', onResize);
+    addEventListener('scroll', onResize, { passive: true });
+
     return () => {
       io.disconnect();
+      removeEventListener('resize', onResize);
+      removeEventListener('scroll', onResize);
       section.removeEventListener('mousemove', onMove);
       section.removeEventListener('mouseleave', onLeave);
       cancelAnimationFrame(raf);
@@ -242,6 +309,9 @@ export default function VideoBackground({ children, lang }) {
 
         {/* ASCII de fondo — caracteres que se encienden al azar + foco del cursor */}
         <div ref={wrapRef} className="hero-ascii-wrapper">
+          {/* Telón base: existe ya en la respuesta del servidor, así que el hero
+              pinta sin esperar al bundle de React. Lo releva la capa animada. */}
+          {!mounted && <pre className="hero-ascii hero-ascii--base" aria-hidden="true">{ASCII}</pre>}
           {mounted && (
             <>
               <div className="hero-ascii hero-ascii--chars" aria-hidden="true">{asciiNodes}</div>
@@ -357,13 +427,20 @@ export default function VideoBackground({ children, lang }) {
         /* Cada carácter descansa en un piso tenue (--ascii-floor) para que el
          * logo siempre se intuya, y se ENCIENDE al máximo cuando lo alcanza el
          * pulso radial (el retardo por distancia al centro va inline). */
+        /* El glow vive en la capa, no en cada tramo: heredado se ve igual y el
+         * navegador no promueve cientos de elementos a capa propia (un will-change
+         * por carácter creaba ~1.100 capas de composición y ahogaba la GPU). */
+        .hero-ascii--chars { text-shadow: 0 0 6px var(--ascii-glow); }
         .ascii-ch {
           --ascii-floor: 0.18;
           opacity: var(--ascii-floor);
-          color: var(--ascii-ink);
-          text-shadow: 0 0 6px var(--ascii-glow);
           animation: ascii-pulse 6s ease-in-out infinite;
-          will-change: opacity;
+        }
+        /* Telón estático previo a la hidratación: el mismo piso de opacidad con
+         * el que arrancan los tramos animados, para que el relevo no dé un salto. */
+        .hero-ascii--base {
+          opacity: 0.18;
+          text-shadow: 0 0 6px var(--ascii-glow);
         }
         @keyframes ascii-pulse {
           0%   { opacity: var(--ascii-floor); }

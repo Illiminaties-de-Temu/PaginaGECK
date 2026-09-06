@@ -6,7 +6,9 @@
 # ── Buscadores tradicionales ──────────────────────────────
 User-agent: *
 Allow: /
-Disallow: /blog
+# /blog NO se bloquea a proposito: la pagina lleva noindex y, si aqui se
+# prohibiera el rastreo, el buscador nunca llegaria a leer esa etiqueta.
+# Para desindexar hay que DEJAR entrar.
 
 # ── Motores de busqueda con IA (AEO / GEO) ────────────────
 # Se permiten explicitamente para que el sitio pueda ser

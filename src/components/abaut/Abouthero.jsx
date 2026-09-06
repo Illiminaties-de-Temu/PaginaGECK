@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useMemo } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { useLanguage } from '../../hooks/useLanguage';
 
@@ -14,10 +14,16 @@ export default function AboutHero({ lang }) {
   const { t } = useLanguage(lang);
   const heroRef = useRef(null);
   const mapRef = useRef(null);
+  const leafletRef = useRef(null);
   const flownRef = useRef(false);
+  /* El acento vive también en un ref: el efecto que arma el mapa corre una sola
+     vez y necesita el valor del momento sin volver a depender de él. */
+  const accentRef = useRef('#C3AD85');
 
-  const [lib, setLib] = useState(null);
+  const mapElRef = useRef(null);
+  const layersRef = useRef({ circle: null, lines: [] });
   const [mapReady, setMapReady] = useState(false);
+  const [mapFailed, setMapFailed] = useState(false);
   const [inView, setInView] = useState(false);
   const [landed, setLanded] = useState(false);
   const [accent, setAccent] = useState('#C3AD85');
@@ -33,31 +39,132 @@ export default function AboutHero({ lang }) {
   // --- Color de acento real desde el token (Leaflet no resuelve var() en atributos SVG) ---
   useEffect(() => {
     const c = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim();
-    if (c) setAccent(c);
+    if (c) { accentRef.current = c; setAccent(c); }
   }, []);
 
-  // --- Carga diferida de Leaflet (evita SSR de window/document) ---
+  /* Leaflet a secas, sin react-leaflet.
+   *
+   * Antes esto montaba <MapContainer> y compañía, y el mapa se quedaba clavado
+   * en "Estableciendo conexión": si la isla revienta al hidratar, React se
+   * queda con el marcado del servidor, que es justo ese mensaje de carga.
+   * react-leaflet 5 sobre React 19 era el sospechoso, y aquí no aportaba nada:
+   * el vuelo, el zoom y el aterrizaje ya se hacían de forma imperativa contra
+   * `mapRef`, así que la capa declarativa solo añadía una superficie de fallo.
+   *
+   * Ahora la única dependencia es `leaflet`, que no toca el árbol de React: el
+   * div existe siempre en el DOM y Leaflet pinta dentro. Si el import falla,
+   * `mapFailed` lo dice en pantalla en vez de dejar el mensaje girando para
+   * siempre. */
   useEffect(() => {
     let mounted = true;
-    import('leaflet/dist/leaflet.css');
-    Promise.all([import('react-leaflet'), import('leaflet')]).then(([rl, leafletMod]) => {
-      if (!mounted) return;
-      const L = leafletMod.default || leafletMod;
-      setLib({ MapContainer: rl.MapContainer, TileLayer: rl.TileLayer, Marker: rl.Marker, Circle: rl.Circle, Polyline: rl.Polyline, L });
-    });
-    return () => { mounted = false; };
+    let map = null;
+
+    (async () => {
+      try {
+        await import('leaflet/dist/leaflet.css');
+        const mod = await import('leaflet');
+        const L = mod.default || mod;
+        if (!mounted || !mapElRef.current || mapRef.current) return;
+
+        map = L.map(mapElRef.current, {
+          center: MEXICO_CENTER,
+          zoom: 5,
+          scrollWheelZoom: false,
+          zoomControl: false,
+          /* La atribución vuelve, en pequeño: Esri la exige por licencia y un
+             mapa sin crédito no es un mapa que podamos usar. El CSS la deja
+             discreta en la esquina, no la esconde. */
+          attributionControl: true,
+        });
+
+        /* Esri y no CARTO.
+         *
+         * CARTO cerró sus basemaps públicos y desde entonces estampa
+         * "API KEY REQUIRED — carto.com/basemaps/apikey" DENTRO de cada
+         * cuadrito. No fue un cambio nuestro y no daba error: los tiles
+         * seguían respondiendo 200, solo que con la marca pintada encima.
+         *
+         * Esri World Dark Gray sirve sin registro y en el mismo tono. Va en
+         * dos capas —el terreno y los rótulos aparte— porque así lo publica
+         * Esri, y de paso los nombres quedan por encima del círculo y del
+         * pin en vez de debajo. Llega hasta z16 y aquí no pasamos de z9.
+         *
+         * Sin `{s}` ni `{r}`: no reparte por subdominios ni tiene versión
+         * retina, y dejar los marcadores puestos pediría URLs que no existen. */
+        const ESRI = 'https://services.arcgisonline.com/ArcGIS/rest/services/Canvas';
+        const esriAttrib = 'Tiles &copy; Esri';
+
+        L.tileLayer(`${ESRI}/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}`, {
+          maxZoom: 16,
+          attribution: esriAttrib,
+        }).addTo(map);
+
+        L.tileLayer(`${ESRI}/World_Dark_Gray_Reference/MapServer/tile/{z}/{y}/{x}`, {
+          maxZoom: 16,
+          /* El crédito ya lo puso la capa de abajo; repetirlo lo duplica. */
+          pane: 'shadowPane',
+        }).addTo(map);
+
+        const accentNow = accentRef.current;
+
+        layersRef.current.circle = L.circle(PARRAL, {
+          radius: 80000,
+          color: accentNow,
+          fillColor: accentNow,
+          fillOpacity: 0.08,
+          weight: 1.5,
+        }).addTo(map);
+
+        L.marker(PARRAL, {
+          icon: L.divIcon({
+            className: 'ah-pin',
+            html: '<span class="ah-pin__pulse"></span><span class="ah-pin__pulse ah-pin__pulse--2"></span><span class="ah-pin__core"></span>',
+            iconSize: [22, 22],
+            iconAnchor: [11, 11],
+          }),
+        }).addTo(map);
+
+        mapRef.current = map;
+        leafletRef.current = L;
+        setMapReady(true);
+      } catch (err) {
+        console.error('[AboutHero] Leaflet no cargó:', err);
+        if (mounted) setMapFailed(true);
+      }
+    })();
+
+    return () => {
+      mounted = false;
+      if (map) map.remove();
+      mapRef.current = null;
+      layersRef.current = { circle: null, lines: [] };
+    };
   }, []);
 
-  // --- Marcador dorado con pulso ---
-  const pinIcon = useMemo(() => {
-    if (!lib) return null;
-    return lib.L.divIcon({
-      className: 'ah-pin',
-      html: '<span class="ah-pin__pulse"></span><span class="ah-pin__pulse ah-pin__pulse--2"></span><span class="ah-pin__core"></span>',
-      iconSize: [22, 22],
-      iconAnchor: [11, 11],
-    });
-  }, [lib]);
+  /* Las líneas de alcance salen al aterrizar, no antes: dibujadas desde el
+     principio delatan el destino del vuelo. */
+  useEffect(() => {
+    const map = mapRef.current;
+    const L = leafletRef.current;
+    if (!map || !L) return;
+
+    if (!landed) {
+      layersRef.current.lines.forEach((l) => l.remove());
+      layersRef.current.lines = [];
+      return;
+    }
+    layersRef.current.lines = REACH.map((line) =>
+      L.polyline(line, { color: accent, weight: 1.4, opacity: 0.5, dashArray: '4 9' }).addTo(map),
+    );
+  }, [landed, accent]);
+
+  /* El acento se lee del token después del primer pintado, así que puede
+     cambiar cuando las capas ya existen. */
+  useEffect(() => {
+    const { circle, lines } = layersRef.current;
+    if (circle) circle.setStyle({ color: accent, fillColor: accent });
+    lines.forEach((l) => l.setStyle({ color: accent }));
+  }, [accent]);
 
   // --- Disparar el vuelo cuando el hero entra en vista (una sola vez) ---
   useEffect(() => {
@@ -86,8 +193,6 @@ export default function AboutHero({ lang }) {
     const t3 = setTimeout(() => setLanded(true), 7200);
     return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
   }, [inView, mapReady, reduce]);
-
-  const Map = lib;
 
   return (
     <>
@@ -120,35 +225,14 @@ export default function AboutHero({ lang }) {
             transition={{ duration: 1.2, delay: 0.2, ease: EASE }}
             className="about-hero__map-wrapper"
           >
-            {Map ? (
-              <Map.MapContainer
-                center={MEXICO_CENTER}
-                zoom={5}
-                scrollWheelZoom={false}
-                zoomControl={false}
-                attributionControl={false}
-                style={{ height: '100%', width: '100%' }}
-                ref={(m) => { if (m && !mapRef.current) { mapRef.current = m; setMapReady(true); } }}
-              >
-                <Map.TileLayer url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png" />
+            {/* El nodo del mapa está siempre en el DOM: Leaflet necesita un
+                contenedor con medidas ya resueltas para calcular sus teselas. */}
+            <div ref={mapElRef} className="about-hero__map" />
 
-                {landed && REACH.map((line, i) => (
-                  <Map.Polyline
-                    key={i}
-                    positions={line}
-                    pathOptions={{ color: accent, weight: 1.4, opacity: 0.5, dashArray: '4 9' }}
-                  />
-                ))}
-
-                <Map.Circle
-                  center={PARRAL}
-                  radius={80000}
-                  pathOptions={{ color: accent, fillColor: accent, fillOpacity: 0.08, weight: 1.5 }}
-                />
-                {pinIcon && <Map.Marker position={PARRAL} icon={pinIcon} />}
-              </Map.MapContainer>
-            ) : (
-              <div className="about-hero__map-loading"><span>{t.about.mapLoading}</span></div>
+            {!mapReady && (
+              <div className="about-hero__map-loading">
+                <span>{mapFailed ? t.about.mapCity : t.about.mapLoading}</span>
+              </div>
             )}
 
             {/* Tarjeta que aparece al aterrizar */}
@@ -224,6 +308,7 @@ export default function AboutHero({ lang }) {
           padding-right: 5%;
         }
 
+        .about-hero__map { position: absolute; inset: 0; }
         .about-hero__map-wrapper {
           position: relative;
           /* Contexto de apilamiento propio. Leaflet pinta sus capas en z-index
@@ -297,6 +382,20 @@ export default function AboutHero({ lang }) {
           font-size: 0.78rem;
           line-height: 1.4;
           color: rgba(255,255,255,0.62);
+        }
+
+        /* ── Crédito de los tiles ──
+           Esri lo pide por licencia. Se queda legible pero fuera del camino:
+           el fondo blanco de Leaflet arruinaría el mapa oscuro. */
+        .leaflet-control-attribution {
+          background: rgba(11, 29, 51, 0.55) !important;
+          color: rgba(255, 255, 255, 0.45) !important;
+          font-size: 0.6rem;
+          padding: 1px 6px;
+          backdrop-filter: blur(2px);
+        }
+        .leaflet-control-attribution a {
+          color: rgba(255, 255, 255, 0.6) !important;
         }
 
         /* ── Marcador con pulso (divIcon) ── */
