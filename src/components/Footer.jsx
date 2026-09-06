@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect, useRef } from "react";
 import { Github, Instagram, Facebook, Linkedin, ArrowUp } from "lucide-react";
 import { useLanguage } from "../hooks/useLanguage";
-import { localizedPath } from '../i18n/routes';
+import { localizedPath, LOCALES, LOCALE_META } from '../i18n/routes';
 
 // --- DISPERSIÓN DE TEXTO (mismo patrón que el logo del Navbar) ---
 function DisperseFooterText({ text, isHovered }) {
@@ -35,7 +35,7 @@ function DisperseFooterText({ text, isHovered }) {
   );
 }
 
-export default function GeckFooter({ lang }) {
+export default function GeckFooter({ lang, pageKey }) {
   const { t } = useLanguage(lang);
   const [hoveredIcon, setHoveredIcon] = useState(null);
   const [atBottom, setAtBottom] = useState(false);
@@ -147,6 +147,34 @@ export default function GeckFooter({ lang }) {
               <li><a href={localizedPath('terms', lang)}>{t.footer.terms}</a></li>
             </ul>
           </div>
+
+          {/* Los idiomas, como enlaces de verdad.
+              El selector del nav es un <button> que navega con
+              window.location, y ademas vive dentro del menu, que solo se
+              monta al abrirlo: en el HTML que recibe un rastreador no habia
+              NADA que llevara a /en/ ni a /pt/. Diez de las diecisiete URLs
+              del sitemap eran huerfanas, anunciadas por hreflang pero sin un
+              solo enlace detras, y Google manda eso al fondo de la cola.
+              Aqui salen siempre, server-rendered, sin depender de React.
+              Apuntan a la misma pagina en el otro idioma —no a la portada—
+              para que coincidan con el hreflang del head. */}
+          <nav className="footer-col" aria-label={t.language}>
+            <p className="footer-col__title">{t.language}</p>
+            <ul className="footer-list">
+              {LOCALES.map((code) => (
+                <li key={code}>
+                  <a
+                    href={pageKey ? localizedPath(pageKey, code) : localizedPath('home', code)}
+                    hrefLang={LOCALE_META[code].htmlLang}
+                    aria-current={code === lang ? 'true' : undefined}
+                    className={code === lang ? 'is-current' : undefined}
+                  >
+                    {LOCALE_META[code].name}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </nav>
         </div>
 
         {/* REDES SOCIALES — control segmentado navy (mismo estilo que el selector de idioma del nav) */}
@@ -227,7 +255,7 @@ export default function GeckFooter({ lang }) {
         .footer-nav {
           width: 100%;
           display: grid;
-          grid-template-columns: 1.6fr 1fr 1.3fr 1fr;
+          grid-template-columns: 1.6fr 1fr 1.3fr 1fr 0.8fr;
           gap: 2.5rem;
           padding-bottom: 2.5rem;
           border-bottom: 1px solid var(--border);
@@ -249,6 +277,14 @@ export default function GeckFooter({ lang }) {
           color: var(--text-muted);
           margin: 0;
           max-width: 32ch;
+        }
+
+        /* El idioma en el que ya estas: sigue siendo enlace —quitarlo
+           romperia el conjunto— pero sin invitar al clic. */
+        .footer-list a.is-current {
+          color: var(--accent-text);
+          opacity: 0.75;
+          cursor: default;
         }
 
         .footer-col__title {
