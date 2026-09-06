@@ -8,6 +8,7 @@ const CLIENTS_BASE = [
   { id:5, name:'Coronado Gym',                    logo:'assets/image/gym.webp' },
   { id:6, name:'Seguiar',                         logo:'assets/image/seguiar.webp' },
   { id:7, name:'Restaurante Nómada',              logo:'assets/image/nomada.webp',          bg:'#E1D8D0' },
+  { id:8, name:'Handlove',                        logo:'assets/image/handlove.webp',        bg:'#FFFFFF' },
 ];
 
 /* ── Parámetros de la simulación de fuerzas ── */
