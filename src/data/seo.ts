@@ -1,3 +1,5 @@
+import { TEAM } from './team.js';
+
 /* ══════════════════════════════════════════════════════════════════
    seo.ts — Fuente única de verdad para datos estructurados (JSON-LD)
 
@@ -165,6 +167,13 @@ export const ORGANIZATION_SCHEMA: Record<string, unknown> = {
     geoRadius: 500000,
   },
   sameAs: SAME_AS,
+  /* Las personas se declaran por referencia y no incrustadas: el nodo completo
+     de cada una vive en /nosotros (About.astro), con su foto y su puesto. Aquí
+     solo se cierra la relación en el sentido que faltaba — cada Person ya
+     apuntaba a la organización con worksFor, pero la organización no apuntaba
+     de vuelta, y un grafo enlazado en un solo sentido se recorre a medias. */
+  founder: TEAM.filter((m) => m.founder && m.name).map((m) => ({ '@id': `${SITE_URL}/#person-${m.id}` })),
+  employee: TEAM.filter((m) => m.name).map((m) => ({ '@id': `${SITE_URL}/#person-${m.id}` })),
   knowsLanguage: ['es-MX', 'en-US', 'pt-BR'],
   knowsAbout: [
     'Desarrollo Web',

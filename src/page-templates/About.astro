@@ -4,10 +4,13 @@ import Abouthero from '@/components/abaut/Abouthero.jsx';
 import MisionVision from '@/components/abaut/MisionVision.jsx';
 import Processtimeline from '@/components/abaut/Processtimeline.jsx';
 import Techstack from '@/components/abaut/Techstack.jsx';
+import Team from '@/components/abaut/Team.jsx';
 import Python from '@/components/abaut/python.jsx';
 import { SITE_URL } from '@/data/seo';
 import { PAGE_META } from '@/i18n/seo-meta';
 import { localizedUrl } from '@/i18n/routes';
+import { translations } from '@/i18n/translations';
+import { TEAM } from '@/data/team';
 import type { Locale } from '@/i18n/routes';
 
 interface Props {
@@ -29,6 +32,24 @@ const aboutPage = {
   about: { '@id': `${SITE_URL}/#organization` },
   mainEntity: { '@id': `${SITE_URL}/#organization` },
 };
+
+// Un `Person` por cada quien: es lo que convierte a la organizacion en gente
+// identificable para Google y para los buscadores de IA, que citan mejor lo que
+// pueden atribuir a alguien. El `@id` NO lleva idioma —a diferencia del de la
+// pagina— porque las tres versiones hablan de la misma persona y deben
+// resolverse al mismo nodo del grafo.
+const teamCopy = translations[lang].team;
+const people = TEAM.filter((m) => m.name).map((m) => ({
+  '@type': 'Person',
+  '@id': `${SITE_URL}/#person-${m.id}`,
+  name: m.name,
+  jobTitle: m.founder ? teamCopy.founderRole : teamCopy.roles[m.id],
+  worksFor: { '@id': `${SITE_URL}/#organization` },
+  // Absoluta: una ruta relativa en datos estructurados no se resuelve.
+  // Quien no tiene retrato no lleva la propiedad — mejor ausente que vacia.
+  ...(m.photo ? { image: `${SITE_URL}${m.photo}` } : {}),
+  url,
+}));
 ---
 
 <Layout
@@ -36,13 +57,14 @@ const aboutPage = {
   description={meta.description}
   canonical={url}
   breadcrumbs={[{ name: meta.breadcrumb!, url }]}
-  schema={[aboutPage]}
+  schema={[aboutPage, ...people]}
   lang={lang}
   pageKey="about"
 >
   <div class="components-container">
     <Abouthero client:visible lang={lang} />
     <MisionVision client:visible lang={lang} />
+    <Team client:visible lang={lang} />
     <Techstack client:visible lang={lang} />
   </div>
 
