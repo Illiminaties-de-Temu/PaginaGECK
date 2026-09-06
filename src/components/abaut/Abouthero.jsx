@@ -71,12 +71,38 @@ export default function AboutHero({ lang }) {
           zoom: 5,
           scrollWheelZoom: false,
           zoomControl: false,
-          attributionControl: false,
+          /* La atribución vuelve, en pequeño: Esri la exige por licencia y un
+             mapa sin crédito no es un mapa que podamos usar. El CSS la deja
+             discreta en la esquina, no la esconde. */
+          attributionControl: true,
         });
 
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-          subdomains: 'abcd',
-          maxZoom: 20,
+        /* Esri y no CARTO.
+         *
+         * CARTO cerró sus basemaps públicos y desde entonces estampa
+         * "API KEY REQUIRED — carto.com/basemaps/apikey" DENTRO de cada
+         * cuadrito. No fue un cambio nuestro y no daba error: los tiles
+         * seguían respondiendo 200, solo que con la marca pintada encima.
+         *
+         * Esri World Dark Gray sirve sin registro y en el mismo tono. Va en
+         * dos capas —el terreno y los rótulos aparte— porque así lo publica
+         * Esri, y de paso los nombres quedan por encima del círculo y del
+         * pin en vez de debajo. Llega hasta z16 y aquí no pasamos de z9.
+         *
+         * Sin `{s}` ni `{r}`: no reparte por subdominios ni tiene versión
+         * retina, y dejar los marcadores puestos pediría URLs que no existen. */
+        const ESRI = 'https://services.arcgisonline.com/ArcGIS/rest/services/Canvas';
+        const esriAttrib = 'Tiles &copy; Esri';
+
+        L.tileLayer(`${ESRI}/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}`, {
+          maxZoom: 16,
+          attribution: esriAttrib,
+        }).addTo(map);
+
+        L.tileLayer(`${ESRI}/World_Dark_Gray_Reference/MapServer/tile/{z}/{y}/{x}`, {
+          maxZoom: 16,
+          /* El crédito ya lo puso la capa de abajo; repetirlo lo duplica. */
+          pane: 'shadowPane',
         }).addTo(map);
 
         const accentNow = accentRef.current;
@@ -356,6 +382,20 @@ export default function AboutHero({ lang }) {
           font-size: 0.78rem;
           line-height: 1.4;
           color: rgba(255,255,255,0.62);
+        }
+
+        /* ── Crédito de los tiles ──
+           Esri lo pide por licencia. Se queda legible pero fuera del camino:
+           el fondo blanco de Leaflet arruinaría el mapa oscuro. */
+        .leaflet-control-attribution {
+          background: rgba(11, 29, 51, 0.55) !important;
+          color: rgba(255, 255, 255, 0.45) !important;
+          font-size: 0.6rem;
+          padding: 1px 6px;
+          backdrop-filter: blur(2px);
+        }
+        .leaflet-control-attribution a {
+          color: rgba(255, 255, 255, 0.6) !important;
         }
 
         /* ── Marcador con pulso (divIcon) ── */
